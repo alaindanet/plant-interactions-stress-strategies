@@ -4,12 +4,15 @@
 
 
 % bibliographie
-\usepackage[round]{natbib}
+%\usepackage[round]{natbib}
+\usepackage[natbib=true,backend=bibtex,sorting=nyvt, isbn= false, url=false, doi=false, eprint=false]{biblatex}
+\addbibresource{/home/alain.danet/Dropbox/Shared_TheseAlain/BibTeX/M2-StageM2,/home/alain.danet/Dropbox/Shared_TheseAlain/BibTeX/Thesis}
 
 %accents, language français
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[english]{babel} %
+\usepackage{csquotes}
 %\usepackage{xltxtra}
 
 \addto\captionsfrench{\def\tablename{Tableau}}
@@ -82,7 +85,9 @@ The conceptual model of Grime predict the dominant plant strategies along stress
 
 
 
-The goal of this studies is to make a conceptual link between Grime and SGH model: (i) Facilitation can modulate Grime predictions ? (ii) Which strategies is the most facilitated along a stress and disturbance gradient ?
+The goal of this studies is to have a functional approach of interaction inside a plant community in front of stress and disturbance gradient.
+
+%%conceptual link between Grime and SGH model: (i) Facilitation can modulate Grime predictions ? (ii) Which strategies is the most facilitated along a stress and disturbance gradient ?
 
 \part{Methods}
 
@@ -92,14 +97,34 @@ The experiment will take in Alicante. Mart's field sites are free to use and tho
 
 \section{Plants}
 
-To following Grime plant strategies, the best would be to choose species which are enough caricatural. A first axis to separate  quite clear to separate species  difference of ressources management is the SLA (Surface Leaf Area). SLA is linked to maximum photosynthesis speed and leaf life span. A low SLA means conservative strategie (low photosynthesis speed and long leaf life span) and high SLA an acquisition strategie. This axis discriminates S and C-R strategies. C and R are different in term of stature and seed investment. On the contrary of R, C have a high canopy an invest low ressources in seeds.
+It seems difficult to me to find caricatural species of grime's strategies but we can use instead species already used in experimental studies located in Mediteranean area.
+I used studies of \citep{McCluney2012,Navarro2006, Jauffret2003}
 
-It's a very simple way to define plant strategies and may be I can refine it with C-S, S-R and S-C Grime (1979) but the main idea is here. 
+\begin{tabular}{|c|c|c|c|c|}
+\hline 
+Vrac & Grazing tolerant & Grazing sensitive & Stress-tolerant & Competitive \\ 
+\hline 
+Teucrium polium & Fagonia cretica & Phlomis purpurea & \textit{Helianthemum squamatum} & \textit{Stipa tenacissima} \\ 
+\hline 
+Koeleria vallesiana & Paronichia sufruticosa & Cistus albidus & • & \textit{Ligeum spartum} \\ 
+\hline 
+Thymus lacaitae & Thymus & Quercus coccifera  & \textit{Lepidium subulatum} & • \\ 
+\hline 
+Herniaria fruticosa & Teucrium & Olea europaea & \textit{Retama sphaerocarpa} & • \\ 
+\hline
+ & Sideritis spp. & • & \textit{Pistacia lentiscus} & • \\ 
+\hline
+ & A. herba-alba & • &  & • \\ 
+\hline
+\end{tabular} 
 
 
 \section{Design}
 
-The design would be to plant 3 saplings of 3 different species, each one representing a Grime strategie (See Figure \ref{exp}). An alternative would be to test a set of 2 saplings by treatment: Competitive vs Stress-tolerator for Stress (Water), Competitive vs Ruderals for disturbance gradient (grazing) because we have not hypothesis with for the third sapling. We will have a water-stress treatment provided by Susana's roof which exclude a bit less than 30\% of rainfall. I propose to keep only 2 cattle grazing treatment ( low and high) and abondon rabbit treatment. Finally, of course, a treatment open/nurse to have interaction balance.
+We have 3 plant species. I purposed a set of species to Susana and we have to decided which can be used. We have 4 treatments: open/patch, grazing, water supply/water stress, alone/community.
+
+Each species will be plant alone and in mix with the 2 other species. We will simulate grazing instead of use goat. It will permit us to scale statistical unit to micro-site instead of plot as in previous experiment 
+We will have a water-stress treatment provided by Susana's roof which exclude a bit less than 30\% of rainfall or if the summer is very dry, we can watering instead of exclude to have the water treatment.
 
 \begin{figure}
 \begin{center}
@@ -133,16 +158,17 @@ It would be good to measure height canopy and survival regularly to have dynamic
 \section{Timing}
 \begin{itemize}
 
-\item January: Species choice have to be done, idem for experimental design.
-\item February: Growth of saplings in green house.
-\item March: plant saplings, watering them to prevent transplant mortality.
+\item End January: Drill hole.
+\item February: plant saplings, watering them to prevent transplant mortality.
+\item March: .
 \item June or july: may be one visit to make sure everything is fine and water plants.
 \item October: first measure and after application of grazing and water treatment.
 \item March: Second measurement
 
 \end{itemize}
 
-\bibliographystyle{plainnat}
+%\bibliographystyle{plainnat}
 
-\bibliography{/home/alain.danet/Dropbox/Shared_TheseAlain/BibTeX/M2-StageM2,/home/alain.danet/Dropbox/Shared_TheseAlain/BibTeX/Thesis}
+%\bibliography{/home/alain.danet/Dropbox/Shared_TheseAlain/BibTeX/M2-StageM2,/home/alain.danet/Dropbox/Shared_TheseAlain/BibTeX/Thesis}
+\printbibliography
 \end{document}
