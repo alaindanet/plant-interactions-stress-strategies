@@ -5,7 +5,7 @@
 
 % bibliographie
 %\usepackage[round]{natbib}
-\usepackage[natbib=true,backend=bibtex,sorting=nyvt, isbn= false, url=false, doi=false, eprint=false]{biblatex}
+\usepackage[natbib=true,backend=bibtex,sorting=nyvt, isbn= false, url=false, doi=false,eprint=false, style=authoryear]{biblatex}
 \addbibresource{/home/alain.danet/Dropbox/Shared_TheseAlain/BibTeX/M2-StageM2,/home/alain.danet/Dropbox/Shared_TheseAlain/BibTeX/Thesis}
 
 %accents, language français
@@ -15,7 +15,6 @@
 \usepackage{csquotes}
 %\usepackage{xltxtra}
 
-\addto\captionsfrench{\def\tablename{Tableau}}
 
 %Image
 \usepackage{graphicx}
@@ -93,38 +92,24 @@ The goal of this studies is to have a functional approach of interaction inside 
 
 \section{Site}
 
-The experiment will take in Alicante. Mart's field sites are free to use and those sites seem perfect.
+The experiment will take in Alicante. Mart's field sites are free to use and those sites seem perfect. 3 independant terraces with each 2 plots: one is totally fenced to prevent grazing and one prevent grazing only from ruminant (rabbit can go in). 
 
 \section{Plants}
 
 It seems difficult to me to find caricatural species of grime's strategies but we can use instead species already used in experimental studies located in Mediteranean area.
-I used studies of \citep{McCluney2012,Navarro2006, Jauffret2003}
+I used studies of \citep{McCluney2012,Navarro2006, Jauffret2003}.
 
-\begin{tabular}{|c|c|c|c|c|}
-\hline 
-Vrac & Grazing tolerant & Grazing sensitive & Stress-tolerant & Competitive \\ 
-\hline 
-Teucrium polium & Fagonia cretica & Phlomis purpurea & \textit{Helianthemum squamatum} & \textit{Stipa tenacissima} \\ 
-\hline 
-Koeleria vallesiana & Paronichia sufruticosa & Cistus albidus & • & \textit{Ligeum spartum} \\ 
-\hline 
-Thymus lacaitae & Thymus & Quercus coccifera  & \textit{Lepidium subulatum} & • \\ 
-\hline 
-Herniaria fruticosa & Teucrium & Olea europaea & \textit{Retama sphaerocarpa} & • \\ 
-\hline
- & Sideritis spp. & • & \textit{Pistacia lentiscus} & • \\ 
-\hline
- & A. herba-alba & • &  & • \\ 
-\hline
-\end{tabular} 
 
 
 \section{Design}
 
-We have 3 plant species. I purposed a set of species to Susana and we have to decided which can be used. We have 4 treatments: open/patch, grazing, water supply/water stress, alone/community.
+We have 3 plant species. I purposed a set of species to Susana and we have to decided which can be used. We have 4 treatments: open/patch, grazing, water, alone/community and 3 blocks (terraces).
 
-Each species will be plant alone and in mix with the 2 other species. We will simulate grazing instead of use goat. It will permit us to scale statistical unit to micro-site instead of plot as in previous experiment 
+ We will simulate grazing instead of use goat. It will permit us to scale statistical unit to micro-site instead of plot as in previous experiment. We will simulate grazing by using probability of being eaten and how much thank to Mart's data. 
 We will have a water-stress treatment provided by Susana's roof which exclude a bit less than 30\% of rainfall or if the summer is very dry, we can watering instead of exclude to have the water treatment.
+
+For each terrace, we planted 30 saplings by treatment. Nurse micro-sites were choosen randomly and the corresponding open micro-site have been placed Xm around. Each species have been plant alone and in mix with the 2 other species. We performed  5 replicates for single species and the same for mix. So we need $10\times5\times3=150$ saplings of each species.
+
 
 \begin{figure}
 \begin{center}
@@ -172,3 +157,4 @@ It would be good to measure height canopy and survival regularly to have dynamic
 %\bibliography{/home/alain.danet/Dropbox/Shared_TheseAlain/BibTeX/M2-StageM2,/home/alain.danet/Dropbox/Shared_TheseAlain/BibTeX/Thesis}
 \printbibliography
 \end{document}
+\include{list_species.tex}
