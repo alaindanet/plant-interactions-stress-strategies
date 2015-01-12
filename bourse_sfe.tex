@@ -1,0 +1,67 @@
+% This file was converted to LaTeX by Writer2LaTeX ver. 1.0.2
+% see http://writer2latex.sourceforge.net for more info
+\documentclass[12pt]{article} %scrartcl
+
+
+% bibliographie
+%\usepackage[round]{natbib}
+\usepackage[natbib=true,backend=bibtex,sorting=nyvt, isbn= false, url=false, doi=false,eprint=false, style=authoryear]{biblatex}
+\addbibresource{/home/alain.danet/Dropbox/Shared_TheseAlain/BibTeX/M2-StageM2,/home/alain.danet/Dropbox/Shared_TheseAlain/BibTeX/Thesis}
+
+%accents, language français
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english, french]{babel} %
+\usepackage{csquotes}
+%\usepackage{xltxtra}
+
+%Lien
+\usepackage[colorlinks=true,urlcolor=blue]{hyperref}
+
+%Image
+\usepackage[pdftex]{graphicx}
+\usepackage{subcaption}
+\usepackage{tikz}
+\usetikzlibrary{arrows,shapes}
+\graphicspath{{/home/alain.danet/Dropbox/Shared_TheseAlain/Figures/}}
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+% Font
+
+% Outline numbering
+\setcounter{secnumdepth}{0}
+% Set interligne
+\linespread{1.5}
+% Page layout (geometry)
+%\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+% Pages styles
+\pagestyle{plain}
+
+
+
+\begin{document}
+
+\input{./titre_bourse_sfe.tex}
+
+\begin{center}
+\includegraphics[width=\textwidth]{/home/alain.danet/Dropbox/Shared_TheseAlain/CV_2014.pdf}
+\end{center}
+
+\section{Motivations}
+
+\emph{Mesdames et Messieurs, membres du jury,}\\
+je me permets de vous présenter ma candidature afin de pouvoir réaliser une expérimentation dans le cadre de ma thèse. Ayant débuté ma thèse depuis maintenant 4 mois, le temps est venu de mettre a profit mon travail de mise en place de mon projet de thèse. Le projet que je vous présente ci-dessous a pour but de permettre de commencer à résoudre une des controverses issus des travaux concernant l'hypothèse du gradient de stress (en anglais, "Stress Gradient Hypothesis"). J'ai en effet la conviction qu'une approche fonctionnelle des interactions entre plantes permettra d'avoir des attendus qualitatifs sur le bilan de ces interactions le long d'un gradient de stress et de mieux comprendre ces interactions à l'échelle de la communauté.
+
+J'ai eu l'opportunité cet été de réussir le concours de l'école doctorale de Montpellier, qui paie mon salaire depuis octobre dernier et ce pour une durée de 3 ans. Mes encadrants me laissent une totale liberté quant au choix de mes sujets d'étude et je les en remercie grandement. Cependant, je travaille sur mes propres thématiques en étant totalement dépendant des financements de mes encadrants, l'université de Montpellier ne fournissant que mon salaire. C'est en grande partie pour cela que je candidate à votre bourse, afin de pouvoir commencer à obtenir des financements propres à mes recherches.
+
+\clearpage
+
+\section{Descriptif du projet de terrain}
+
+Les milieux arides couvrent 40\% des surfaces émergées du globe et un tiers de la population mondiale les occupent. Ces écosystèmes sont connus pour passer d'une façon soudaine et souvent irréversible d'un  état à couvert végétal à un état désertique, on qualifie ces transitions de "catastrophique" \citep{Scheffer2001,Kefi2007}. Voir aussi le \href{http://www.sfecologie.org/regards/2012/10/19/r37-hysteresis-sonia-kefi/}{regard} de Sonia Kéfi sur le sujet. Historiquement largement ignorées, plusieurs modèles ont permis de montrer que les interactions positives entre les plantes jouent un rôle important dans l'apparition de ces transitions catastrophiques dans les milieux arides \citep{Kefi2007,Kefi2007a,Rietkerk2004}. D'autre part, une idée conceptualisée par \citet{Bertness1994} postule que les interactions positives deviennent plus importantes quand le stress augmente. Ce concept a été très populaire et beaucoup de travaux se sont attachés à la tester et à la raffiner \citep{ Michalet2007,Maestre2009,He2013}. \citep{Verwijmeren2013} a récemment conceptualisé le lien entre les transitions catastrophiques et l'hypothèse du gradient de stress. Cependant il est toujours difficile d'avoir des prédictions qualitatives sur les interactions observées sur le terrain. \citet{Butterfield2013} propose de regarder les interactions à travers le prisme fonctionnel pour résoudre les contradictions. L'écologie fonctionnelle a pour objet les fonctions réalisées par les organismes en s'affranchissant de la taxonomie. Un des succès majeurs de cette approche a été de montrer que certaines fonctions des plantes peuvent être approximées par des traits facilement mesurables sur le terrain. \citet{Grime1977a} a popularisé cette approche en synthétisant les types végétaux (STRESS ET PERTURBATION) en 3 grandes classes: Compétitrice, Tolérante au stress et Rudérales (modèle C-S-R).
+
+L'approche expérimentale que je propose permet de faire le lien entre l'approche fonctionnelle de Grime et l'hypothèse du gradient de stress.
+
+
+\printbibliography
+\end{document}
