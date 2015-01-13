@@ -24,7 +24,7 @@
 \usepackage{tikz}
 \usetikzlibrary{arrows,shapes}
 \graphicspath{{/home/alain.danet/Dropbox/Shared_TheseAlain/Figures/}}
-\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}} %Pour la page de titre
 
 % Font
 
@@ -33,7 +33,8 @@
 % Set interligne
 \linespread{1.5}
 % Page layout (geometry)
-%\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+\usepackage[a4paper]{geometry}
+\geometry{left=2.5cm,right=2cm,top=2cm,bottom=2cm}
 % Pages styles
 \pagestyle{plain}
 
@@ -50,18 +51,47 @@
 \section{Motivations}
 
 \emph{Mesdames et Messieurs, membres du jury,}\\
-je me permets de vous présenter ma candidature afin de pouvoir réaliser une expérimentation dans le cadre de ma thèse. Ayant débuté ma thèse depuis maintenant 4 mois, le temps est venu de mettre a profit mon travail de mise en place de mon projet de thèse. Le projet que je vous présente ci-dessous a pour but de permettre de commencer à résoudre une des controverses issus des travaux concernant l'hypothèse du gradient de stress (en anglais, "Stress Gradient Hypothesis"). J'ai en effet la conviction qu'une approche fonctionnelle des interactions entre plantes permettra d'avoir des attendus qualitatifs sur le bilan de ces interactions le long d'un gradient de stress et de mieux comprendre ces interactions à l'échelle de la communauté.
+je me permets de vous présenter ma candidature afin de pouvoir réaliser une expérimentation dans le cadre de ma thèse. L'ayant débuté depuis maintenant quatre mois, le temps est venu de mettre a profit le travail de mise en place de mon projet. Le projet que je vous présente ci-dessous a pour but de permettre de d'explorer une des controverses issues des travaux concernant l'hypothèse du gradient de stress (\textit{Stress Gradient Hypothesis}). J'ai en effet la conviction qu'une approche fonctionnelle des interactions entre plantes permettra d'avoir des attendus qualitatifs sur le bilan de ces interactions le long d'un gradient de stress et de mieux comprendre ces interactions à l'échelle de la communauté.
 
-J'ai eu l'opportunité cet été de réussir le concours de l'école doctorale de Montpellier, qui paie mon salaire depuis octobre dernier et ce pour une durée de 3 ans. Mes encadrants me laissent une totale liberté quant au choix de mes sujets d'étude et je les en remercie grandement. Cependant, je travaille sur mes propres thématiques en étant totalement dépendant des financements de mes encadrants, l'université de Montpellier ne fournissant que mon salaire. C'est en grande partie pour cela que je candidate à votre bourse, afin de pouvoir commencer à obtenir des financements propres à mes recherches.
+Cet été, j'ai eu la chance de réussir le concours de l'école doctorale de Montpellier, qui paie mon salaire depuis octobre dernier et ce pour une durée de trois ans. Mes encadrants me laissent une totale liberté quant au choix de mes sujets d'étude et je les en remercie grandement. Cependant, je travaille sur mes propres thématiques en étant totalement dépendant des financements de mes encadrants. Candidater à votre bourse est une occasion pour moi de commencer à obtenir des fonds propres à mes recherches.
 
+\emph{Je vous prie d'agréer, mesdames et messieurs, mes salutations distinguées.}
+\begin{flushright}
+Alain Danet
+\end{flushright}
 \clearpage
 
 \section{Descriptif du projet de terrain}
 
-Les milieux arides couvrent 40\% des surfaces émergées du globe et un tiers de la population mondiale les occupent. Ces écosystèmes sont connus pour passer d'une façon soudaine et souvent irréversible d'un  état à couvert végétal à un état désertique, on qualifie ces transitions de "catastrophique" \citep{Scheffer2001,Kefi2007}. Voir aussi le \href{http://www.sfecologie.org/regards/2012/10/19/r37-hysteresis-sonia-kefi/}{regard} de Sonia Kéfi sur le sujet. Historiquement largement ignorées, plusieurs modèles ont permis de montrer que les interactions positives entre les plantes jouent un rôle important dans l'apparition de ces transitions catastrophiques dans les milieux arides \citep{Kefi2007,Kefi2007a,Rietkerk2004}. D'autre part, une idée conceptualisée par \citet{Bertness1994} postule que les interactions positives deviennent plus importantes quand le stress augmente. Ce concept a été très populaire et beaucoup de travaux se sont attachés à la tester et à la raffiner \citep{ Michalet2007,Maestre2009,He2013}. \citep{Verwijmeren2013} a récemment conceptualisé le lien entre les transitions catastrophiques et l'hypothèse du gradient de stress. Cependant il est toujours difficile d'avoir des prédictions qualitatives sur les interactions observées sur le terrain. \citet{Butterfield2013} propose de regarder les interactions à travers le prisme fonctionnel pour résoudre les contradictions. L'écologie fonctionnelle a pour objet les fonctions réalisées par les organismes en s'affranchissant de la taxonomie. Un des succès majeurs de cette approche a été de montrer que certaines fonctions des plantes peuvent être approximées par des traits facilement mesurables sur le terrain. \citet{Grime1977a} a popularisé cette approche en synthétisant les types végétaux (STRESS ET PERTURBATION) en 3 grandes classes: Compétitrice, Tolérante au stress et Rudérales (modèle C-S-R).
+\subsection{Introduction}
 
-L'approche expérimentale que je propose permet de faire le lien entre l'approche fonctionnelle de Grime et l'hypothèse du gradient de stress.
+Les milieux arides couvrent 40\% des surfaces émergées du globe et un tiers de la population mondiale les occupent. Ces écosystèmes sont connus pour passer d'une façon soudaine et souvent irréversible d'un  état à couvert végétal à un état désertique, on qualifie ces transitions de "catastrophique" \citep{Scheffer2001,Kefi2007}; voir aussi le \href{http://www.sfecologie.org/regards/2012/10/19/r37-hysteresis-sonia-kefi/}{regard de Sonia Kéfi} sur le sujet. Plusieurs modèles ont permis de montrer que les interactions positives entre les plantes (facilitation) jouent un rôle important dans l'apparition de ces transitions catastrophiques dans les milieux arides \citep{Kefi2007,Kefi2007a,Rietkerk2004}. D'un point de vue empirique, la facilitation a été bien documentée chez les plantes \citep{Callaway1995, Callaway1997}. On en définit deux types: directe face à un stress abiotique et indirecte face à stress biotique. La facilitation directe est un mécanisme d'amélioration des conditions abiotiques locales, phénomène important dans l'apparition des transitions catastrophiques observées dans les milieux arides \citep{Kefi2007a}. Les plantes augmentent l'infiltration de l'eau dans le sol localement. Elles limitent la perte de sol et de nutriments par l'érosion due au vent et au ruissellement de l'eau. Elles fournissent également un microclimat favorable en créant de l'ombrage, en concentrant les ressources en eau et en améliorant l'oxygénation du sol par le développement du réseau racinaire \citep{Rietkerk1997a}. Par ces processus, les plantes favorisent le recrutement de nouveaux individus dans leur voisinage. La facilitation indirecte se produit par l'intermédiaire d'un herbivore entre une plante facilitatrice et une plante facilitée. Une espèce résistante à l'herbivorie (facilitatrice) peut protéger les plantules d'une espèce sensible à l'herbivorie (facilitée). Les plantules situées dans des patchs de plantes facilitatrices sont moins consommées car les herbivores évitent les plantes qui produisent des défenses (\textit{associational resistance} en anglais). Au contraire, les plantules de plantes facilitatrices situées dans des patchs de plantes facilitées peuvent être consommées par accident (\textit{associational patalability} en anglais).
 
+En \citeyear{Bertness1994}, \citeauthor{Bertness1994} postule que la facilitation devient plus importante quand le stress augmente. Ce concept, appelé hypothèse du gradient de stress (\textit{Stress Gradient Hypothesis}) a été très populaire et beaucoup de travaux se sont attachés à la tester et à la raffiner \citep{ Michalet2007,Maestre2009,He2013}. \citet{Verwijmeren2013} ont conceptualisé verbalement le lien entre les transitions catastrophiques et l'hypothèse du gradient de stress. Cependant il est toujours difficile d'avoir des prédictions qualitatives sur les interactions observées \textit{in natura}. \citet{Butterfield2013} ont récemment proposé de regarder les interactions à travers le prisme fonctionnel pour résoudre les contradictions. L'écologie fonctionnelle a pour objet les fonctions réalisées par les organismes en s'affranchissant de la taxonomie. Un des succès majeurs de cette approche a été de montrer que certaines fonctions des plantes peuvent être approximées par des traits facilement mesurables sur le terrain. \citet{Grime1977a} l'a popularisé en synthétisant les types végétaux majoritaires présents le long d'un gradient de stress basé sur les ressources (ex. l'eau) et d'un gradient de perturbation (ex. pâturage). Il a ainsi défini 3 grandes classes: Compétitrice, Tolérante au stress et Rudérales (modèle C-S-R). Les compétitrices sont dominantes dans les conditions de stress et de perturbation faibles, les rudérales sont dominantes à haute perturbation et faible conditions de stress et enfin les tolérantes au stress dominent à stress élevé et faible perturbation.
+
+On se pose la question de savoir: (i) Les différents types fonctionnels de Grime ont-ils le même potentiel pour être facilité ? (ii) Comment ces interactions sont modulées à l'échelle de la communauté ? (iii) Quelles sont leur impact sur la dynamique et la stabilité des milieux arides ?
+
+\subsection{Protocole}
+
+Afin de répondre à ces questions, je souhaite mettre en place une expérimentation à Alicante (Espagne) en collaboration avec Susana Bautista de l'université d'Alicante. Nous utiliserons des terraces clôturées qui ont déjà été utilisées pour une expérimentation précédente. Nous allons choisir une espèce pour chaque type fonctionnel (Compétitrice, Tolérante au stress et Rudérale). Les plantules de chaque espèce seront plantées soit sous une plante facilitatrice adulte (\textit{Artemisia herba-alba}), soit en milieu ouvert (traitement dit \textit{open/patch}), ce qui permettra de mesurer le bilan des interactions entre la plantule et l'adulte (Question i). Ce traitement sera répliqué en combinant les trois espèces à la fois (Question ii, traitement dit \textit{single/community}). Ces traitements seront combinés avec un traitement de pâturage (perturbation) et de stress hydrique (ressources). Le traitement de pâturage aura deux modalités: manuellement grâce aux données issus d'une expérimentation contrôlée précédemment réalisée à Alicante par Mart Verwijmeren, et de manière passive en laissant trois parcelles accessibles aux lapins. Le traitement de stress hydrique sera réalisé par l'apposition de toits possédant des gouttières transparentes, permettant d'exclure un peu moins de 30\% des précipitations. Nous prendrons comme mesure de performance la survie, la croissance, la biomasse et le succès reproducteur des plantules initialement plantées. L'expérience débutera en février prochain et se déroulera sur un an.
+Les données issues de cette expérimentation me permettront d'alimenter le modèle théorique que j'ai commencé à développer durant mon stage de fin d'études afin d'étudier l'impact de ces interactions sur la dynamique et la stabilité d'un milieu aride (Question iii).
 
 \printbibliography
+
+\subsection{Annexe budgétaire}
+
+\subsubsection{Transports}
+
+\begin{itemize}
+\item 3 allers-retours Montpellier-Alicante en train: environ $160 \times 3 = 480$ euros. Source: \href{http://www.voyages-sncf.com}{Voyages sncf} pour un aller début février. Consulté le 12 janvier. 
+
+\item 3 fois 2 semaines de location de voiture pour aller-retour sur le terrain: environ $150 \times 3 = 450$ euros. Source : \href{https://www.locationdevoiture.fr/}{locationdevoiture.fr}. Consulté le 12 janvier.
+\end{itemize}
+
+\subsubsection{Hébergement}
+
+\begin{itemize}
+\item 3 fois un mois de location d'une chambre à Alicante: environ $300 \times 3 = 900$ euros.
+\href{http://erasmusu.com/fr/erasmus-alicante/logement-etudiant}{erasmusu.com}. Consulté le 12 janvier.
+\end{itemize}
 \end{document}
