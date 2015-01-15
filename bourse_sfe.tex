@@ -5,13 +5,20 @@
 
 % bibliographie
 %\usepackage[round]{natbib}
-\usepackage[natbib=true,backend=bibtex,sorting=nyvt, isbn= false, url=false, doi=false,eprint=false, style=authoryear]{biblatex}
+\usepackage[natbib=true,
+ backend=bibtex,
+ isbn= false, 
+ url=false, 
+ doi=false, 
+ eprint=false, 
+ style=authoryear-comp, %instead of numeric citation
+ hyperref=false]{biblatex}
 \addbibresource{/home/alain.danet/Dropbox/Shared_TheseAlain/BibTeX/M2-StageM2,/home/alain.danet/Dropbox/Shared_TheseAlain/BibTeX/Thesis}
 
 %accents, language français
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage[english, french]{babel} %
+\usepackage[french]{babel} %
 \usepackage{csquotes}
 %\usepackage{xltxtra}
 
@@ -39,7 +46,6 @@
 \pagestyle{plain}
 
 
-
 \begin{document}
 
 \input{./titre_bourse_sfe.tex}
@@ -64,6 +70,7 @@ N’ayant pas de financement associé à ma thèse pour la réalisation d’exp�
 Le projet d’expérience que je vous présente ci-après vise à explorer une controverse actuelle de la littérature en écologie intitulée « l’hypothèse du gradient de stress » (ou « Stress Gradient Hypothesis » en anglais). Cette hypothèse postule que les interactions positives entre organismes deviennent plus importantes quand la pression environnementale augmente. Beaucoup de travaux ont étudié cette hypothèse, certains sont contradictoires et soulèvent des interrogations. Une approche fonctionnelle des interactions plantes-plantes, qui se place à l'échelle du trait au lieu de celui du taxon, apportera une meilleure compréhension du contexte dépendance de ces interactions.
 
 Candidater à la bourse de la SFE est pour moi une occasion unique et importante d’acquérir une expérience quant à l’obtention de fonds propres pour la réalisation de mes recherches. En vous remerciant par avance pour l’attention que vous porterez à mon dossier, je vous prie d’agréer, mesdames et messieurs, l’expression de mes salutations distinguées.
+
 \begin{flushright}
 Alain Danet
 \end{flushright}
@@ -73,33 +80,58 @@ Alain Danet
 
 \subsection{Introduction}
 
-Les milieux arides couvrent 40\% des surfaces émergées du globe et un tiers de la population mondiale les occupent. Ces écosystèmes sont connus pour passer d'une façon soudaine et souvent irréversible d'un  état à couvert végétal à un état désertique, on qualifie ces transitions de "catastrophique" \citep{Scheffer2001,Kefi2007}; voir aussi le \href{http://www.sfecologie.org/regards/2012/10/19/r37-hysteresis-sonia-kefi/}{regard de Sonia Kéfi} sur le sujet. Plusieurs modèles ont permis de montrer que les interactions positives entre les plantes (facilitation) jouent un rôle important dans l'apparition de ces transitions catastrophiques dans les milieux arides \citep{Kefi2007,Kefi2007a,Rietkerk2004}. D'un point de vue empirique, la facilitation a été bien documentée chez les plantes \citep{Callaway1995, Callaway1997}. On en définit deux types: directe face à un stress abiotique et indirecte face à stress biotique. La facilitation directe est un mécanisme d'amélioration des conditions abiotiques locales, phénomène important dans l'apparition des transitions catastrophiques observées dans les milieux arides \citep{Kefi2007a}. Les plantes augmentent l'infiltration de l'eau dans le sol localement. Elles limitent la perte de sol et de nutriments par l'érosion due au vent et au ruissellement de l'eau. Elles fournissent également un microclimat favorable en créant de l'ombrage, en concentrant les ressources en eau et en améliorant l'oxygénation du sol par le développement du réseau racinaire \citep{Rietkerk1997a}. Par ces processus, les plantes favorisent le recrutement de nouveaux individus dans leur voisinage. La facilitation indirecte se produit par l'intermédiaire d'un herbivore entre une plante facilitatrice et une plante facilitée. Une espèce résistante à l'herbivorie (facilitatrice) peut protéger les plantules d'une espèce sensible à l'herbivorie (facilitée). Les plantules situées dans des patchs de plantes facilitatrices sont moins consommées car les herbivores évitent les plantes qui produisent des défenses (\textit{associational resistance} en anglais). Au contraire, les plantules de plantes facilitatrices situées dans des patchs de plantes facilitées peuvent être consommées par accident (\textit{associational patalability} en anglais).
+Les milieux arides couvrent 40\% des surfaces émergées du globe et hébergent environ le tiers de la population mondiale \citep{Assessment2005}. Ces écosystèmes sont connus pour être susceptible de perdre leur couvert végétal de façon soudaine et souvent irréversible. Ces transitions vers la désertification ont été qualifiées de "catastrophiques" dans la littérature \citep{Scheffer2001,Kefi2007,Kefi2012a}.
 
-En \citeyear{Bertness1994}, \citeauthor{Bertness1994} postulent que la facilitation devient plus importante lorsque la pression environnementale augmente. Ce concept, appelé hypothèse du gradient de stress (\textit{Stress Gradient Hypothesis}) a été très populaire et beaucoup de travaux se sont attachés à la tester et à la raffiner \citep{ Anthelme2007,Maestre2009,He2013}. \citet{Verwijmeren2013} ont conceptualisé verbalement le lien entre les transitions catastrophiques et l'hypothèse du gradient de stress. Cependant il est toujours difficile d'avoir des prédictions qualitatives sur les interactions observées \textit{in natura}. \citet{Butterfield2013} ont récemment proposé de regarder les interactions à travers le prisme fonctionnel pour résoudre les contradictions. L'écologie fonctionnelle a pour objet les fonctions réalisées par les organismes en s'affranchissant de la taxonomie. Un des succès majeurs de cette approche a été de montrer que certaines fonctions des plantes peuvent être approximées par des traits facilement mesurables sur le terrain. \citet{Grime1977a} l'a popularisé en synthétisant les types végétaux majoritaires présents le long d'un gradient de stress basé sur les ressources (ex. l'eau) et d'un gradient de perturbation (ex. pâturage). Il a ainsi défini 3 grandes classes: Compétitrice, Tolérante au stress et Rudérales (modèle C-S-R). Les compétitrices sont dominantes dans les conditions de stress et de perturbation faibles, les rudérales sont dominantes à haute perturbation et faible conditions de stress et enfin les tolérantes au stress dominent à stress élevé et faible perturbation.
+Des modèles mathématiques ont mis en évidence le rôle important des interactions positives entre les plantes (facilitation) dans l'apparition de ces transitions catastrophiques dans les milieux arides \citep{Kefi2007,Kefi2007a,Rietkerk2004}. D'un point de vue empirique, la facilitation a été bien documentée chez les plantes \citep{Callaway1995, Callaway1997}. Deux types principaux ont été définis: la facilitation directe et la facilitation indirecte. La facilitation directe est un mécanisme d'amélioration des conditions abiotiques locales \citep{Kefi2007a}. Les plantes contribuent à la création d'un microclimat favorable sous leur canopée en créant de l'ombrage, en concentrant les ressources localement et en améliorant l'oxygénation du sol par le développement du réseau racinaire \citep{Rietkerk1997a}. Par exemple, le taux d'infiltration de l'eau dans le sol est supérieur sous la canopée des plantes que dans les zones dépourvues de végétation \citep{Rietkerk2000}. D'autre part, la présence de plantes contribue à diminuer la perte de sol et de nutriments par l'érosion due au vent et au ruissellement de l'eau \citep{Mayor2008}. Par ces processus, les plantes favorisent le recrutement de nouveaux individus dans leur voisinage. Ce mécanisme de facilitation directe est considéré comme clé dans l'émergence de réponse catastrophique des écosystèmes arides à des perturbations. 
 
-On se pose la question de savoir: (i) Les différents types fonctionnels de Grime ont-ils le même potentiel pour être facilité ? (ii) Comment ces interactions sont modulées à l'échelle de la communauté ? (iii) Quelles sont leur impact sur la dynamique et la stabilité des milieux arides ?
+La facilitation indirecte se produit par l'intermédiaire d'un herbivore entre une plante facilitatrice et une plante facilitée. Une espèce de plante résistante à l'herbivorie (facilitatrice) peut protéger les plantules d'une espèce sensible à l'herbivorie (facilitée). Les plantules situées dans des patchs de plantes facilitatrices sont en conséquence moins consommées car les herbivores évitent les plantes qui produisent des défenses ("associational resistance" en anglais). Au contraire, les plantules de plantes facilitatrices situées dans des patchs de plantes facilitées peuvent être consommées par accident ("associational patalability" en anglais).
+
+En \citeyear{Bertness1994}, \citeauthor{Bertness1994} a postulé que la facilitation devient plus importante (que la compétition) lorsque le stress augmente. Ce concept, appelé 'hypothèse du gradient de stress' ("Stress Gradient Hypothesis" en anglais) a attiré beaucoup d'attention dans la littérature et de nombreux travaux de recherche se sont attachés à la tester et à affiner sa formulation \citep{ Anthelme2007,Maestre2009,He2013}. Une étude de revue récente \citep{Verwijmeren2013} a verbalement explicité le lien possible entre les transitions catastrophiques et l'hypothèse du gradient de stress. Des travaux ont montré que l'importance de la facilitation diminue aux pressions environnementales extrêmes. \citet{Verwijmeren2013} propose alors que ce déclin pourrait être conjoint avec l'apparition d'une transition catastrophique. Il est cependant difficile d'avoir des prédictions qualitatives sur les interactions pouvant être observées \textit{in natura} car la majorité des travaux s'est attachée à étudier espèce par espèce, une approche qui manque de généralité. Une autre étude de \citep{Butterfield2013} a proposé que regarder les interactions entre espèce à travers le prisme fonctionnel pourrait permettre de généraliser ces interactions. 
+
+L'écologie fonctionnelle a pour objet les fonctions réalisées par les organismes en s'affranchissant de la taxonomie. Un des succès majeurs de cette approche a été de montrer que certaines fonctions des plantes peuvent être approximées par des traits facilement mesurables sur le terrain. \citet{Grime1977a} a popularisé [je ne sais pas si 'popularisé' est le mot approprié?] cette approche en synthétisant les types végétaux majoritaires présents le long d'un gradient de stress basé sur les ressources (ex. l'eau) et d'un gradient de perturbation (ex. pâturage). Il a ainsi défini 3 grandes classes de plantes: Compétitrice, Tolérante au stress et Rudérales (modèle C-S-R). Les compétitrices sont dominantes dans les conditions de stress et de perturbation faibles, les rudérales sont dominantes à haute perturbation et faible conditions de stress et enfin les tolérantes au stress dominent à stress élevé et faible perturbation. Je propose ici d'utiliser des espèces appartement aux types fonctionnels de Grime, de les tester individuellement ainsi que tous ensembles, le long de pression environnementale afin de lier l'hypothèse du gradient de stress à l'écologie fonctionnelle. Les données issues de cette expérimentation me permettrait d'alimenter le modèle théorique que j'ai commencé à développer afin de lier transition catastrophique, hypothèse du gradient de stress et types fonctionnels.
+
+%[On est passé de transition cata/desertification --> facilitation directe et indirecte --> SGH --> écologie fonctionnelle --> Grime. Mais ici à la fin du texte, on ne voit plus le lien avec ce dont tu as parlé au début. Quel est le lien entre les stratégies de Grime, la SGH, la facilitation directe/indirecte et les transitions catastrophiques?]
+
+Ce projet de recherche propose d'aborder les questions suivantes: (i) les différents types fonctionnels de Grime ont-ils le même potentiel pour être facilité de façon directe ou indirecte ?
+(ii) Comment ces interactions sont-elles modulées à l'échelle de la communauté le long de gradient de pression environnementale (Stress hydrique et pâturage)? (iii) Quelles sont leur impact sur la dynamique et la stabilité des milieux arides ?
+
+Je souhaiterais aborder ces questions à l'aide d'une expérimentation sur le terrain, en collaboration avec Susana Bautista de l'université d'Alicante. %[Je mettrais une phrase comme ça ici pour que l'on sache de quoi il s'agit]
+
+%[PS/ verifie la différence entre 'expérience' et 'expérimentation'. J'utilise plutot experience,. Y a-t-il une difference de signification?]
 
 \subsection{Protocole}
 
-Afin de répondre à ces questions, je souhaite mettre en place une expérimentation à Alicante (Espagne) en collaboration avec Susana Bautista de l'université d'Alicante. Nous utiliserons des terraces clôturées qui ont déjà été utilisées pour une expérimentation précédente. Nous allons choisir une espèce pour chaque type fonctionnel (Compétitrice, Tolérante au stress et Rudérale). Les plantules de chaque espèce seront plantées soit sous une plante facilitatrice adulte (\textit{Artemisia herba-alba}), soit en milieu ouvert (traitement dit \textit{open/patch}), ce qui permettra de mesurer le bilan des interactions entre la plantule et l'adulte (Question i). Ce traitement sera répliqué en combinant les trois espèces à la fois (Question ii, traitement dit \textit{single/community}). Ces traitements seront combinés avec un traitement de pâturage (perturbation) et de stress hydrique (ressources). Le traitement de pâturage aura deux modalités: manuellement grâce aux données issus d'une expérimentation contrôlée précédemment réalisée à Alicante par Mart Verwijmeren, et de manière passive en laissant trois parcelles accessibles aux lapins. Le traitement de stress hydrique sera réalisé par l'apposition de toits possédant des gouttières transparentes, permettant d'exclure un peu moins de 30\% des précipitations. Nous prendrons comme mesure de performance la survie, la croissance, la biomasse et le succès reproducteur des plantules initialement plantées. L'expérience débutera en février prochain et se déroulera sur un an.
+Le site expérimental candidat est caractérisé par un climat semi-aride  avec 301mm de précipitation par année en moyenne. Le sol est de type limono-sableux et la végétation est composée d'un mélange de chaméphytes, d'arbustes ligneux et d'herbacées \citep{Verwijmeren2014}. Nous utiliserons des terraces clôturées qui ont déjà été utilisées pour une expérimentation précédente. %[Ajouter qq mots sur le type d'écosystème: climat, sol, type de végétation]
+
+Nous allons choisir une espèce pour chaque type fonctionnel (Compétitrice, Tolérante au stress et Rudérale). Les plantules de chaque espèce seront plantées soit sous une plante facilitatrice adulte (\textit{Artemisia herba-alba}), soit en milieu ouvert (traitement dit \textit{open/patch}), ce qui permettra de mesurer le bilan des interactions entre la plantule et l'adulte (Question i). Ce traitement sera répliqué en combinant les trois espèces à la fois (Question ii, traitement dit \textit{single/community}). Ces traitements seront combinés avec un traitement de pâturage (perturbation) et de stress hydrique (ressources). Le traitement de pâturage aura deux modalités: coupe manuelle des plantes pour mimer le pâturage grâce aux données issus d'une expérimentation contrôlée précédemment réalisée à Alicante par Mart Verwijmeren, et de manière naturelle en laissant trois parcelles accessibles aux lapins. Le traitement de stress hydrique sera réalisé par l'utilisation? de toits possédant des gouttières transparentes, permettant d'exclure environ 30\% des précipitations. Nous prendrons comme mesure de performance la survie, la croissance, la biomasse et le succès reproducteur des plantules initialement plantées a un rythme de 2 fois par an qui correspondent aux saisons de production de biomasse (printemps et automne). L'expérience débuterait cet automne et se déroulerait sur un an. J'aimerais tester grâce à ces données la dépendance du niveau de facilitation par rapport au type fonctionnel et la pression environnementale ainsi que sa modulation au niveau de la communauté.
+
 Les données issues de cette expérimentation me permettront d'alimenter le modèle théorique que j'ai commencé à développer durant mon stage de fin d'études afin d'étudier l'impact de ces interactions sur la dynamique et la stabilité d'un milieu aride (Question iii).
 
 \printbibliography
 
 \subsection{Annexe budgétaire}
 
+\begin{tabular}{|c|c|c|}
+\hline 
+Transports & Hébergement & Total \\ 
+\hline 
+930 & 900 & 1830 euros \\ 
+\hline 
+\end{tabular} 
+
+
 \subsubsection{Transports}
 
 \begin{itemize}
 \item 3 allers-retours Montpellier-Alicante en train: environ $160 \times 3 = 480$ euros. Source: \href{http://www.voyages-sncf.com}{Voyages sncf} pour un aller début février. Consulté le 12 janvier. 
 
-\item 3 fois 2 semaines de location de voiture pour aller-retour sur le terrain: environ $150 \times 3 = 450$ euros. Source : \href{https://www.locationdevoiture.fr/}{locationdevoiture.fr}. Consulté le 12 janvier.
+\item 3 fois 2 semaines de location de voiture à Alicante pour aller-retour sur le terrain: environ $150 \times 3 = 450$ euros. Source : \href{https://www.locationdevoiture.fr/}{locationdevoiture.fr}. Consulté le 12 janvier.
 \end{itemize}
 
 \subsubsection{Hébergement}
 
 \begin{itemize}
-\item 3 fois un mois de location d'une chambre à Alicante: environ $300 \times 3 = 900$ euros. Source:
+\item 3 fois un mois de location d'un hébergement à Alicante: environ $300 \times 3 = 900$ euros. Source:
 \href{http://erasmusu.com/fr/erasmus-alicante/logement-etudiant}{erasmusu.com}. Consulté le 12 janvier.
 \end{itemize}
 \end{document}
