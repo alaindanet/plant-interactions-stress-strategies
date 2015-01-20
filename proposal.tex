@@ -4,23 +4,24 @@
 
 
 % bibliographie
-%\usepackage[round]{natbib}
-\usepackage[natbib=true,backend=bibtex,sorting=nyvt, isbn= false, url=false, doi=false,eprint=false, style=authoryear]{biblatex}
-\addbibresource{/home/alain.danet/Dropbox/Shared_TheseAlain/BibTeX/M2-StageM2,/home/alain.danet/Dropbox/Shared_TheseAlain/BibTeX/Thesis}
+\usepackage[round, authoryear]{natbib}
 
 %accents, language français
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage[english]{babel} %
+\usepackage[french,english]{babel} %
 \usepackage{csquotes}
 %\usepackage{xltxtra}
 
+%Lien
+\usepackage[colorlinks=true,urlcolor=blue, citecolor=black]{hyperref}
 
 %Image
-\usepackage{graphicx}
+\usepackage[pdftex]{graphicx}
 \usepackage{subcaption}
 \usepackage{tikz}
 \usetikzlibrary{arrows,shapes}
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}} %Pour la page de titre
 \graphicspath{{/home/alain.danet/Dropbox/Shared_TheseAlain/Figures/}}
 
 % Font
@@ -30,26 +31,17 @@
 % Set interligne
 \linespread{1.5}
 % Page layout (geometry)
-%\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+\usepackage[a4paper]{geometry}
+\geometry{left=2.4cm,right=2cm,top=2cm,bottom=2cm}
 % Pages styles
 \pagestyle{plain}
 
 
-
-% Page de titre
-\title{Experiment: Modulation of interaction following functional plant type across grazing et water stress gradients}
-\author{\textbf{Alain Danet}}
-
-
-\date{\today}
-
-
 \begin{document}
 
-\maketitle
 
 
-\part{Introduction}
+\section{Introduction}
 The theory of Stress Gradient Hypothesis (SGH) predict basicly a increasing of facilitation importance when stress increase. This hypothesis has been widely tested and stay still in debate because of opposite results. Two of main obstacles are (i) the fact all the species have not the same potential to be facilited and conversely all the species have not the same potentiel to facilitate; (ii) We have not the same assumptions if the "stress" is based on stress (eg water) or disturbance (eg grazing) (sensu Grime) \citep{Maestre2009}. 
 
 As \citet{Butterfield2013} suggested, take a functional approach of facilitation will permit us to better understand the context dependance of facilitation. He predicts stress would result in facilitation of competitive species and disturbance would result in facilitation of competitive or stress-tolerator species. So far, we don't know any experimental studies which have explicitly related Grime plant strategies to SGH. On the other hand, some observational studies described plant strategies along grazing gradient \citep{DIAZ2007}. 
@@ -84,21 +76,21 @@ As \citet{Butterfield2013} suggested, take a functional approach of facilitation
 
 The goal of this studies is to have a functional approach of interaction inside a plant community in front of stress and disturbance gradient. We want to study how the interaction balance change along a stress and disturbance gradient at community level. To achieve this objective, we set up an experiment in South-East of Spain.
 
-%%conceptual link between Grime and SGH model: (i) Facilitation can modulate Grime predictions ? (ii) Which strategies is the most facilitated along a stress and disturbance gradient ?
 
-\part{Methods}
 
-\section{Site}
+\section{Methods}
+
+\subsection{Site}
 
 The experiment will take in Alicante. Mart's field sites are free to use and those sites seem perfect. 3 independant terraces with each 2 plots: one is totally fenced to prevent grazing and one prevent grazing only from ruminant (rabbit can go in). 
 
-\section{Plants}
+\subsection{Plants}
 
 It seems difficult to me to find caricatural species of grime's strategies but we can use instead species already used in experimental studies located in Mediteranean area. I used studies and reviews of \citet{McCluney2012,Navarro2006, Jauffret2003}.
 
 
 
-\section{Design}
+\subsection{Design}
 
 We have 3 plant species. I purposed a set of species to Susana and we have to see which can be used. We have 4 treatments: open/patch, grazing, water, alone/community and 3 blocks (terraces).
 
@@ -108,7 +100,7 @@ We will have a water-stress treatment provided by Susana's roof which exclude a 
 For each terrace, we planted 30 saplings by treatment. Nurse micro-sites were choosen randomly and the corresponding open micro-site have been placed Xm around. Each species have been plant alone and in mix with the 2 other species. We performed  5 replicates for single species and the same for mix. So we need $10\times5\times3=150$ saplings of each species.
 
 
-\begin{figure}
+\begin{figure} %Prédictions
 \begin{center}
 \includegraphics[width=0.75\textwidth]{Experiment.pdf}
 \end{center}
@@ -118,7 +110,7 @@ For each terrace, we planted 30 saplings by treatment. Nurse micro-sites were ch
 Table \ref{hyp} shows assumptions about results of winning strategies according to stress or disturbance. In Summary, (i) we can think facilitation modulate Grime's prediction, (ii) we also make hypothesis that different strategies have different potential to be facilited.
 
 
-\begin{table}
+\begin{table} % Prédictions grime winning hypothesis
 \begin{center}
 \begin{tabular}{|l|l|l|l|l|l|}
   \hline
@@ -133,11 +125,11 @@ Table \ref{hyp} shows assumptions about results of winning strategies according 
 \caption{Hypothesis about winning plant strategies according to stress or disturbance.  Strategies: C (Competitive), R (Ruderal), S (Stress-tolerator). \label{hyp}}
 \end{table}
 
-\section{Measurements}
+\subsection{Measurements}
 It would be good to measure height canopy and survival regularly to have dynamics of competition. Finally, the final output of competition would be an idea of seed production. 
 
 
-\section{Timing}
+\subsection{Timing}
 \begin{itemize}
 
 \item End January: Drill hole.
@@ -149,9 +141,9 @@ It would be good to measure height canopy and survival regularly to have dynamic
 
 \end{itemize}
 
-%\bibliographystyle{plainnat}
+\bibliographystyle{apalike}
 
-%\bibliography{/home/alain.danet/Dropbox/Shared_TheseAlain/BibTeX/M2-StageM2,/home/alain.danet/Dropbox/Shared_TheseAlain/BibTeX/Thesis}
-\printbibliography
+\bibliography{/home/alain.danet/Dropbox/Shared_TheseAlain/BibTeX/M2-StageM2,/home/alain.danet/Dropbox/Shared_TheseAlain/BibTeX/Thesis}
+%\printbibliography
 \end{document}
 \include{list_species}
