@@ -45,11 +45,11 @@
 
 Positive interactions between plants have been studied a lot since the very influential paper of \citep{Bertness1994}, followed-up by \citep{Bruno2003}. Results showed positive interactions between pair of plants become often dominant when the environment is harsh for survival of saplings, but result only in a reduction of competition for growth and reproduction\citep{He2013}. Those studies was successful to provide a signal of positive interaction commonness between species pairs. However, no one provide insights from facilitation at community level with a functional approach. One cans imagine when a seed pool arrive in a site, some will germinate (of several species) and several saplings of different species experiment competition between them. Only few of these saplings will become an adult. Previous experiments suggest only one seed by site can germinate. As \citet{Butterfield2013} suggested, take a functional approach of facilitation will permit us to better understand the context dependence of facilitation. Several studies used Grime's functional types to explain post-hoc general patterns of interaction outcome \citep{Maestre2009,Butterfield2013}. Here, we propose to take a comparative approach of species at community level.
 
-Theory of coexistence in communities purpose species can coexist if their niches are different or because of environmental heterogeneity. So, more species have different traits, more they can coexist (limiting similarity). By doing an experiment at community level, we can suppose monoculture community are less facilitated than mixture community because intra-competition than inter-competition ?
+Theory of coexistence in communities purpose species can coexist if their niches are different or because of environmental heterogeneity. So, more species have different traits, more they can coexist (limiting similarity). By doing an experiment at community level, we can suppose monoculture community are less facilitated than mixture community because intra-competition is higher than inter-competition. This result could be have an impact on restoration strategies.
 
 In an other side, many experiments showed the effect of facilitation on survival, growth and reproduction but not on phenology. 
 
-We want to see (i) how interactions are modulated by community composition along a water stress gradient and what are the underlying mechanisms, (ii) what is the impact of nursing on phenology ?
+We want to see (i) how interactions are modulated by community composition along a water stress gradient and what are the underlying mechanisms, (ii) How species response in mixture along water stress gradient can be explained by its traits?, (iii) what is the impact of nursing on phenology ?
 
 
 
@@ -61,57 +61,64 @@ The experiment will take in Alicante (South-East of Spain). Mart's field sites a
 
 \subsection{Plants}
 
-Plant species were choosen based on spain reviews \citep{McCluney2012,Navarro2006, Jauffret2003}. According to those studies, we classified species which can be used.
+Plant species were choosen based on spain reviews \citep{McCluney2012,Navarro2006, Jauffret2003}. According to those studies, we classified species which can be use in competitive or stress-tolerator.
 
 
 
 \subsection{Design}
 
-We have 3 plant species. I purposed a set of species to Susana and we have to see which can be used. We have 3 treatments: open/patch, water, monoculture/community and 3 blocks (terraces).
+Deciding how saplings I will use following choosen treatments (Figure \ref{exp}).
 
-For each terrace, we planted 30 saplings by treatment. Nurse micro-sites were choosen randomly and the corresponding open micro-site have been placed Xm around. Each species have been plant alone and in mix with other species. We performed 3 replicates for single species and the same for mix. So we need $10\times5\times3=150$ saplings of each species.
+\begin{itemize}
+\item 5 species, 2 replicates, 10 saplings by unit: 3600.
+\item 3 species, 2 replicates, 6 saplings by unit: 648.
+\item 3 species, 3 replicates, 6 saplings by unit: 972.
+\item 3 species, 2 replicates, 9 sapling by unit: 972.
+\end{itemize}
 
 
 \begin{figure} %Prédictions
 \begin{center}
 \includegraphics[width=0.75\textwidth]{Experiment.pdf}
 \end{center}
-\caption{Choosen treatments. Circle: adults; Square: saplings. Saplings are planted in triangular way and position is random in the triangle. Triangle are choosen to be sure saplings are at the same distance of main stem of the nurse. \label{exp}}
+\caption{Choosen treatments. Circle: adults; Square: saplings. \label{exp}}
 \end{figure}
 
-Table \ref{hyp} shows assumptions about results of winning strategies according to stress or disturbance. In Summary, (i) we can think facilitation modulate Grime's prediction, (ii) we also make hypothesis that different strategies have different potential to be facilited.
-
-
-\begin{table} % Prédictions grime winning hypothesis
-\begin{center}
-\begin{tabular}{|l|l|l|l|l|l|}
-  \hline
-  & Control & Water stress & Low grazing & High grazing  \\
-  \hline
-  Patch & C & C & C & R \\
-  \hline
-  Open & C & S & S ou R & R \\
-  \hline
-\end{tabular} 
-\end{center}
-\caption{Hypothesis about winning plant strategies according to stress or disturbance.  Strategies: C (Competitive), R (Ruderal), S (Stress-tolerator). \label{hyp}}
-\end{table}
 
 \subsection{Measurements}
-It would be good to measure height canopy and survival regularly to have dynamics of competition. Finally, the final output of competition would be an idea of seed production. 
 
+\subsubsection{Exploratory variables}
+\begin{tabular}{c}
+Measurement \\ 
+\hline
+Survival \\ 
+Biomass \\ 
+Phenology \\ 
 
-\subsection{Timing}
-\begin{itemize}
+\hline 
+\end{tabular}
 
-\item End January: Drill hole.
-\item February: plant saplings, watering them to prevent transplant mortality.
-\item March: .
-\item June or july: may be one visit to make sure everything is fine and water plants.
-\item October: first measure and after application of grazing and water treatment.
-\item March: Second measurement
+\subsubsection{Explicative (environment)}
+\begin{tabular}{cc}
+Measurement & Device \\ 
+\hline
+Temperature & Temperature coin battery \\ 
+LAI & • \\ 
+MDMC &  \\ 
+Soil moisture & • \\ 
+Water potential & Pressure chamber \\ 
+\hline 
+\end{tabular} 
 
-\end{itemize}
+\subsection{Analysis}
+
+\subsubsection{Community composition effect}
+
+Interaction outcome $= Com + Water + Com:Water + Environment + random(Replicates) $
+\subsubsection{Species effects at community level}
+Interaction outcome by species in mixture$ = Species:Water + WP + MDMC + Environment + random(place)$
+
+\subsubsection{Phenology}
 
 \bibliographystyle{apalike}
 
