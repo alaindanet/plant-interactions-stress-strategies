@@ -29,7 +29,9 @@
 % Outline numbering
 \setcounter{secnumdepth}{0}
 % Set interligne
-\linespread{1.5}
+%\linespread{1.5}
+\usepackage{setspace}
+\doublespacing
 % Page layout (geometry)
 \usepackage[a4paper]{geometry}
 \geometry{left=2.4cm,right=2cm,top=2cm,bottom=2cm}
@@ -43,9 +45,15 @@
 
 \section{Introduction}
 
-Positive interactions between plants have been studied a lot since the very influential paper of \citep{Bertness1994}, followed-up by \citep{Bruno2003}. Results showed that positive interactions between pair of plants become often dominant when the environment is harsh for survival of saplings, but result only in a reduction of competition for growth and reproduction\citep{He2013}. Those studies were successful in highlighting that positive interactions between pairs of species may be more common than previously thought. until now, no study as far as we know has investigated facilitation at the community level insights. 
+Positive interactions between plants have been studied a lot since the very influential paper of \citep{Bertness1994}, followed-up by \citep{Bruno2003}. In particular, \citet{Bertness1994} proposed the Stress Gradient Hypothesis (called here after SGH) which postulate that species interactions shift from competition to facilitation when the environment become harsher. Traditionally, studies examine plant interaction outcome by comparing the performance of a facilited species (often a sapling) in a open site and under a nurse (usually an adult) along a stress gradient, natural (e.g altitude, grazers density) or manipulated (e.g. roofs or irrigation for water stress, controlled number of grazer and grazing duration for disturbance). By this method, one conclude positive interactions are dominant if  Results showed that positive interactions between pair of plants become often dominant when the environment is harsh for survival of saplings, but result only in a reduction of competition for growth and reproduction\citep{He2013}. Those studies were successful in highlighting that positive interactions between pairs of species may be more common than previously thought. Until now, no experimental study as far as we know has investigated facilitation at the community level insights. 
 
-One cans imagine when a seed pool arrive in a site, some will germinate (of several species) and several saplings of different species experiment competition between them. Only few of these saplings will become an adult. Previous experiments suggest only one seed by site can germinate. As \citet{Butterfield2013} suggested, take a functional approach of facilitation will permit us to better understand the context dependence of facilitation. Several studies used Grime's functional types to explain post-hoc general patterns of interaction outcome \citep{Maestre2009,Butterfield2013}. Here, we propose to take a comparative approach of species at community level.
+Recently, observational studies at community level take more importance in the literature \citep{Soliveres2012, Gross2013, Soliveres2014b} \textbf{Add more studies}. \citet{Soliveres2014} argue we "\textit{need more community-level studies and approaches assessing interactions among multiple species to understand better the consequences of facilitative interactions for the structure of whole communities}". I totally agree with this point but I think we missed a step by moving from experimental species pairs to observation of species co-occurrence. By studying pairs experimentally, we can access to mechanisms underlying interaction outcome. To access mechanisms at community level, I purpose to experimentally manipulate community of facilited sapling along a water stress gradient.
+One cans imagine when a seed pool arrive in a site, some will germinate (of several species) and several saplings of different species experiment competition between them. Only few of these saplings will become an adult. Previous experiments suggest only one seed by site can germinate. So, the first objective of this studies is to add a step between pairs experiment and observational studies at community level.
+
+Results of SGH investigation produced some contrasting results \citep{Maestre2009}. %Il faut introduire le côté fonctionnel.
+Several reviews used Grime's functional types to explain post-hoc general patterns of interaction outcome \citep{Maestre2009,Butterfield2013}.
+
+As \citet{Butterfield2013} suggested, take a functional approach of facilitation will permit us to better understand the context dependence of facilitation. Several studies used Grime's functional types to explain post-hoc general patterns of interaction outcome \citep{Maestre2009,Butterfield2013}. Here, we propose to take a comparative approach of species at community level.
 
 Theory of coexistence in communities purpose species can coexist if their niches are different or because of environmental heterogeneity. So, more species have different traits, more they can coexist (limiting similarity). By doing an experiment at community level, we can suppose monoculture community are less facilitated than mixture community because intra-competition is higher than inter-competition. This result could be have an impact on restoration strategies.
 
@@ -61,8 +69,7 @@ We want to see (i) how interactions are modulated by community composition along
 
 \subsection{Site}
 
-The experiment will take in Alicante (South-East of Spain). Mart's field sites are free to use and those sites seem perfect.
-
+The experiment will take in Alicante (South-East of Spain).
 \subsection{Plants}
 
 Plant species were choosen based on spain reviews \citep{McCluney2012,Navarro2006, Jauffret2003}. According to those studies, we classified species which can be use in competitive or stress-tolerator.
@@ -130,7 +137,9 @@ Interaction outcome by species in mixture$ = Species:Water + WP + MDMC + Environ
 
 \bibliographystyle{apalike}
 
+\begin{spacing}{1.0}
 \bibliography{/home/alain.danet/Dropbox/Shared_TheseAlain/BibTeX/M2-StageM2,/home/alain.danet/Dropbox/Shared_TheseAlain/BibTeX/Thesis}
-%\printbibliography
+\end{spacing}
+
 \end{document}
 \include{list_species}
