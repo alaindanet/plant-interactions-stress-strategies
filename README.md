@@ -18,7 +18,7 @@ Take a functional approach to link stress gradient hypothesis to Grime's concept
 Susana said we should do a treatment "alone/community" to have an insight about how each species responds to nursing effect.
 She also advises to keep a rabbit treatment.
 
-## With Cyrille
+## With Cyrille (20/01/2015)
 
 ### Concept
 - Be careful about originality of my question.
@@ -36,3 +36,9 @@ She also advises to keep a rabbit treatment.
 - Dangerous to have a rabbit treatment. transplant saplings are always greener than natural vegetation, so rabbits jump on.
 - Co-variables to know what is going on: temperature (temperature coin battery or infrared temperature gun), soil moisture, light transmission (LAI), water potential (idea of stress,pressure chamber), MDMC (leaf thickness).
 - Have a continous measure of allometry relationship between (height + encombrement) and biomass. So keep saplings to do that.
+
+## With Susana (4/02/2015)
+
+- Keep grazing treatment in my proposal. Relevant because no results exist about that.
+- Better to put one sapling in monoculture treatment.
+- Artemisia is not a good facilitator of Antyllis (Mart's results).
