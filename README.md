@@ -42,3 +42,8 @@ She also advises to keep a rabbit treatment.
 - Keep grazing treatment in my proposal. Relevant because no results exist about that.
 - Better to put one sapling in monoculture treatment.
 - Artemisia is not a good facilitator of Antyllis (Mart's results).
+
+## With Sonia (13/02/2015)
+
+- Keep 3 saplings in monoculture treatment
+- Keep may be one stress treatment (grazing) and collaborate with Susana student for same protocol with water stress
