@@ -24,5 +24,6 @@ data$ID <- as.integer(1:length(data$ID))
 # ?rep()
 data$terrace <- rep(c(1:4), times=nrow(data)/4); data$terrace <- as.factor(data$terrace)
 data$site <- rep(c("open", "patch"), times=nrow(data)/2); data$site <- as.factor(data$site)
+data$water  <- rep(c("watering", "control"), times=nrow(data)/2); data$water <- as.factor(data$water)
 
 
