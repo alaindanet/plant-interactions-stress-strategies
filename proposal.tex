@@ -13,7 +13,7 @@
 \usepackage{csquotes}
 %\usepackage{xltxtra}
 
-%Lien
+%Lien internet et biliographique
 \usepackage[colorlinks=true,urlcolor=blue, citecolor=black]{hyperref}
 
 %Image
@@ -22,8 +22,8 @@
 \usepackage{tikz}
 \usetikzlibrary{arrows,shapes}
 \newcommand{\HRule}{\rule{\linewidth}{0.5mm}} %Pour la page de titre
-\graphicspath{{/home/alain.danet/Dropbox/Shared_TheseAlain/Figures/}}
-%\graphicspath{{/home/alain/Dropbox/Shared_TheseAlain/Figures/}}
+%\graphicspath{{/home/alain.danet/Dropbox/Shared_TheseAlain/Figures/}}
+\graphicspath{{/home/alain/Dropbox/Shared_TheseAlain/Figures/}}
 
 
 % Font
@@ -83,7 +83,7 @@ We also know that variations in the flowering timing is an important way to prom
 
 In sum, this project aims at addressing the following research questions:
 \begin{itemize}
-	\item How does the presence of a patch affect the species net interactions in a community ?
+	\item How does the interactions with etablished ,adult plants, affect the performance and multi-species interactions in a community ?
 	\item How does that change along a stress gradient ?
 	\item How can these net community outcomes be understood/explained by species traits (functional groups) ?
 \end{itemize}
@@ -94,13 +94,15 @@ In sum, this project aims at addressing the following research questions:
 The experiment will take place near Alicante (South-East of Spain). Climate is semi-arid[...climate, soil, vegetation stuff]
 
 \subsection{Plants}
-Plant species were choosen based on spanish litterature reviews \citep{McCluney2012,Navarro2006, Jauffret2003}. According to those studies, we identified species which could be considered as competitive or stress-tolerator. Susana asked for the disponibility of \textit{Pistacia lentiscus} (competitive), \textit{Olea europaea} (competitive) and \textit{Anthyllis citoides} (stress tolerant). We are going to use \textit{Artemisia herba-alba} adults as patch plants. We will focus on C-plants and S-plants because R-plants are mainly annuals.
+Plant species were choosen based on spanish litterature reviews \citep{McCluney2012,Navarro2006, Jauffret2003}. According to those studies, we identified species which could be considered as competitive or stress-tolerator. For the pilote, we will use \textit{Pistacia lentiscus} (competitive), \textit{Atriplex glauca} (ruderal) and \textit{Anthyllis citoides} (stress tolerant). We are going to use \textit{Artemisia herba-alba} adults as patch plants. For the real esperiment, we will replace \textit{A.glauca} by \textit{(Monicambia?)}. 
+Saplings were grown in a nursery (Viveros Muzalé S.L.) located in Abanilla (South-East of Spain, Province of Murcia).
 % Information about seedlings: age, size, provenance, growth conditions.
 
 \subsection{Design}
 The design is fully randomized and orthogonal. It consists in 4 crossed treatments repeated in 4 terraces. The microsite treatment allows us to estimate the relative importance of the interactions. It has 2 modalities: "open" or "patch" (i.e. below an adult \textit{A.herba-alba}). We will use same \textit{A.herba-alba} microsites than in a previous experiment in which microsites were randomly choosen (Verwijmeren, in prep). Open sites are placed at 1 meter from their associated \textit{A.herba-alba} sites. The water stress treatment has 2 modalities: "control" and "watering". The grazing treatment has also 2 modalities: "control" and "grazing". The community treatment has 4 modalities: species 1, species 2, species 3 or mixture of the 3 species. All those treatments are crossed in each terrace (Schematic representation Figure \ref{exp}). We are going to plant 3 saplings of the same species in the monoculture treatment and 1 sapling of each species in the mixture one (i.e. 3 saplings in each case).
 
-Planting will be done in the end of february 2015. We are going to dig holes of 25*25*25 cm to plant the saplings which will be watered.
+Planting will be done in March 2015. We are going to dig holes of 25*25*25 cm to plant the saplings which will be watered. The 3 saplings will be put in the same hole to insure that they will be in interaction and so, constitute a community. Furthermore, we will place the saplings in triangular way. Thus, the 3 saplings will be at the same distance from each other. For the patch sites, the holes were oriented to the north. In this way, saplings will recieve most shading from \textit{A.herba-alba}.
+
 
 To summarize, there will be:
 \begin{itemize} %Nombre de plantules
@@ -168,15 +170,15 @@ Analysis will be performed using \citep{RCoreTeam2015}.
 \begin{tabular}{cc}
 Indice & Signification\\
 \hline
-I & Interaction indices\\
-C & Community treatment\\
-W & Water stress treatment\\
-G & Grazing treatment\\
-SM & Soil moisture\\
+I   & Interaction indices\\
+C   & Community treatment\\
+W   & Water stress treatment\\
+G   & Grazing treatment\\
+SM  & Soil moisture\\
 DSM & Soil moisture difference between open and patch\\
-T & Temperature \\
-DT & Temperature difference between open and patch \\
-Sp & Species \\
+T   & Temperature \\
+DT  & Temperature difference between open and patch \\
+Sp  & Species \\
 \hline 
 \end{tabular}
 \caption{•}
@@ -185,6 +187,18 @@ Sp & Species \\
 
 \subsubsection{Interaction indices}
 [...] Detail available indices \citep{Seifan2010}.
+
+\subsubsection{Species responses to stress: determinate the place of the species in the CSR diagram}
+We will analyse the species response in the monoculture/open combination of treatments. Compare to control, the C-plants sould answer (in term of growth) the most to the watering treatment and S-plants the least. R-plants should be the least impacted by the grazing treatment and the C-plants sould be the most impacted. The response of the R-plants should be the most important in the combination of watering and grazing treatment and the S-plant sould response the least. All those predictions can be resumed in figure \ref{pred}A.
+
+\subsubsection{Do facilitation modulate those responses ?}
+As mentionned in the litterature, we can make the hypothesis that the species, representating each one functional type, will show different responses following to which distance to their ecological optimum the stress or/and disturbance led them. As we show in the figure \ref{pred}B, the C-plants would be the most facilited species since they will be the farest of their ecological optimum and the S-plants would be the less facilited species because on the contrary, because the control will represent the treatment the nearest of ecological optimum of S-plants. In the watered treatment, the R- and C-plants would be negatively affected by the presence of \textit{A.herba-alba} of shading. Still in the watered treatment, the outcome of interaction could be null between the S-plants and \textit{A.herba-alba} because they would be have enough ressources for both of them and in the same time, adaptations to stress are often correlated to shade-tolerance \citep{Grime1977a}. In the grazing treatement, the C-plants could be the most facilited by \textit{A.herba-alba} since they will beneficiate of micro-habitat amelioration and protection from grazing. The S-plants would be less facilited since they will only beneficiate from grazing protection (see the prediction for the previous treatment). The outcome of interaction between the R-plants and \textit{A.herba-alba} is excepted to null because they will beneficiate of micro-habitat amelioration but will be affected by shading for growth whereas in open site, they would be affected by water restriction but they can grow after grazing event. In the combined treatment of watering and grazing, the R-plants could experiment competition in the presence of \textit{A.herba-alba} because they will be near of their ecological optimum. On the contrary, the S- and C-plants could experiment facilitation because they will be protected from grazing.
+\begin{figure} %Predictions
+\begin{center}
+\includegraphics[width=0.9\textwidth]{prediction.pdf}
+\end{center}
+\caption{Predication about species behaviour in the monoculture treatment. W:watered, G:grazed, WG:watered and grazed. R:ruderal, S: stress tolerant, C: Competitor. (A): Relative mean growth of species in the monoculture treatment. (B) Relative Neibourgh Effect (RNE) of \textit{A.herba-alba} on saplings in the monoculture treatment. The values which are superior to 0 mean that the most important interaction is the facilitation. On the contrary, the values below 0 indicates that the most important interaction is the competition.\label{pred}}
+\end{figure}
 
 \subsubsection{Diversity effect on interaction along water stress}
 Test if interaction outcome along stress gradient is different between monocultures and mixtures.
@@ -209,23 +223,11 @@ $I= Sp + W + Sp:W + Environment + random(Replicates,Terraces)$
 \bibliographystyle{apalike}
 
 \begin{spacing}{1.0}
-%\bibliography{/home/alain/Dropbox/Shared_TheseAlain/BibTeX/M2-StageM2,/home/alain/Dropbox/Shared_TheseAlain/BibTeX/Thesis}
-\bibliography{/home/alain.danet/Dropbox/Shared_TheseAlain/BibTeX/M2-StageM2,/home/alain.danet/Dropbox/Shared_TheseAlain/BibTeX/Thesis}
+\bibliography{/home/alain/Dropbox/Shared_TheseAlain/BibTeX/M2-StageM2,/home/alain/Dropbox/Shared_TheseAlain/BibTeX/Thesis}
+%\bibliography{/home/alain.danet/Dropbox/Shared_TheseAlain/BibTeX/M2-StageM2,/home/alain.danet/Dropbox/Shared_TheseAlain/BibTeX/Thesis}
 \end{spacing}
 
 \section{Annexes}
-
-\begin{table}
-\begin{center}
-\begin{tabular}{cc}
-Material needed & Usefulness \\
-\hline
-1296 saplings & \\
-Plexiglas & Positioning saplings in normalize way\\
-
-\end{tabular}
-\end{center}
-\end{table}
 
 \end{document}
 \include{list_species}
