@@ -1,0 +1,61 @@
+---
+title: "Analyse data from the pilot"
+output:
+  pdf_document:
+    fig_width: 7
+    fig_height: 6
+    fig_caption: true
+    toc: true
+    toc_depth: 3
+    highlight: zenburn 
+    number_sections: true
+---
+
+# Charger les données
+
+```{r}
+data <- read.table("dead_may_1er_check.csv", sep=";", header=T)
+str(data)
+```
+# Statistiques descriptives
+
+```{r}
+tapply(data$P.dead, list(com=data$treatment,site=data$microsite), mean)
+tapply(data$P.dead, list(com=data$treatment,site=data$microsite), function(x){1.96*sd(x)/sqrt(length(x))})
+
+```
+On peut voir que il y a plus de Pistachia morts en milieu ouvert et dans dans les monoculture. Les Pistachia en monoculture meurent moins sous les patch que en milieu ouverts. Mais on peut observer que les écart-types sont assez grand.
+
+```{r}
+boxplot(P.dead ~ treatment + microsite, data)
+```
+
+```{r}
+tapply(rowSums(cbind(data$P.dead,data$P.almost.dead)), list(com=data$treatment,site=data$microsite), mean)
+```
+
+If I want to be conservative, I can exclude all the holes where at least one plant was considered as almost dead.
+
+```{r}
+data2  <- data[which(data$P.dead==0 & data$P.almost.dead==0 & data$A.dead==0 & data$A.almost.dead==0 & data$T.dead==0 & data$T.almost.dead==0),]
+
+```
+There is still `r length(data2)` intact plots. It makes `r round(length(data2)/length(data)*100,1)` of the plots which are totally intact. Now it would be good to have an idea of the balancement of the treatment.
+
+```{r}
+tapply(data2$P.dead, list(com=data2$treatment,site=data2$microsite), length)
+```
+It stays quite sufficent numbers of holes to perform the experiment.
+
+Let's see now how many plants are alive by two one
+
+```{r}
+P     <- data[data$treatment=="P",]
+P$tot <- rowSums(cbind(P$P.dead,P$P.almost.dead))
+T     <- data[data$treatment=="T",]
+T$tot <- rowSums(cbind(T$T.dead,T$T.almost.dead))
+A     <- data[data$treatment=="A",]
+A$tot <- rowSums(cbind(A$A.dead,A$A.almost.dead))
+
+```
+

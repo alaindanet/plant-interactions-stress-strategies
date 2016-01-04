@@ -1,0 +1,228 @@
+---
+title: "Analyze results from data from Mart"
+output:
+html_document:
+    toc: true
+    theme: united
+---
+
+The goal of this analysis is to determine the cutting treatment I will apply in my experiment.
+
+Task to do:
+
+ 
+
+## Dataset preparation
+```{r}
+setwd("../thesis_chap2_alicante/")
+
+data <- read.table(file="Mart_data.csv", sep=";" , dec=",", header=TRUE)
+
+# We want those variables are considered as factor 
+factor <- c("terrace", "treatment", "watering", "rabbit", "plot", "microsite")
+for (i in 1:length(factor)) {
+	data[,factor[i]] <- as.factor(data[,factor[i]])	
+}
+str(data)
+```
+
+### Explicative variables 
+The height variables are defined in neperian logarithme because as we will see later, there are a lot of extrem values. This logarithme transformation permit to have normalized values and so, to respect hypothesis of the linear model.
+
+### Exploratory variables
+In the previous code, I defined them as factor. Finally, we have:
+
+* `treatment`: grazing variable
+    + 0: no grazing
+    + 1: low grazing
+    + 2: high grazing
+    + 3: rabbit grazing
+* `rabbit`: Were they grazed by rabbit?
+    + 0: no
+    + 1: yes
+* `microsite`:
+    + 0: open
+    + 1: patch
+
+## Data exploration
+
+### Proportion of survival in each terrace and between microsites
+
+```{r}
+tapply(as.numeric(data$survival),
+       INDEX=list(terrace=data$terrace,
+		  microsite=data$microsite),
+       FUN=function(x){round(mean(x),2)})
+```
+
+We want have the mean size reduction of Antillys because of grazing, so we keep only the Antyllis which were alive. Moreover, there was so much mortality in the first terrace that I exclude it from the analysis.
+
+```{r}
+data <- data[which(data$survival==1),]
+data <- data[-which(data$terrace==1),]
+```
+## Data visualisation
+
+### Are data normally distributed ?
+
+It's not too bad!
+
+```{r}
+# Data visualisation
+# pdf(file="QQ_plot.pdf", paper="a4r")
+par(mfrow=c(1,2))
+qqnorm(data$lnheightmay2014, main = "QQ-plot - May ln height")
+qqline(data$lnheightmay2014)
+qqnorm(data$lnheightoct14, main = "QQ-plot - October ln height")
+qqline(data$lnheightoct14)
+# dev.off()
+par(mfrow=c(1,1))
+```
+### How are the data when we untransform them ?
+
+We can see why Mart transformed his data. There are not normally distributed. An alternative hypothesis should be Mart didn't transform the transform the exploratory variables by the neperian logarithme, but it's not likely to be the case because of the names of the variables (contains "ln").
+
+```{r}
+data$may <- exp(data$lnheightmay2014)  #Data untransformation by exponential 
+data$oct <- exp(data$lnheightoct14)
+
+par(mfrow=c(1,2))
+qqnorm(data$may, main = "QQ-plot - May height");qqline(data$may)
+qqnorm(data$oct, main = "QQ-plot - Oct height");qqline(data$oct)
+par(mfrow=c(1,1))
+```
+### Correlation between the variables
+
+```{r}
+plot(data[,c("lnheightmay2014","lnheightoct14", "treatment","microsite")])
+```
+
+## Statistical models
+
+I proceed by ascendant analysis, i.e. I begin by the simplest model and I increase the complexity.
+
+```{r}
+
+## Dépenpence of size between the two dates
+mod <- lm(lnheightoct14 ~ lnheightmay2014, data=data)
+summary(mod)
+par(mfrow=c(2,2))
+plot(mod)
+par(mfrow=c(1,1))
+
+mod <- lm(lnheightoct14 ~ lnheightmay2014 + microsite , data=data)
+summary(mod)
+par(mfrow=c(2,2))
+plot(mod)
+par(mfrow=c(1,1))
+
+mod <- lm(lnheightoct14 ~  lnheightmay2014 + treatment + microsite , data=data)
+summary(mod)
+par(mfrow=c(2,2))
+plot(mod)
+par(mfrow=c(1,1))
+
+mod <- lm(lnheightoct14 ~ lnheightmay2014 + treatment*microsite , data=data)
+summary(mod)
+par(mfrow=c(2,2))
+plot(mod)
+par(mfrow=c(1,1))
+
+mod <- lm(lnheightoct14 ~ lnheightmay2014, data=data)
+mod2 <- lm(residuals(mod) ~ na.omit(data)$treatment*na.omit(data)$microsite)
+summary(mod2)
+par(mfrow=c(2,2))
+plot(mod2)
+par(mfrow=c(1,1))
+
+```
+As we can see, 92% of the height variation of the saplingscan be explain by their height at the starting point of the experiment. Moreover, the effect of grazing and protection by Artemisia seems very weak. I have 2 hypothesis to explain that:
+
+1. The height of the saplings was not very high at the beginning of the experiment. 
+
+2. I didn't take in account terrace effect as random factor (Altough we do not except a such big change in the result).
+
+Let's check that!
+
+### Saplings height distribution
+
+We have to untransform data. We did it before (`data$may` and `data$oct`)
+
+```{r ,results='hold'}
+par(mfrow=c(1,2))
+summary(data$may)
+summary(data$oct)
+hist(data$may, main ="Height distribution in May")
+hist(data$oct, main ="Height distribution in October")
+par(mfrow=c(1,1))
+```
+Okay, the mean height of the saplings is respectively 1,81 and 1,75cm for May and October it seems highly irrelevant that the saplings were so little. So, which transformation Mart applied to his data ?
+TODO: ask to Mart which transformation did he perform to his data and ask if it's possible, to have the brut data.
+Nevertheless, we can work with proportion. 
+
+### Calculation of the proportion of height loss during the summer
+
+```{r}
+data$prop <- (data$lnheightmay2014 - data$lnheightoct14)/data$lnheightmay2014
+hist(data$prop)
+summary(data$prop)
+```
+It works not so well because of the ln transformation which produce a lot of infinite values when we calculated the proportion. Moreover, obviously, when we calculate a soustraction of logarithme, we divide the original data. Because $ln(x) - ln(y) = ln(\dfrac{x}{y})$. Let's try with a tricky solution. We do not know the exact transformation Mart applied but we can calculate the proportion with data untransformed by exponential as we did before.
+
+
+```{r}
+data$prop <- (data$oct - data$may)/data$may
+hist(data$prop)
+summary(data$prop)
+```
+## Statistical analysis
+
+The effect of grazing and nursing is far to be great.
+```{r}
+mod <- lm(prop ~  treatment*microsite, data=data)
+summary(mod)
+par(mfrow=c(2,2))
+plot(mod)
+par(mfrow=c(1,1))
+
+mod <- lm(prop ~  treatment*microsite + terrace , data=data)
+summary(mod)
+par(mfrow=c(2,2))
+plot(mod)
+par(mfrow=c(1,1))
+```
+Let's try with lme by putting the terraces as random factor.
+
+```{r}
+library(lme4)
+
+mod <- lm(prop ~ treatment + microsite, data)
+
+mod1 <- lm(prop ~ treatment*microsite, data)
+AIC(mod,mod1)
+
+mod2 <- lm(prop ~ treatment*microsite + terrace, data)
+AIC(mod2,mod1)
+
+```
+The interaction between treatment and microsite do not improve the model. The same for terrace effect. Now let's try with terrace as random effect. I put the random effect as `1|terrace` which means that in the different terraces, we can have different intercept for the relationships due to environmental variation. I didn't put in the slope because there is, on my opinon, no reason to think the effect of grazer (variable: `treatment`) can be different between the terrace. Idem for patch effect.
+
+```{r}
+mod <- lmer(prop ~ treatment + (1|terrace), data, REML=FALSE)
+summary(mod)
+
+mod1 <- lmer(prop ~ treatment + microsite + (1|terrace), data, REML=FALSE)
+AIC(mod,mod1)
+summary(mod1)
+
+mod2 <- lmer(prop ~ treatment * microsite + (1|terrace), data, REML=FALSE)
+AIC(mod,mod2)
+summary(mod2)
+
+mod3 <- lm(prop ~ treatment * microsite , data)
+summary(mod3)
+```
+## Conclusion
+Finally, the random effect doesn't improve the model. The effect of treatment is respectively a height decrease of 1% for high grazing, 8% for high grazing and  an increase of 2% for the low grazing treatment. The effect of Artemisia was globally positive (height increase of 3%). But when we look at the interaction, the effect of Artemisia was only positive for grazing treatment (height increase of 5%).
+
+Overall, the effects are weak and none of the estimated parameters are significantly different from 0. Moreover, the confidence interval of most of the estimated parameters falls in 0. Obsviously, it will take more time and may be more data of the parameter estimation. One big biais for example, I didn't take in account the fact that the groups are unbalanced which play a role in variance calculation and so, parameters estimation.

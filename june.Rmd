@@ -1,0 +1,84 @@
+---
+title: "Analyse data of june"
+output:
+  pdf_document:
+    fig_width: 7
+    fig_height: 6
+    fig_caption: true
+    toc: true
+    toc_depth: 3
+    highlight: zenburn 
+    number_sections: true
+---
+
+# Charger les données
+
+```{r}
+data <- read.table("dead_june.csv", sep=",", header=T, na.string="")
+str(data)
+```
+
+# Statistiques descriptives
+
+```{r}
+tapply(data$Dead.P, list(com=data$COM,site=data$Site), mean, na.rm=T)
+tapply(data$Dead.A, list(com=data$COM,site=data$Site), mean, na.rm=T)
+tapply(data$Dead.T, list(com=data$COM,site=data$Site), mean, na.rm=T)
+tapply(data$Dead.P, list(com=data$COM,site=data$Site), function(x){1.96*sd(x)/sqrt(length(x))})
+
+```
+
+# Linear model
+
+```{r}
+modp <- lm(data[data$COM=="P",]$Dead.P ~ data[data$COM=="P",]$Site)
+moda <- lm(data[data$COM=="A",]$Dead.A ~ data[data$COM=="A",]$Site)
+modt <- lm(data[data$COM=="T",]$Dead.T ~ data[data$COM=="T",]$Site)
+
+```
+
+# Put the probes 
+
+so I have 30 pairs of probes. It means 15 pairs in open and 15 pairs in the patch site. I proceed by selecting randomly 15 patches and I will put the others 15 to the open site corresponding.
+```{r}
+probes <- data[data$Site=="p" & data$Dead.P<3 | data$Site=="p" & data$Dead.A<3 | data$Site=="p" & data$Dead.T < 3,]
+summary(probes)# Looks that its works although it produced a lot of NA
+probes2  <- probes[!is.na(probes$Site),]
+sample(probes2$Label,size=15)
+```
+# Basal diameter measurement
+
+```{r}
+diam <- data[data$Site=="p" & data$Dead.P<3 | data$Site=="p" & data$Dead.A<3 | data$Site=="p" & data$Dead.T < 3,]
+diam <- data[data$Site=="p" & data$Dead.P<=1 | data$Site=="p" & data$Dead.A<1 & data$Dead.T < 1,] # Pour mixture treatment
+diam2  <- diam[!is.na(diam$Site),]
+summary(diam2)
+sample(diam2[diam2$COM=="P",]$Label, size=length(diam2[diam2$COM=="P",]$Label)/2)
+sample(diam2[diam2$COM=="A",]$Label, size=length(diam2[diam2$COM=="A",]$Label)/2)
+sample(diam2[diam2$COM=="M",]$Label, size=length(diam2[diam2$COM=="M",]$Label)/2)
+sample(diam2[diam2$COM=="T",]$Label, size=length(diam2[diam2$COM=="T",]$Label)/2)
+
+diamo <- data[data$Site=="o" & data$Dead.P<3 | data$Site=="p" & data$Dead.A<3 | data$Site=="p" & data$Dead.T < 3,]
+diam2  <- diam[!is.na(diam$Site),]
+summary(diam2)
+sample(diam2[diam2$COM=="P",]$Label, size=length(diam2[diam2$COM=="P",]$Label)/2)
+sample(diam2[diam2$COM=="A",]$Label, size=length(diam2[diam2$COM=="A",]$Label)/2)
+sample(diam2[diam2$COM=="M",]$Label, size=length(diam2[diam2$COM=="M",]$Label)/2)
+sample(diam2[diam2$COM=="T",]$Label, size=length(diam2[diam2$COM=="T",]$Label)/2)
+
+```
+
+# Cutting treatment
+
+Quasiment plus de Pistachia intact...
+```{r}
+cutting <- data[data$Dead.P==0 & is.na(data$Dead.A) & is.na(data$Dead.T),]
+summary(cutting)
+
+
+cutting <- data[data$Dead.A==0 & is.na(data$Dead.P) & is.na(data$Dead.T),]
+
+
+cutting <- data[data$Dead.T==0 & is.na(data$Dead.P) & is.na(data$Dead.A),]
+```
+
