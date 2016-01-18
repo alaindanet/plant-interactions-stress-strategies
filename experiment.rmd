@@ -1,0 +1,112 @@
+---
+title: "Experiment in Spain - Summary document"
+highlight: "zenburn" 
+output:
+pdf_document:
+fig_width: 7
+fig_height: 6
+fig_caption: true
+toc: true
+toc_depth: 3
+number_sections: true
+geometry: margin=2cm
+
+---
+
+# Plantation
+
+## Site 
+
+The plantation was going during three weeks from the ... to the ...  of November.
+
+  - To add: photos
+
+## The holes
+
+We re-used the holes which were used in a precedent experiment (Werviejmeren et al., in prep). Those have a size of $25 cm$ by $25 cm$ by $25 cm$ and were dug using a drilling machine. We selected only the holes where Artemisia were alive. Where it missed some holes, we dug some by ourself using picks.
+
+![A hole of 20 by 20 by 20 cm in patch/mixture treatment indicated by the black & blue color.](/home/alain/hole.JPG)
+
+
+# Plantation results
+
+## Distribution of the holes
+
+The goal of this part is to look if there were some mistakes during the holes attributions.
+Let's see the distribution of the holes by treatments.
+
+```{r, results="hide"}
+data <- read.table("data_january_plant.csv", sep=";",dec=",", header=T)
+str(data)
+```
+
+```{r}
+att <- tapply(data$com, list(data$ms, data$com), length)
+att <- as.matrix(att)
+colnames(att) <- c("Anthyllis", "Dorycnium", "Mixture", "Pistachia")
+rownames(att) <- c("Open","Patch")
+```
+
+```{r plant_plot, fig.height=5, fig.width=7}
+barplot(as.matrix(att), beside=TRUE,
+	col=c("white", "black"), 
+	names.arg= c("Anthyllis", "Dorycnium", "Mixture", "Pistachia"),
+	main="Number of holes distributed by treatments",
+	ylim=c(0,100))
+text(x = c(1.50, 2.50, 4.5, 5.5, 7.5, 8.5, 10.5, 11.5),
+	y = as.vector(att + 5),
+	labels = as.character(as.vector(att)))
+text(x = c(1.50, 2.50, 4.5, 5.5, 7.5, 8.5, 10.5, 11.5),
+	y = as.vector(3), labels = c("Open", "Patch"),
+	col = c("black" ,"white"))
+```
+
+## Transplantation shock
+
+The first measurements were done from the 11th to the 16th January. We measured the height, the basal diameter and the state of the saplings. Those measurements represent the starting of the experiment. We will keep only the holes in which all the individuals are alive because those individuals can be dead because of the transplant and so, not because of the treatments.
+
+To investigate the state of the saplings, we set up an index to characterize the state of the saplings (NOTE: find how to do a table in markdown). 
+
+ - 0/nothing: plant in a good shape, totally green
+ - 1: plant with some leaves which are not green
+ - 2: plant with all leaves which are not green
+ - 3: plant dead
+
+```{r transplant_result, echo = FALSE}
+data[which(is.na(data$e1)),]$e1 <- 0;data[which(is.na(data$e2)),]$e2  <- 0;data[which(is.na(data$e3)),]$e3 <- 0
+tra <- data[data$e1<=1 & data$e2<=1 & data$e3<=1,]
+art <- tapply(tra$com, list(tra$ms, tra$com), length)
+art <- as.matrix(art)
+colnames(art) <- c("Anthyllis", "Dorycnium", "Mixture", "Pistachia")
+rownames(art) <- c("Open","Patch")
+knitr::kable(art, caption="Number of holes with individuals in good shape")
+```
+
+```{r transplant_plot, fig.height=5, fig.width=7}
+barplot(as.matrix(art), beside=TRUE,
+	col=c("white", "black"), 
+	names.arg= c("Anthyllis", "Dorycnium", "Mixture", "Pistachia"),
+	main="Number of holes distributed by treatments with good individuals",
+	ylim=c(0,100))
+text(x = c(1.50, 2.50, 4.5, 5.5, 7.5, 8.5, 10.5, 11.5),
+	y = as.vector(art + 5),
+	labels = as.character(as.vector(art)))
+text(x = c(1.50, 2.50, 4.5, 5.5, 7.5, 8.5, 10.5, 11.5),
+	y = as.vector(3), labels = c("Open", "Patch"),
+	col = c("black" ,"white"))
+```
+
+## Measurements
+
+We recorded the vegetative height and the basal diameter of the plants. Let's see the summary results. 
+
+```{r first_measure, echo = FALSE }
+layout(matrix(c(1,2,3,4,5,6), 2, 3, byrow = FALSE))
+
+com <- c("A", "D", "P")
+for (i in 1:3) {
+	hist(data[which(data$com==com[i]),]$h1, breaks=20, main=paste(com[i]," ","heights"))
+	hist(data[which(data$com==com[i]),]$d1, breaks=20, main=paste(com[i]," ","diameters"))
+}
+
+```
