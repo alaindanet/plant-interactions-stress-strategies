@@ -75,7 +75,7 @@ To investigate the state of the saplings, we set up an index to characterize the
 
 ```{r transplant_result, echo = FALSE}
 data[which(is.na(data$e1)),]$e1 <- 0;data[which(is.na(data$e2)),]$e2  <- 0;data[which(is.na(data$e3)),]$e3 <- 0
-tra <- data[data$e1<=1 & data$e2<=1 & data$e3<=1,]
+tra <- data[data$e1<=2 & data$e2<=2 & data$e3<=2,]
 art <- tapply(tra$com, list(tra$ms, tra$com), length)
 art <- as.matrix(art)
 colnames(art) <- c("Anthyllis", "Dorycnium", "Mixture", "Pistachia")
@@ -101,15 +101,15 @@ text(x = c(1.50, 2.50, 4.5, 5.5, 7.5, 8.5, 10.5, 11.5),
 
 ## Measurements
 
-We recorded the vegetative height and the basal diameter of the plants. Let's see the summary results. 
+We recorded the vegetative height and the basal diameter of the plants. Let's see the summary results. The vegetation height was measured as a light competitive trait. It means that we measured the plants without moving them.
 
 ```{r first_measure, echo = FALSE }
 layout(matrix(c(1,2,3,4,5,6), 2, 3, byrow = FALSE))
 
 com <- c("A", "D", "P")
 for (i in 1:3) {
-	hist(data[which(data$com==com[i]),]$h1, breaks=20, main=paste(com[i]," ","heights"))
-	hist(data[which(data$com==com[i]),]$d1, breaks=20, main=paste(com[i]," ","diameters"))
+	hist(data[which(data$com==com[i]),]$h1, breaks=20, main=paste(com[i]," ","heights"), xlab="")
+	hist(data[which(data$com==com[i]),]$d1, breaks=20, main=paste(com[i]," ","diameters"), xlab="")
 }
 
 ```
@@ -119,7 +119,7 @@ for (i in 1:3) {
 For the transplantation shock, we saw that it is cleary unbalanced among treatments. We will select the holes that will be watered by selecting half of the holes whose all the plants have a score below than 2. We can that the watering treatment is almost distributed equally in each other treatments combination.
 
 ```{r water_plot_selection, echo = FALSE }
-sampled <- data[data$e1<=1 & data$e2<=1 & data$e3<=1,]
+sampled <- data[data$e1<=2 & data$e2<=2 & data$e3<=2,]
 sampl <- c()
 for (i in 1:nlevels(sampled$com)) {
 	for (j in 1:nlevels(sampled$ms)) {
