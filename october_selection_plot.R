@@ -45,18 +45,18 @@ length(which(sain2$terrace==4 & sain2$microsite==1))
 # Number of patch by plot, some plots don't have enough patch for 2 replicates
 tapply(sain2[sain2$microsite==1,]$label, list(plot=sain2[sain2$microsite==1,]$plot), length)
 
-################# Terrace 4# {{{
+################# Selection# {{{
 
 # Plot 4a
 plot4a <- sample(sain2[which(sain2$terrace==4 & sain2$microsite==1 & sain2$plot==13),]$label, size= 16*2)
 
-COM <- sample(rep(c("A","D","P","M"),times= 8), size = length(plot4a))
+com <- sample(rep(c("a","d","p","m"),times= 8), size = length(plot4a))
 for(i in 1:50){
-COM <- sample(COM)
+com <- sample(com)
 }
 
 plot4a <- as.data.frame(plot4a[order(plot4a)])
-p4a <- cbind(plot4a,COM)
+p4a <- cbind(plot4a,com)
 
 # Plot 4b
 plot4b <- sample(sain2[which(sain2$terrace==4 & sain2$microsite==1 & sain2$plot==14),]$label, size= 16*2)

@@ -38,6 +38,7 @@ Let's see the distribution of the holes by treatments.
 ```{r, results="hide"}
 data <- read.table("data_january_plant.csv", sep=";",dec=",", header=T)
 str(data)
+data$ms <- as.factor(data$ms)
 ```
 
 ```{r}
@@ -96,6 +97,8 @@ text(x = c(1.50, 2.50, 4.5, 5.5, 7.5, 8.5, 10.5, 11.5),
 	col = c("black" ,"white"))
 ```
 
+### Distribution of the transplant shock by terrace
+
 ## Measurements
 
 We recorded the vegetative height and the basal diameter of the plants. Let's see the summary results. 
@@ -110,3 +113,25 @@ for (i in 1:3) {
 }
 
 ```
+
+## Hole selection for the watering treatment
+
+For the transplantation shock, we saw that it is cleary unbalanced among treatments. We will select the holes that will be watered by selecting half of the holes whose all the plants have a score below than 2. We can that the watering treatment is almost distributed equally in each other treatments combination.
+
+```{r water_plot_selection, echo = FALSE }
+sampled <- data[data$e1<=1 & data$e2<=1 & data$e3<=1,]
+sampl <- c()
+for (i in 1:nlevels(sampled$com)) {
+	for (j in 1:nlevels(sampled$ms)) {
+		temp <- sampled[which(sampled$com==levels(sampled$com)[i] & sampled$ms==levels(sampled$ms)[j]),]$label
+		sampl <- c(sampl, sample(temp, size= round(length(temp)/2), replace=FALSE))
+	}
+}
+
+sampled$watering <- rep(0,times=length(sampled$label))
+sampled[which(sampled$label %in% sampl),]$watering <- 1
+tabl <- tapply(sampled$watering, list(sampled$ms, sampled$com), FUN= function(x) sum(x)/length(x))
+tabl <- round(tabl,3)
+knitr::kable(tabl, caption="fraction of holes which will be watered by treatments")
+```
+
