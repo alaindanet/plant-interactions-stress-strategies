@@ -10,7 +10,7 @@ ter;plot;label;ms;com;watering;sp1;sp2;sp3;h1;h2;h3;d1;d2;d3;e1;e2;e3;f1;f2;f3
 2;5;569;0;M;0;pistachia;dorycnium;anthyllis;13;26,8;12,9;4;1,64;2,18;0;0;0;NA;NA;NA
 2;5;570;0;P;0;pistachia;pistachia;pistachia;21,5;20,3;25,9;4,55;3,65;4,54;1;2;2;NA;NA;NA
 2;5;571;1;P;1;pistachia;pistachia;pistachia;22,5;26,1;19,2;3,45;3,53;4;0;0;0;NA;NA;NA
-2;5;578;0;P;1;pistachia;pistachia;pistachia;16;15;22,4;2,57;2,66;2,87;1;0;2;NA;NA;NA
+2;5;577;0;P;0;pistachia;pistachia;pistachia;16;15;22,4;2,57;2,66;2,87;1;0;2;NA;NA;NA
 2;5;579;0;M;1;dorycnium;anthyllis;pistachia;33,8;22;24;4,4;2,45;2,84;0;0;2;NA;NA;NA
 2;5;580;1;M;1;pistachia;anthyllis;dorycnium;28;26;31;4,07;3,07;2,97;2;0;0;NA;NA;NA
 2;5;581;1;P;0;pistachia;pistachia;pistachia;23;25,5;24,5;3,22;3,42;4,07;0;0;2;NA;NA;NA
@@ -20,7 +20,7 @@ ter;plot;label;ms;com;watering;sp1;sp2;sp3;h1;h2;h3;d1;d2;d3;e1;e2;e3;f1;f2;f3
 2;5;585;1;P;1;pistachia;pistachia;pistachia;30;29,5;23;4,12;5,9;3,24;0;0;0;NA;NA;NA
 2;5;586;1;A;0;anthyllis;anthyllis;anthyllis;16;15,9;16,5;2,73;3,17;2,16;0;0;0;NA;NA;NA
 2;5;587;0;A;1;anthyllis;anthyllis;anthyllis;25;12;17,2;2,49;2,2;2,39;0;0;0;1;NA;NA
-2;5;588;1;M;1;anthyllis;dorycnium;pistachia;NA;25;29;NA;2,21;4,48;0;0;2;NA;NA;NA
+2;5;588;1;M;1;anthyllis;dorycnium;pistachia;NA;25;29;NA;2,21;4,48;3;0;2;NA;NA;NA
 2;5;589;0;M;0;anthyllis;pistachia;dorycnium;7,8;22,2;21;1,64;2,58;3,05;1;2;0;NA;NA;NA
 2;5;590;0;P;1;pistachia;pistachia;pistachia;26,2;29,3;24;2,79;3,24;2,81;2;2;1;NA;NA;NA
 2;5;591;0;P;0;pistachia;pistachia;pistachia;26,5;26,5;23,3;2,98;4,44;3,85;0;1;2;NA;NA;NA
@@ -138,8 +138,8 @@ ter;plot;label;ms;com;watering;sp1;sp2;sp3;h1;h2;h3;d1;d2;d3;e1;e2;e3;f1;f2;f3
 2;7;673;1;M;1;anthyllis;dorycnium;pistachia;22,6;28;18,4;2,25;2,82;3,9;0;0;0;NA;NA;NA
 2;7;674;1;D;0;dorycnium;dorycnium;dorycnium;26,1;31,9;31,3;2,27;2,11;2,99;0;0;0;NA;NA;NA
 2;7;675;0;D;0;dorycnium;dorycnium;dorycnium;25,2;31,1;23,9;2,15;2,26;2,22;0;0;0;NA;NA;NA
-2;7;684;1;A;1;dorycnium;dorycnium;dorycnium;33,5;29,2;29,5;3,57;2,73;2,87;0;0;0;NA;NA;NA
-2;7;685;0;A;0;dorycnium;dorycnium;dorycnium;21,9;29,4;31,6;2,23;2,19;2,94;0;0;0;NA;NA;NA
+2;7;684;1;D;1;dorycnium;dorycnium;dorycnium;33,5;29,2;29,5;3,57;2,73;2,87;0;0;0;NA;NA;NA
+2;7;685;0;D;0;dorycnium;dorycnium;dorycnium;21,9;29,4;31,6;2,23;2,19;2,94;0;0;0;NA;NA;NA
 2;7;692;1;P;1;pistachia;pistachia;pistachia;20,7;25,5;20,8;2,81;3,42;5,25;0;0;0;NA;NA;NA
 2;7;691;0;P;0;pistachia;pistachia;pistachia;26,7;29,1;26,2;4,53;3,62;2,98;1;0;1;NA;NA;NA
 2;7;694;1;D;0;dorycnium;dorycnium;dorycnium;28;25,7;24,5;2,31;2,87;3,01;0;0;0;NA;NA;NA
@@ -227,7 +227,7 @@ ter;plot;label;ms;com;watering;sp1;sp2;sp3;h1;h2;h3;d1;d2;d3;e1;e2;e3;f1;f2;f3
 3;9;907;0;A;0;anthyllis;anthyllis;anthyllis;36,6;17,8;17,2;2,35;1,74;2,16;0;0;0;NA;NA;NA
 3;9;908;1;A;1;anthyllis;anthyllis;anthyllis;28;26,4;27;2,75;1,95;3,77;0;0;0;1;NA;NA
 3;9;912;1;M;0;dorycnium;pistachia;anthyllis;23;16,5;13,5;2,1;2,8;1,34;0;0;0;NA;NA;NA
-3;9;911;0;M;0;dorycnium;pistachia;anthyllis;17,6;16,4;16,7;2,26;2,32;2,19;0;2;0;NA;NA;NA
+3;9;913;0;M;0;dorycnium;pistachia;anthyllis;17,6;16,4;16,7;2,26;2,32;2,19;0;2;0;NA;NA;NA
 3;9;914;1;D;0;dorycnium;dorycnium;dorycnium;32,5;31,5;37;2,16;2,9;2,74;0;0;0;NA;NA;NA
 3;9;915;0;D;0;dorycnium;dorycnium;dorycnium;27,2;37;29;2,27;2,59;2,1;0;0;0;NA;NA;NA
 3;9;916;1;D;1;dorycnium;dorycnium;dorycnium;25;16,2;28,4;2,48;1,85;1,99;0;0;0;NA;NA;NA
@@ -266,7 +266,8 @@ ter;plot;label;ms;com;watering;sp1;sp2;sp3;h1;h2;h3;d1;d2;d3;e1;e2;e3;f1;f2;f3
 3;9;958;0;M;1;pistachia;dorycnium;anthyllis;26;28,5;18,5;2,86;2,19;2,8;1;0;0;NA;NA;NA
 3;9;959;1;M;1;dorycnium;anthyllis;pistachia;40;20,9;33,8;2,83;2,9;4,18;0;0;0;NA;NA;NA
 3;10;1103;0;A;0;anthyllis;anthyllis;anthyllis;28,3;11,7;14,3;2,18;2,2;1,27;0;0;0;1;NA;NA
-3;10;1110;1;A;0;anthyllis;anthyllis;anthyllis;21,5;15,3;19,5;2,1;2,62;2,32;0;1;2;NA;NA;NA
+3;10;1107;1;A;0;anthyllis;anthyllis;anthyllis;21,5;15,3;19,5;2,1;2,62;2,32;0;1;2;NA;NA;NA
+3;10;1113;0;A;0;;;;;;;;;;;;;;;
 3;10;1114;1;A;1;anthyllis;anthyllis;anthyllis;23,4;22,7;30,6;2,48;2,97;1,93;0;0;0;NA;NA;NA
 3;10;1117;1;D;0;dorycnium;dorycnium;dorycnium;31,7;35,1;24,6;2,49;3,43;2,83;0;0;0;NA;NA;NA
 3;10;1118;0;D;0;dorycnium;dorycnium;dorycnium;27,8;28;25,2;3,05;2,45;2,54;0;0;0;NA;NA;NA
@@ -279,7 +280,7 @@ ter;plot;label;ms;com;watering;sp1;sp2;sp3;h1;h2;h3;d1;d2;d3;e1;e2;e3;f1;f2;f3
 3;10;1137;0;M;1;pistachia;anthyllis;dorycnium;28,7;19,8;25,3;4,32;2,56;2,82;1;0;0;NA;NA;NA
 3;10;1138;1;M;0;pistachia;dorycnium;anthyllis;26,3;36;17,8;3,76;2,14;2,21;0;0;0;NA;NA;NA
 3;10;1139;0;M;1;pistachia;anthyllis;dorycnium;30,6;22,8;29;4,63;1,93;2,35;2;0;0;NA;NA;NA
-3;10;1140;1;M;1;dorycnium;pistachia;anthyllis;40,2;27,3;20,8;3,01;2,98;1,72;0;0;0;NA;NA;NA
+3;10;1124;1;M;1;dorycnium;pistachia;anthyllis;40,2;27,3;20,8;3,01;2,98;1,72;0;0;0;NA;NA;NA
 3;10;1143;0;P;1;pistachia;pistachia;pistachia;18,8;21,4;23,6;3,2;3,16;3,26;0;0;2;NA;NA;NA
 3;10;1144;1;P;0;pistachia;pistachia;pistachia;19,7;19,9;18,2;3,26;3,42;3,01;0;0;1;NA;NA;NA
 3;10;1145;1;D;0;dorycnium;dorycnium;dorycnium;31;30,7;31;2,23;3,26;3,11;0;0;0;NA;NA;NA
@@ -291,6 +292,7 @@ ter;plot;label;ms;com;watering;sp1;sp2;sp3;h1;h2;h3;d1;d2;d3;e1;e2;e3;f1;f2;f3
 3;10;1059;1;D;1;dorycnium;dorycnium;dorycnium;38,8;36,6;33,5;2,9;2,12;2,34;0;0;0;NA;NA;NA
 3;10;1060;0;D;0;dorycnium;dorycnium;dorycnium;29,5;34,5;31,7;2,75;3,04;2,64;0;0;0;NA;NA;NA
 3;10;1064;1;M;1;pistachia;dorycnium;anthyllis;22,4;27,7;18,5;3,22;2,11;1,71;1;0;0;NA;NA;NA
+3;10;1065;;;;;;;;;;;;;;;;;;
 3;10;1067;0;D;0;dorycnium;dorycnium;dorycnium;28;16,4;30,6;2,03;2,03;2,01;0;0;0;NA;NA;NA
 3;10;1068;1;D;0;dorycnium;dorycnium;dorycnium;23;27,6;20,2;1,64;2,37;1,45;0;0;0;NA;NA;NA
 3;10;1071;1;P;1;pistachia;pistachia;pistachia;25;21,2;10,4;4,05;3,92;2,91;0;0;0;NA;NA;NA
