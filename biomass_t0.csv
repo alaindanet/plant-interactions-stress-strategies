@@ -1,4 +1,4 @@
-Species;Ind;Height;dia1;dia2;Xdia1;Xdia2;bio_leaves;bio_roots;bio_stem;LA
+species;ind;height;dia1;dia2;Xdia1;Xdia2;bio_leaves;bio_roots;bio_stem;LA
 Anthyllis;1;24;2,68;2,9;2,67;2,31;0,311;0,244;0,616;
 Anthyllis;2;27;3,24;2,97;2,63;2,6;0,532;0,385;0,847;
 Anthyllis;3;26,5;2,9;2,71;2,08;1,89;0,322;0,138;0,418;

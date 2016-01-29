@@ -1,15 +1,15 @@
 ---
 title: "Experiment in Spain - Summary document"
-highlight: "zenburn" 
 output:
 pdf_document:
-fig_width: 7
-fig_height: 6
-fig_caption: true
-toc: true
-toc_depth: 3
-number_sections: true
-geometry: margin=2cm
+  highlight: zenburn
+  fig_width: 7
+  fig_height: 6
+  fig_caption: true
+  toc: true
+  toc_depth: 3
+  number_sections: true
+  geometry: margin=2cm
 
 ---
 
@@ -27,6 +27,35 @@ We re-used the holes which were used in a precedent experiment (Werviejmeren et 
 
 ![A hole of 20 by 20 by 20 cm in patch/mixture treatment indicated by the black & blue color.](/home/alain/hole.JPG)
 
+# Allometric mesurements
+
+After the plantation, we used 12 remaining saplings by species to do allometric measurements and measure functional traits.
+
+## Protocol
+
+There was several individuals in each pot and their number were variable. Thus, we select the biggest stem to do our measurements. We measured the height of the stem, 2 measurements perpandicular of basal diameter and the Huber index (basal diameter without the bark). After this, the stem, the leaves and the roots were separated and dried at 65°C during 3 days to obtain the biomass. Before to be dried, the leaves were scanned to calculate the Specific Leaf Area.
+
+## Allometry between basal diameter, height and biomass
+
+```{r allometry, echo = FALSE , fig.caption="Relationship between different biomass part and basal diameter. Black: stem biomass, brown: root biomass, green: leaves biomass"}
+
+data <- read.table("biomass_t0.csv", sep=";", dec=",", header=T)
+
+par(pch=20, mfrow=c(1,2))
+variable <- c("dia2", "height")        #Explicative variables
+for (i in 1:length(variable)) {
+	plot(data[, "bio_stem"] ~ data[, variable[i]],
+	xlab="Basal diameter (mm)", ylab="Biomass (g)"#,
+# 	main= "Relationship between biomass and basal diameter"
+	)
+	points(data[, "bio_roots"] ~ data[, variable[i]], col="brown")
+	points(data[, "bio_leaves"] ~ data[, variable[i]], col="green")
+}
+
+title("Relationship between biomass and basal diameter")
+
+
+```
 
 # Plantation results
 
@@ -74,6 +103,7 @@ To investigate the state of the saplings, we set up an index to characterize the
  - 3: plant dead
 
 ```{r transplant_result, echo = FALSE}
+data <- read.table("data_january_plant.csv", sep=";",dec=",", header=T)
 tra <- data[data$e1<=2 & data$e2<=2 & data$e3<=2,]
 art <- tapply(tra$com, list(tra$ms, tra$com), length)
 art <- as.matrix(art)
@@ -100,7 +130,7 @@ text(x = c(1.50, 2.50, 4.5, 5.5, 7.5, 8.5, 10.5, 11.5),
 
 ## Measurements
 
-We recorded the vegetative height and the basal diameter of the plants. Let's see the summary results. The vegetation height was measured as a light competitive trait. It means that we measured the plants without moving them.
+We recorded the vegetative height and the basal diameter of the plants. Let's see the summary results. The vegetation height was measured as a light competitive trait. It means that we measured the plants without moving them. Note: Susana suggested that the length of the stem would be more relevant ( calculate height/basal diameter to know the growth strategies of the plants)
 
 ```{r first_measure, echo = FALSE }
 layout(matrix(c(1,2,3,4,5,6), 2, 3, byrow = FALSE))
@@ -137,7 +167,8 @@ The new file with only the holes remaining in the experiment and the distributio
 
 ## Error check in the data
 
-```{r error_check, echo = FALSE}
+We did some logic tests to detect mistakes in the dataset. The code of those test can be found in the source of this file.
+```{r error_check, echo = FALSE, eval=FALSE}
 data <- read.table("data_january_plant.csv", sep=";",dec=",", header=T)
 
 # Check if the species correspond to the community attribute 
@@ -181,8 +212,87 @@ for (i in 1:length(data[data$com=="M",]$label)) {
 
 	}
 
-	}
+}
 
 
 ```
 
+# Environmental measurements
+
+
+Due to the holes selection for the treatments, some probes were not included in the measurements. The measurements of soil moisture were taken during the morning between 9 and 11 january, the PAR and the temperature between 13h30 and 15h. The measurements took place from wenesday 20 to friday 22th january (3 days). We watered one terrace by day and we did the measurements the day after the watering.
+
+```{r env_measures, echo = FALSE, fig.height=7, fig.width=7 }
+env <- read.table("data_january_env.csv", sep=";",dec=",", header=T)
+for (i in 1:7) {
+	env[,i] <- as.factor(env[,i])
+}
+
+layout(matrix(c(1, 2, 3, 4), nrow=2, ncol=2, byrow=T))
+va <- c("PAR", "temperature")
+
+for (i in 1:length(va)) {
+	env.table <- tapply(env[,va[i]], list(env$ms, env$ter), mean, na.rm=T)
+	env.table
+	barplot(as.matrix(env.table), beside=TRUE,
+		col=c("white", "grey20"), 
+		names.arg= c("Terrace 2", "Terrace 3", "Terrace 4"),
+		main=paste(va[i]),
+		ylim=c(0, max(env[,va[i]],na.rm=T)+1.5*sd(env[,va[i]],na.rm=T))
+		)
+	text(x = c(1.50, 2.50, 4.5, 5.5, 7.5, 8.5, 10.5, 11.5),
+		y = as.vector(3), labels = c("Open", "Patch"),
+		col = c("black" ,"white"))
+	se.par <- tapply(env[,va[i]], list(env$ms, env$ter), FUN=function(x) sd(x, na.rm=T)/sqrt(length(!is.na(x))))
+	arrows(c(1.50, 2.50, 4.5, 5.5, 7.5, 8.5, 10.5, 11.5),
+		y0=as.vector(env.table-se.par*1.96),
+		y1=as.vector(env.table+se.par*1.96),
+		code=3, angle=90)
+
+}
+
+# Effect of watering on soil moisture
+va <- c("soil.moisture")
+for (i in 1:length(va)) {
+	env.table <- tapply(env[,va[i]], list(env$water, env$ter), mean, na.rm=T)
+	env.table
+	barplot(as.matrix(env.table), beside=TRUE,
+		col=c("white", "grey60"), 
+		names.arg= c("Terrace 2", "Terrace 3", "Terrace 4"),#c("Water", "No water"),
+		main="Effect of watering on soil moisture",
+		ylim=c(0, max(env[,va[i]],na.rm=T)+1.5*sd(env[,va[i]],na.rm=T))
+		)
+	text(x = c(1.50, 2.50, 4.5, 5.5, 7.5, 8.5, 10.5, 11.5),
+		y = as.vector(3), labels = c("No watered", "Watered"),
+		col = c("black" ,"white"))
+	se.par <- tapply(env[,va[i]], list(env$ms, env$ter), FUN=function(x) sd(x, na.rm=T)/sqrt(length(!is.na(x))))
+	arrows(c(1.50, 2.50, 4.5, 5.5, 7.5, 8.5, 10.5, 11.5),
+		y0=as.vector(env.table-se.par*1.96),
+		y1=as.vector(env.table+se.par*1.96),
+		code=3, angle=90)
+
+}
+
+# Effect of microsite on soil moisture
+va <- c("soil.moisture")
+for (i in 1:length(va)) {
+	env.table <- tapply(env[,va[i]], list(env$ms, env$ter), mean, na.rm=T)
+	env.table
+	barplot(as.matrix(env.table), beside=TRUE,
+		col=c("white", "grey60"), 
+		names.arg= c("Terrace 2", "Terrace 3", "Terrace 4"),#c("Water", "No water"),
+		main="Effect of microsite on soil moisture",
+		ylim=c(0, max(env[,va[i]],na.rm=T)+1.5*sd(env[,va[i]],na.rm=T))
+		)
+	text(x = c(1.50, 2.50, 4.5, 5.5, 7.5, 8.5, 10.5, 11.5),
+		y = as.vector(3), labels = c("Open", "Patch"),
+		col = c("black" ,"white"))
+	se.par <- tapply(env[,va[i]], list(env$ms, env$ter), FUN=function(x) sd(x, na.rm=T)/sqrt(length(!is.na(x))))
+	arrows(c(1.50, 2.50, 4.5, 5.5, 7.5, 8.5, 10.5, 11.5),
+		y0=as.vector(env.table-se.par*1.96),
+		y1=as.vector(env.table+se.par*1.96),
+		code=3, angle=90)
+
+}
+
+```
