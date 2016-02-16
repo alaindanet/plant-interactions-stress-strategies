@@ -1,14 +1,14 @@
 ---
 title: "Experiment in Spain - Summary document"
 output:
-pdf_document:
-  highlight: zenburn
-  fig_width: 7
-  fig_height: 6
-  fig_caption: true
-  toc: true
-  toc_depth: 3
-  number_sections: true
+  pdf_document:
+    highlight: zenburn
+    fig_width: 7
+    fig_height: 6
+    fig_caption: true
+    toc: true
+    toc_depth: 3
+    number_sections: true
   geometry: margin=2cm
 
 ---
@@ -222,7 +222,7 @@ for (i in 1:length(data[data$com=="M",]$label)) {
 
 Due to the holes selection for the treatments, some probes were not included in the measurements. The measurements of soil moisture were taken during the morning between 9 and 11 january, the PAR and the temperature between 13h30 and 15h. The measurements took place from wenesday 20 to friday 22th january (3 days). We watered one terrace by day and we did the measurements the day after the watering.
 
-```{r env_measures, echo = FALSE, fig.height=7, fig.width=7 }
+```{r env_measures, echo = FALSE, fig.height=8, fig.width=8 }
 env <- read.table("data_january_env.csv", sep=";",dec=",", header=T)
 for (i in 1:7) {
 	env[,i] <- as.factor(env[,i])
@@ -247,7 +247,7 @@ for (i in 1:length(va)) {
 	arrows(c(1.50, 2.50, 4.5, 5.5, 7.5, 8.5, 10.5, 11.5),
 		y0=as.vector(env.table-se.par*1.96),
 		y1=as.vector(env.table+se.par*1.96),
-		code=3, angle=90)
+		code=3, angle=90, length= 0.10)
 
 }
 
@@ -269,7 +269,7 @@ for (i in 1:length(va)) {
 	arrows(c(1.50, 2.50, 4.5, 5.5, 7.5, 8.5, 10.5, 11.5),
 		y0=as.vector(env.table-se.par*1.96),
 		y1=as.vector(env.table+se.par*1.96),
-		code=3, angle=90)
+		code=3, angle=90, length= 0.10)
 
 }
 
@@ -291,8 +291,39 @@ for (i in 1:length(va)) {
 	arrows(c(1.50, 2.50, 4.5, 5.5, 7.5, 8.5, 10.5, 11.5),
 		y0=as.vector(env.table-se.par*1.96),
 		y1=as.vector(env.table+se.par*1.96),
-		code=3, angle=90)
+		code=3, angle=90, length= 0.10)
 
 }
 
 ```
+
+# Functional traits analysis
+
+
+## Protocol
+
+### Field
+
+We will mesure functional traits during the month of march. We will measure Specific Leaf Area, $\delta C^{13}$, leaf height and leaf width.
+We will collect one leaf by individual. Each leaf will be stored in Falcon tubes filled with distilled water.
+Those falcon tubes will be stored in glacial boxes.
+
+### Lab
+
+When the leaves will be taken from the tubes, we will first remove the excess water. Following this, we will weight, scan, measure them, put them in an enveloppe, and finally put them in the drier. 
+
+
+
+## Material
+
+- 640 enveloppes
+- 500 falcon tubes
+- 4 glacial boxes (180 tubes by glacial boxes)
+- plastic bags
+- scissors
+
+## Cost
+
+### Leaves analyses
+
+- $\delta C^{13}$: 7.5\$ per sample.
