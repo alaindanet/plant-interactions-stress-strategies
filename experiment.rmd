@@ -29,7 +29,7 @@ We re-used the holes which were used in a precedent experiment (Werviejmeren et 
 
 # Allometric mesurements
 
-After the plantation, we used 12 remaining saplings by species to do allometric measurements and measure functional traits.
+After the plantation, we used 12 remaining saplings by species to do allometric measurements and measure functional traits. 
 
 ## Protocol
 
@@ -53,8 +53,6 @@ for (i in 1:length(variable)) {
 }
 
 title("Relationship between biomass and basal diameter")
-
-
 ```
 
 # Plantation results
@@ -65,7 +63,7 @@ The goal of this part is to look if there were some mistakes during the holes at
 Let's see the distribution of the holes by treatments.
 
 ```{r, results="hide"}
-data <- read.table("data_january_plant.csv", sep=";",dec=",", header=T)
+data <- read.table("data_january_transplant_shock.csv", sep=";",dec=",", header=T)
 str(data)
 data$ms <- as.factor(data$ms)
 ```
@@ -103,8 +101,12 @@ To investigate the state of the saplings, we set up an index to characterize the
  - 3: plant dead
 
 ```{r transplant_result, echo = FALSE}
-data <- read.table("data_january_plant.csv", sep=";",dec=",", header=T)
-tra <- data[data$e1<=2 & data$e2<=2 & data$e3<=2,]
+
+data <- read.table("data_january_transplant_shock2.csv", sep=";",dec=",", header=T)
+
+data[c("state")][is.na(data[c("state")])] <- 0
+	
+tra <- data[data$state<=2,]
 art <- tapply(tra$com, list(tra$ms, tra$com), length)
 art <- as.matrix(art)
 colnames(art) <- c("Anthyllis", "Dorycnium", "Mixture", "Pistachia")
@@ -113,6 +115,23 @@ knitr::kable(art, caption="Number of holes with individuals in good shape")
 ```
 
 ```{r transplant_plot, fig.height=5, fig.width=7}
+art <- tapply(tra$e3, list(tra$ms, tra$com), mean)
+art <- as.matrix(art)
+
+barplot(as.matrix(art), beside=TRUE,
+	col=c("white", "black"), 
+	names.arg= c("Anthyllis", "Dorycnium", "Mixture", "Pistachia"),
+	main="Number of holes distributed by treatments with good individuals",
+	ylim=c(0,1))
+text(x = c(1.50, 2.50, 4.5, 5.5, 7.5, 8.5, 10.5, 11.5),
+	y = as.vector(art + 5),
+	labels = as.character(as.vector(art)))
+text(x = c(1.50, 2.50, 4.5, 5.5, 7.5, 8.5, 10.5, 11.5),
+	y = as.vector(3), labels = c("Open", "Patch"),
+	col = c("black" ,"white"))
+```
+
+```{r transplant_plot2, fig.height=5, fig.width=7}
 barplot(as.matrix(art), beside=TRUE,
 	col=c("white", "black"), 
 	names.arg= c("Anthyllis", "Dorycnium", "Mixture", "Pistachia"),
@@ -140,7 +159,10 @@ for (i in 1:3) {
 	hist(data[which(data$com==com[i]),]$h1, breaks=20, main=paste(com[i]," ","heights"), xlab="")
 	hist(data[which(data$com==com[i]),]$d1, breaks=20, main=paste(com[i]," ","diameters"), xlab="")
 }
-
+for (i in 1:3) {
+	hist(data[which(data$com==com[i]),]$height, breaks=20, main=paste(com[i]," ","heights"), xlab="")
+	hist(data[which(data$com==com[i]),]$diameter, breaks=20, main=paste(com[i]," ","diameters"), xlab="")
+}
 ```
 
 ## Hole selection for the watering treatment
