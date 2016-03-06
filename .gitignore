@@ -1,0 +1,8 @@
+# Les types de fichier que git doit ignorer
+
+## Les fichiers compilés
+*.pdf
+
+## Les images
+*.png
+*.jpg
