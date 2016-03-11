@@ -472,7 +472,7 @@ ter	plot	label	ms	com	watering	sp1	sp2	sp3	h1	h2	h3	d1	d2	d3	fresh_mass1	fresh_m
 4	14	282	1	A	0	anthyllis	anthyllis	anthyllis	32,2	17	27,5	2,24	2,22	1,56	0,267	0,111	0,157	0,253	0,098	0,144
 4	14	284	0	A	1	anthyllis	anthyllis	anthyllis	23,5	28,4	37	2,66	2,22	3,07						
 4	14	285	1	A	1	anthyllis	anthyllis	anthyllis	19,5	23,1	19,2	2,26	1,87	1,88						
-4	14	288	0	M	0	pistachia	anthyllis	dorycnium	24	20,5	27	4,22	4,04	2,39						
+4	14	288	0	M	0	pistachia	anthyllis	dorycnium	24	20,5	27	4,22	4,04	2,39	0,906	0,163	0,059	0,744	0,146	
 4	14	289	1	M	1	pistachia	anthyllis	dorycnium	28,1	19	27,7	4,29	2,43	3,55						
 4	14	291	0	M	1	anthyllis	dorycnium	pistachia	19,4	19,3	25,3	2,26	3,57	4,66						
 4	14	292	1	M	0	anthyllis	pistachia	dorycnium	26,5	28,7	26,5	2,15	3,81	2,2						
@@ -480,23 +480,23 @@ ter	plot	label	ms	com	watering	sp1	sp2	sp3	h1	h2	h3	d1	d2	d3	fresh_mass1	fresh_m
 4	14	294	1	D	0	dorycnium	dorycnium	dorycnium	30,5	30,5	31,2	3,54	4,09	3,42		0,057				
 4	14	296	0	D	1	dorycnium	dorycnium	dorycnium	31,3	22,6	29	2,2	2,67	2,7						
 4	14	297	1	D	1	dorycnium	dorycnium	dorycnium	28,6	28,2	27,5	2,96	3,81	2,72						
-4	14	300	1	D	0	dorycnium	dorycnium	dorycnium	22	21,4	27,5	3,4	2,43	3,74						
-4	14	301	0	D	0	dorycnium	dorycnium	dorycnium	27	15,5	24	3,15	2,57	3,15	0,094					
-4	14	303	1	P	0	pistachia	pistachia	pistachia	21,5	28,8	29,2	3,86	3,36	4						
-4	14	304	0	P	1	pistachia	pistachia	pistachia	26,2	20	13,4	4,76	2,76	4,14	1,043		0,826	0,864		0,695
+4	14	300	1	D	0	dorycnium	dorycnium	dorycnium	22	21,4	27,5	3,4	2,43	3,74			0,173			0,163
+4	14	301	0	D	0	dorycnium	dorycnium	dorycnium	27	15,5	24	3,15	2,57	3,15	0,094		0,057			
+4	14	303	1	P	0	pistachia	pistachia	pistachia	21,5	28,8	29,2	3,86	3,36	4		0,44			0,336	
+4	14	304	0	P	1	pistachia	pistachia	pistachia	26,2	20	13,4	4,76	2,76	4,14	1,043	0,925	0,826	0,864	0,775	0,695
 4	14	308	1	D	0	dorycnium	dorycnium	dorycnium	26,3	29,4	25	2,52	3,28	3,26						
 4	14	309	0	D	0	dorycnium	dorycnium	dorycnium	26,6	23,5	23,4	3,43	3,6	2,59						
 4	14	310	0	A	0	anthyllis	anthyllis	anthyllis	30,5	27,1	22,9	2,16	1,87	3,12						
 4	14	311	0	A	0	anthyllis	anthyllis	anthyllis	27,9	28	25,8	1,82	2,1	2,69						
 4	14	312	0	D	0	dorycnium	dorycnium	dorycnium	30,8	29,5	26	1,74	2,65	2,57						
-4	14	313	0	P	0	pistachia	pistachia	pistachia	28,6	25,1	26,2	3,34	3,58	3,38	0,601		0,693	0,517		0,578
+4	14	313	0	P	0	pistachia	pistachia	pistachia	28,6	25,1	26,2	3,34	3,58	3,38	0,601	1,419	0,693	0,517	1,244	0,578
 4	14	314	1	D	0	dorycnium	dorycnium	dorycnium	33	36,4	32,9	3,31	3,12	3,29						
 4	14	315	1	P	1	pistachia	pistachia	pistachia	21	21,2	24	3,87	3,85	3,61						
 4	14	316	1	M	1	anthyllis	dorycnium	pistachia	17,3	24,6	28,1	2,88	2,59	3,87						
 4	14	317	0	M	1	anthyllis	dorycnium	pistachia	19,1	30,1	26,2	1,96	4,8	4,01						
 4	14	319	0	M	0	dorycnium	anthyllis	pistachia	28,7	25,8	18	2,38	1,85	2,57						
 4	14	320	0	M	1	dorycnium	pistachia	anthyllis	24,1	15,1	27,2	1,99	3,58	2,58						
-4	14	321	1	M	1	dorycnium	anthyllis	pistachia	26	25,5	26,2	2,05	1,46	2,86	0,052					
+4	14	321	1	M	1	dorycnium	anthyllis	pistachia	26	25,5	26,2	2,05	1,46	2,86	0,052	0,127	0,835		0,12	0,72
 4	14	325	0	M	0	dorycnium	anthyllis	pistachia	27,5	21,2	21,6	2,13	2,26	2,86						
 4	14	326	1	M	1	pistachia	anthyllis	dorycnium	24,4	32,5	23,5	3,32	2,05	2,34						
 4	14	327	1	P	1	pistachia	pistachia	pistachia	12,5	8	17,2	2,77	2,05	2,78						
@@ -504,13 +504,13 @@ ter	plot	label	ms	com	watering	sp1	sp2	sp3	h1	h2	h3	d1	d2	d3	fresh_mass1	fresh_m
 4	14	330	0	A	1	anthyllis	anthyllis	anthyllis	16,7	17,8	22,4	2,56	1,97	1,64		0,1			0,088	
 4	14	331	1	A	1	anthyllis	anthyllis	anthyllis	19,1	23,2	23,7	1,49	2,41	2,14						
 4	14	332	0	P	0	pistachia	pistachia	pistachia	28,8	31,4	24,6	4,71	4,42	4,67						
-4	14	334	1	P	0	pistachia	pistachia	pistachia	30,4	23	9,5	3,87	5,56	2,07	1,108		0,598	0,969		0,482
-4	14	335	0	A	0	anthyllis	anthyllis	anthyllis	27,6	20,5	28,6	3,29	2,94	2,72	0,094	0,117		0,085	0,104	
-4	14	336	1	A	1	anthyllis	anthyllis	anthyllis	21	24,3	27	2,12	1,66	1,48		0,1	0,123		0,094	0,119
+4	14	334	1	P	0	pistachia	pistachia	pistachia	30,4	23	9,5	3,87	5,56	2,07	1,108	0,28	0,598	0,969	0,227	0,482
+4	14	335	0	A	0	anthyllis	anthyllis	anthyllis	27,6	20,5	28,6	3,29	2,94	2,72	0,094	0,117	0,099	0,085	0,104	0,089
+4	14	336	1	A	1	anthyllis	anthyllis	anthyllis	21	24,3	27	2,12	1,66	1,48	0,167	0,1	0,123	0,148	0,094	0,119
 4	14	337	0	A	0	anthyllis	anthyllis	anthyllis	19,1	19,1	20,2	1,52	2,26	2,22						
 4	14	338	1	A	1	anthyllis	anthyllis	anthyllis	26	14	12,4	3,14	1,81	1,83						
 4	14	339	0	D	0	dorycnium	dorycnium	dorycnium	7,1	21,9	31	1,23	2,29	2,8						
-4	14	340	1	D	1	dorycnium	dorycnium	dorycnium	30	31	27	2,65	2	1,98			0,074			
+4	14	340	1	D	1	dorycnium	dorycnium	dorycnium	30	31	27	2,65	2	1,98		0,044	0,074			
 4	14	341	0	D	1	dorycnium	dorycnium	dorycnium	30,5	28,7	27,2	3,31	2,19	1,69	0,059		0,083			
 4	14	342	1	D	0	dorycnium	dorycnium	dorycnium	21,4	27,2	28,1	2,6	2,67	3,08						
 4	14	344	0	M	1	anthyllis	pistachia	dorycnium	18,1	24	27,2	1,21	4,15	2,29						
@@ -518,14 +518,14 @@ ter	plot	label	ms	com	watering	sp1	sp2	sp3	h1	h2	h3	d1	d2	d3	fresh_mass1	fresh_m
 4	14	346	0	D	1	dorycnium	dorycnium	dorycnium	34,9	30	31,3	3,08	2,99	1,73						
 4	14	347	0	A	1	anthyllis	anthyllis	anthyllis	19	20	12	2,12	1,43	1,45	0,064		0,102	0,057		0,095
 4	14	348	1	D	1	dorycnium	dorycnium	dorycnium	25	33	28,5	2,54	2,3	2,68	0,058	0,059				
-4	14	349	1	A	0	anthyllis	anthyllis	anthyllis	14,8	40	16,1	0,99	2,66	1,75						
-4	14	350	1	P	1	pistachia	pistachia	pistachia	24,2	27,7	23,1	4,51	4,23	3,54	0,933			0,756		
+4	14	349	1	A	0	anthyllis	anthyllis	anthyllis	14,8	40	16,1	0,99	2,66	1,75		0,217			0,203	
+4	14	350	1	P	1	pistachia	pistachia	pistachia	24,2	27,7	23,1	4,51	4,23	3,54	0,933	0,698	0,731	0,756	0,56	0,61
 4	14	351	0	P	0	pistachia	pistachia	pistachia	22,6	19	19,4	2,25	2,36	2,09						
-4	14	352	1	P	0	pistachia	pistachia	pistachia	13,6	33,2	15,5	2,5	3,37	2,24	0,292	0,519		0,245	0,4	
+4	14	352	1	P	0	pistachia	pistachia	pistachia	13,6	33,2	15,5	2,5	3,37	2,24	0,292	0,519	0,676	0,245	0,4	0,55
 4	14	353	0	P	1	pistachia	pistachia	pistachia	22,2	16,4	23,9	3,15	2,82	3,33						
 4	14	354	1	M	0	pistachia	anthyllis	dorycnium	26,7	36,2	22,4	3,16	1,77	2,44	0,563	0,059		0,479	0,055	
 4	14	356	0	P	0	pistachia	pistachia	pistachia	29,1	29	36,2	4,69	3,38	5,01						
-4	14	357	1	P	1	pistachia	pistachia	pistachia	27,8	27,4	29,9	3,66	3,29	3,39		0,916			0,777	
+4	14	357	1	P	1	pistachia	pistachia	pistachia	27,8	27,4	29,9	3,66	3,29	3,39	0,473	0,916	0,734	0,397	0,777	0,615
 4	15	1452	0	D	1	dorycnium	dorycnium	dorycnium	29	29,4	30	3,7	2,55	3,3						
 4	15	1453	1	D	1	dorycnium	dorycnium	dorycnium	28,6	28,8	31	2,41	3,02	1,9						
 4	15	1455	0	D	0	dorycnium	dorycnium	dorycnium	33,2	28,8	32,5	3,33	3,15	4,03						
