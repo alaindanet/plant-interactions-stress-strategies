@@ -3,8 +3,8 @@ title: "Experiment in Spain - Summary document"
 output:
   pdf_document:
     highlight: zenburn
-    fig_width: 7
-    fig_height: 6
+    fig_width: 4
+    fig_height: 4
     fig_caption: true
     toc: true
     toc_depth: 3
@@ -12,6 +12,13 @@ output:
   geometry: margin=2cm
 
 ---
+
+```{r source_functions, echo = FALSE }
+source("data.R")
+library(gplots)
+```
+
+\newpage
 
 # Plantation
 
@@ -27,7 +34,10 @@ We re-used the holes which were used in a precedent experiment (Werviejmeren et 
 
 ![A hole of 20 by 20 by 20 cm in patch/mixture treatment indicated by the black & blue color.](/home/alain/hole.JPG)
 
-# Allometric mesurements
+
+\newpage
+
+# Allometric measurements
 
 After the plantation, we used 12 remaining saplings by species to do allometric measurements and measure functional traits. 
 
@@ -37,23 +47,33 @@ There was several individuals in each pot and their number were variable. Thus, 
 
 ## Allometry between basal diameter, height and biomass
 
-```{r allometry, echo = FALSE , fig.caption="Relationship between different biomass part and basal diameter. Black: stem biomass, brown: root biomass, green: leaves biomass"}
+```{r allometry, echo = FALSE , fig.cap="Relationship between total biomass part and basal diameter (on the left), and height (on the right). Black: Dorycnium, green: Pistachia, red: Anthyllis", fig.width=7}
 
-data <- read.table("biomass_t0.csv", sep=";", dec=",", header=T)
+data <- read.table("../data/biomass_t0.csv", sep=";", dec=",", header=T)
+
+data[, "biomass"] <- data[, "bio_stem"] + data[, "bio_roots"] + data[, "bio_leaves"]
+data[, "diameter"] <- ( data[, "dia1"] + data[, "dia2"] )/2
 
 par(pch=20, mfrow=c(1,2))
-variable <- c("dia2", "height")        #Explicative variables
+variable <- c("diameter", "height")        #Explicative variables
 for (i in 1:length(variable)) {
-	plot(data[, "bio_stem"] ~ data[, variable[i]],
-	xlab="Basal diameter (mm)", ylab="Biomass (g)"#,
-# 	main= "Relationship between biomass and basal diameter"
-	)
-	points(data[, "bio_roots"] ~ data[, variable[i]], col="brown")
-	points(data[, "bio_leaves"] ~ data[, variable[i]], col="green")
-}
+	plot( data[data$species=="Dorycnium", "biomass"] ~ data[data$species=="Dorycnium", variable[i]],
+		xlab=variable[i], ylab="Biomass (g)",
+		ylim=range(data$biomass), xlim=range(data[,variable[i]])
+		)
+	points(data[data$species=="Anthyllis", "biomass"] ~ data[data$species=="Anthyllis", variable[i]], col="red")
+	points(data[data$species=="Pistacia", "biomass"] ~ data[data$species=="Pistacia", variable[i]], col="green")
+	abline(lm(data[data$species=="Anthyllis", "biomass"] ~ data[data$species=="Anthyllis", variable[i]] ), col="red")
+	abline(lm(data[data$species=="Dorycnium", "biomass"] ~ data[data$species=="Dorycnium", variable[i]] ), col="black")
+	abline(lm(data[data$species=="Pistacia", "biomass"] ~ data[data$species=="Pistacia", variable[i]] ), col="green")
 
-title("Relationship between biomass and basal diameter")
+}
+mod <- lm(biomass ~ diameter + diameter:species , data)
+#summary(mod)
+
 ```
+
+\newpage
 
 # Plantation results
 
@@ -62,20 +82,20 @@ title("Relationship between biomass and basal diameter")
 The goal of this part is to look if there were some mistakes during the holes attributions.
 Let's see the distribution of the holes by treatments.
 
-```{r, results="hide"}
-data <- read.table("data_january_transplant_shock.csv", sep=";",dec=",", header=T)
+```{r, results="hide", echo = FALSE}
+data <- read.table("../data/data_january_transplant_shock.csv", sep=";",dec=",", header=T)
 str(data)
 data$ms <- as.factor(data$ms)
 ```
 
-```{r}
+```{r, echo = FALSE}
 att <- tapply(data$com, list(data$ms, data$com), length)
 att <- as.matrix(att)
 colnames(att) <- c("Anthyllis", "Dorycnium", "Mixture", "Pistachia")
 rownames(att) <- c("Open","Patch")
 ```
 
-```{r plant_plot, fig.height=5, fig.width=7}
+```{r plant_plot, echo = FALSE, fig.height=5, fig.width=7}
 barplot(as.matrix(att), beside=TRUE,
 	col=c("white", "black"), 
 	names.arg= c("Anthyllis", "Dorycnium", "Mixture", "Pistachia"),
@@ -102,10 +122,10 @@ To investigate the state of the saplings, we set up an index to characterize the
 
 ```{r transplant_result, echo = FALSE}
 
-data <- read.table("data_january_transplant_shock2.csv", sep=";",dec=",", header=T)
+data <- read.table("../data/data_january_transplant_shock2.csv", sep=";",dec=",", header=T)
 
 data[c("state")][is.na(data[c("state")])] <- 0
-	
+
 tra <- data[data$state<=2,]
 art <- tapply(tra$com, list(tra$ms, tra$com), length)
 art <- as.matrix(art)
@@ -114,24 +134,7 @@ rownames(art) <- c("Open","Patch")
 knitr::kable(art, caption="Number of holes with individuals in good shape")
 ```
 
-```{r transplant_plot, fig.height=5, fig.width=7}
-art <- tapply(tra$e3, list(tra$ms, tra$com), mean)
-art <- as.matrix(art)
-
-barplot(as.matrix(art), beside=TRUE,
-	col=c("white", "black"), 
-	names.arg= c("Anthyllis", "Dorycnium", "Mixture", "Pistachia"),
-	main="Number of holes distributed by treatments with good individuals",
-	ylim=c(0,1))
-text(x = c(1.50, 2.50, 4.5, 5.5, 7.5, 8.5, 10.5, 11.5),
-	y = as.vector(art + 5),
-	labels = as.character(as.vector(art)))
-text(x = c(1.50, 2.50, 4.5, 5.5, 7.5, 8.5, 10.5, 11.5),
-	y = as.vector(3), labels = c("Open", "Patch"),
-	col = c("black" ,"white"))
-```
-
-```{r transplant_plot2, fig.height=5, fig.width=7}
+```{r transplant_plot2, echo = FALSE, fig.height=5, fig.width=7}
 barplot(as.matrix(art), beside=TRUE,
 	col=c("white", "black"), 
 	names.arg= c("Anthyllis", "Dorycnium", "Mixture", "Pistachia"),
@@ -156,8 +159,8 @@ layout(matrix(c(1,2,3,4,5,6), 2, 3, byrow = FALSE))
 
 com <- c("A", "D", "P")
 for (i in 1:3) {
-	hist(data[which(data$com==com[i]),]$h1, breaks=20, main=paste(com[i]," ","heights"), xlab="")
-	hist(data[which(data$com==com[i]),]$d1, breaks=20, main=paste(com[i]," ","diameters"), xlab="")
+	hist(data[which(data$com==com[i]),]$height, breaks=20, main=paste(com[i]," ","heights"), xlab="")
+	hist(data[which(data$com==com[i]),]$diameter, breaks=20, main=paste(com[i]," ","diameters"), xlab="")
 }
 for (i in 1:3) {
 	hist(data[which(data$com==com[i]),]$height, breaks=20, main=paste(com[i]," ","heights"), xlab="")
@@ -191,7 +194,7 @@ The new file with only the holes remaining in the experiment and the distributio
 
 We did some logic tests to detect mistakes in the dataset. The code of those test can be found in the source of this file.
 ```{r error_check, echo = FALSE, eval=FALSE}
-data <- read.table("data_january_plant.csv", sep=";",dec=",", header=T)
+data <- read.table("../data/data_january_plant.csv", sep=";",dec=",", header=T)
 
 # Check if the species correspond to the community attribute 
 ck <- c()
@@ -245,7 +248,7 @@ for (i in 1:length(data[data$com=="M",]$label)) {
 Due to the holes selection for the treatments, some probes were not included in the measurements. The measurements of soil moisture were taken during the morning between 9 and 11 january, the PAR and the temperature between 13h30 and 15h. The measurements took place from wenesday 20 to friday 22th january (3 days). We watered one terrace by day and we did the measurements the day after the watering.
 
 ```{r env_measures, echo = FALSE, fig.height=8, fig.width=8 }
-env <- read.table("data_january_env.csv", sep=";",dec=",", header=T)
+env <- read.table("../data/data_january_env.csv", sep=";",dec=",", header=T)
 for (i in 1:7) {
 	env[,i] <- as.factor(env[,i])
 }
@@ -326,19 +329,22 @@ for (i in 1:length(va)) {
 
 ### Field
 
-We will mesure functional traits during the month of march. We will measure Specific Leaf Area, $\delta C^{13}$, leaf height and leaf width.
-We will collect one leaf by individual. Each leaf will be stored in Falcon tubes filled with distilled water.
+We will measure functional traits during the month of march. We will measure Specific Leaf Area, $\delta C^{13}$, leaf height and leaf width.
+We will collect one leaf by individual. Each leaf will be stored in Falcon tubes filled humid (deionized water) piece of soft paper.
 Those falcon tubes will be stored in glacial boxes.
 
+We collected only leaves in good shape, mature and the most exposed to the sunbeam. Furthermore, we collect only on the individuals which had sufficient leaves to not suffer of the sampling (subjective point of view).
+
+We collected 3 leaves by Pistachia, 5 leaves by Anthyllis and 10 leaves by Dorycnium by respect to the weight of species leaves.
 ### Lab
 
-When the leaves will be taken from the tubes, we will first remove the excess water. Following this, we will weight, scan, measure them, put them in an enveloppe, and finally put them in the drier. 
+When the leaves were taken from the tubes, we first rehydrated them with deionized water. Following this, we weighted them, scanned, measured them, put them in an envelope, and finally put them in the drier. 
 
 
 
 ## Material
 
-- 640 enveloppes
+- 640 envelopes
 - 500 falcon tubes
 - 4 glacial boxes (180 tubes by glacial boxes)
 - plastic bags
@@ -346,6 +352,83 @@ When the leaves will be taken from the tubes, we will first remove the excess wa
 
 ## Cost
 
-### Leaves analyses
+### Leaves analysis
 
 - $\delta C^{13}$: 7.5\$ per sample.
+
+
+## Results
+
+```{r load_data, echo = FALSE }
+
+data <- load.traits(data="~/Documents/thesis/alicante/thesis_chap2_alicante/data/data_mars_traits.csv")
+
+data[, "ldmc"] <- data[, "dry_mass"]/data[, "fresh_mass"]
+
+# Transform numeric in factor
+to.factor <- c("ter", "plot", "label","ms", "com", "watering", "sp", "ind")
+for (i in 1:length(to.factor)) {
+	data[,to.factor[i]] <- as.factor(data[,to.factor[i]])
+}
+
+
+```
+
+### Leaf Dry Matter Content
+
+#### Microsite effect
+
+```{r ldmc_ms, echo = FALSE}
+
+## Microsite effect
+microsite.stat <- data[data$watering==0 & data$com!="M",]
+plotmeans(ldmc~ interaction(ms, sp, sep="|"),
+       	data=microsite.stat,
+	connect=list(1:2,3:4,5:6))
+
+```
+
+The results show that the LDMC of Dorycnium and Anthyllis has shifted toward lower value, that means, a more acquisitive strategy (versus conservative). It's nice because it was predicted by the theory.
+
+#### Watering effect
+
+```{r ldmc_watering, echo = FALSE}
+
+microsite.stat <- data[data$watering==1 & data$com!="M",]
+
+plotmeans(ldmc~ interaction(ms, sp, sep="|"),
+       	data=microsite.stat,
+	connect=list(1:2,3:4,5:6)	)
+
+
+mod <- lm(ldmc~ms+watering+sp , data[data$com!="M",])
+```
+
+#### Community effect
+
+```{r ldmc_community_open, echo = FALSE}
+
+microsite.stat <- data[data$watering==0 & data$ms!=0,]
+
+plotmeans(ldmc~ interaction( com, sp, sep="|"),
+       	data=microsite.stat,
+	connect=list(1:2,3:4,5:6)	)
+
+
+mod <- lm(ldmc~ms+watering+sp , data[data$com!="M",])
+
+```
+
+```{r ldmc_community_patch, echo = FALSE}
+
+microsite.stat <- data[data$watering==0 & data$ms!=1,]
+
+plotmeans(ldmc~ interaction( com, sp, sep="|"),
+       	data=microsite.stat,
+	connect=list(1:2,3:4,5:6)
+	)
+
+
+mod <- lm(ldmc~ms+watering+com , data)
+```
+
