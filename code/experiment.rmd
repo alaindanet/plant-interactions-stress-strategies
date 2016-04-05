@@ -16,6 +16,11 @@ output:
 ```{r source_functions, echo = FALSE }
 source("data.R")
 library(gplots)
+
+# http://yihui.name/knitr/options/#chunk_options
+# opts <- knit$set(progress = TRUE,
+#        	verbose = TRUE,
+# 	base.dir="../ressources/figures/")
 ```
 
 \newpage
@@ -47,7 +52,7 @@ There was several individuals in each pot and their number were variable. Thus, 
 
 ## Allometry between basal diameter, height and biomass
 
-```{r allometry, echo = FALSE , fig.cap="Relationship between total biomass part and basal diameter (on the left), and height (on the right). Black: Dorycnium, green: Pistachia, red: Anthyllis", fig.width=7}
+```{r allometry, echo = FALSE , fig.cap="Relationship between total biomass part and basal diameter (on the left), and height (on the right). Black: Dorycnium, green: Pistachia, red: Anthyllis", fig.width=7, fig.path="../ressources"}
 
 data <- read.table("../data/biomass_t0.csv", sep=";", dec=",", header=T)
 
@@ -356,10 +361,11 @@ When the leaves were taken from the tubes, we first rehydrated them with deioniz
 
 - $\delta C^{13}$: 7.5\$ per sample.
 
+\newpage
 
-## Results
+# Results
 
-```{r load_data, echo = FALSE }
+```{r load_data_traits, echo = FALSE }
 
 data <- load.traits(data="~/Documents/thesis/alicante/thesis_chap2_alicante/data/data_mars_traits.csv")
 
@@ -371,64 +377,157 @@ for (i in 1:length(to.factor)) {
 	data[,to.factor[i]] <- as.factor(data[,to.factor[i]])
 }
 
+```
+
+```{r load_data_march, echo = FALSE, fig.height=2, fig.width=2}
+
+data.january <- LoadPlant()
+data.march <- LoadPlantMarch()
+
+m <- interaction(data.march[,"label"], data.march[,"sp"], sep="-")
+j <- interaction(data.january[,"label"], data.january[,"sp"], sep="-")
+
+
+growth.d <- data.march[m %in% j, "d"] - data.january[m %in% j, "d"]
+hist(growth.d)
+
+growth.h <- data.march[m %in% j, "h"] - data.january[m %in% j, "h"]
+hist(growth.h)
+
+data.growth <- cbind(data.january[,c("ter", "plot", "label","ms", "com", "watering", "sp", "ind")], 
+	growth.d, growth.h)
+```
+
+
+## Growth January March
+
+### Diameter
+
+```{r growth_d, echo = FALSE, fig.width=8, fig.height=8}
+normal <- par()
+par(mfrow=c(2,2))
+microsite.stat <- data.growth[data.growth$watering==0 & data.growth$com!="M",]
+plotmeans(growth.d~ interaction(ms, com, sep="|"),
+       	data=microsite.stat,
+	connect=list(1:2,3:4,5:6),
+	n.label=F,
+	ylim=c(-0.6,1.25),
+	main="No Watering - Monoculture")
+abline(0,0,col="red")
+microsite.stat <- data.growth[data.growth$watering==1 & data.growth$com!="M",]
+plotmeans(growth.d~ interaction(ms, com, sep="|"),
+       	data=microsite.stat,
+	connect=list(1:2,3:4,5:6),
+	n.label=F,
+	ylim=c(-0.6,1.25),
+	main="Watering - Monoculture")
+abline(0,0,col="red")
+microsite.stat <- data.growth[data.growth$watering==0 & data.growth$com=="M",]
+plotmeans(growth.d~ interaction(ms, sp, sep="|"),
+       	data=microsite.stat,
+	connect=list(1:2,3:4,5:6),
+# 	n.label=F,
+ 	ylim=c(-0.6,1.25),
+	main="No Watering - Polyculture")
+abline(0,0,col="red")
+microsite.stat <- data.growth[data.growth$watering==1 & data.growth$com=="M",]
+plotmeans(growth.d~ interaction(ms, sp, sep="|"),
+       	data=microsite.stat,
+	connect=list(1:2,3:4,5:6),
+# 	n.label=F,
+ 	ylim=c(-0.6,1.25),
+	main="Watering - Polyculture")
+abline(0,0,col="red")
+```
+
+\newpage
+
+### Height
+
+```{r growth_h, echo = FALSE, fig.width=8, fig.height=8}
+par(mfrow=c(2,2))
+microsite.stat <- data.growth[data.growth$watering==0 & data.growth$com!="M",]
+plotmeans(growth.h~ interaction(ms, com, sep="|"),
+       	data=microsite.stat,
+	connect=list(1:2,3:4,5:6),
+	n.label=F,
+	ylim=c(-7,7),
+	main="No Watering - Monoculture")
+abline(0,0,col="red")
+microsite.stat <- data.growth[data.growth$watering==1 & data.growth$com!="M",]
+plotmeans(growth.h~ interaction(ms, com, sep="|"),
+       	data=microsite.stat,
+	connect=list(1:2,3:4,5:6),
+	n.label=F,
+	ylim=c(-7,7),
+	main="Watering - Monoculture")
+abline(0,0,col="red")
+microsite.stat <- data.growth[data.growth$watering==0 & data.growth$com=="M",]
+plotmeans(growth.h~ interaction(ms, sp, sep="|"),
+       	data=microsite.stat,
+	connect=list(1:2,3:4,5:6),
+# 	n.label=F,
+	ylim=c(-7,7),
+	main="No Watering - Polyculture")
+abline(0,0,col="red")
+microsite.stat <- data.growth[data.growth$watering==1 & data.growth$com=="M",]
+plotmeans(growth.h~ interaction(ms, sp, sep="|"),
+       	data=microsite.stat,
+	connect=list(1:2,3:4,5:6),
+# 	n.label=F,
+	ylim=c(-7,7),
+	main="Watering - Polyculture")
+abline(0,0,col="red")
 
 ```
 
-### Leaf Dry Matter Content
+\newpage
 
-#### Microsite effect
+## Leaf Dry Matter Content
 
-```{r ldmc_ms, echo = FALSE}
 
-## Microsite effect
+```{r ldmc_ms, echo = FALSE, fig.width=9, fig.height=8}
+oldw <- getOption("warn")
+options(warn = -1)
+
+par(mfrow=c(2,2))
 microsite.stat <- data[data$watering==0 & data$com!="M",]
+plotmeans(ldmc~ interaction(ms, com, sep="|"),
+       	data=microsite.stat,
+	connect=list(1:2,3:4,5:6),
+	n.label=F,
+	ylim=c(0.2,0.6),
+	main="No Watering - Monoculture")
+abline(0,0,col="red")
+microsite.stat <- data[data$watering==1 & data$com!="M",]
+plotmeans(ldmc~ interaction(ms, com, sep="|"),
+       	data=microsite.stat,
+	connect=list(1:2,3:4,5:6),
+	n.label=F,
+	ylim=c(0.2,0.6),
+	main="Watering - Monoculture")
+abline(0,0,col="red")
+microsite.stat <- data[data$watering==0 & data$com=="M",]
 plotmeans(ldmc~ interaction(ms, sp, sep="|"),
        	data=microsite.stat,
-	connect=list(1:2,3:4,5:6))
+	connect=list(1:2,3:4,5:6),
+# 	n.label=F,
+	ylim=c(0.2,0.6),
+	main="No Watering - Polyculture")
+abline(0,0,col="red")
+microsite.stat <- data[data$watering==1 & data$com=="M",]
+plotmeans(ldmc~ interaction(ms, sp, sep="|"),
+       	data=microsite.stat,
+	connect=list(1:2,3:4,5:6),
+# 	n.label=F,
+	ylim=c(0.2,0.6),
+	main="Watering - Polyculture")
+abline(0,0,col="red")
 
+options(warn = oldw)
 ```
 
 The results show that the LDMC of Dorycnium and Anthyllis has shifted toward lower value, that means, a more acquisitive strategy (versus conservative). It's nice because it was predicted by the theory.
 
-#### Watering effect
 
-```{r ldmc_watering, echo = FALSE}
-
-microsite.stat <- data[data$watering==1 & data$com!="M",]
-
-plotmeans(ldmc~ interaction(ms, sp, sep="|"),
-       	data=microsite.stat,
-	connect=list(1:2,3:4,5:6)	)
-
-
-mod <- lm(ldmc~ms+watering+sp , data[data$com!="M",])
-```
-
-#### Community effect
-
-```{r ldmc_community_open, echo = FALSE}
-
-microsite.stat <- data[data$watering==0 & data$ms!=0,]
-
-plotmeans(ldmc~ interaction( com, sp, sep="|"),
-       	data=microsite.stat,
-	connect=list(1:2,3:4,5:6)	)
-
-
-mod <- lm(ldmc~ms+watering+sp , data[data$com!="M",])
-
-```
-
-```{r ldmc_community_patch, echo = FALSE}
-
-microsite.stat <- data[data$watering==0 & data$ms!=1,]
-
-plotmeans(ldmc~ interaction( com, sp, sep="|"),
-       	data=microsite.stat,
-	connect=list(1:2,3:4,5:6)
-	)
-
-
-mod <- lm(ldmc~ms+watering+com , data)
-```
 
