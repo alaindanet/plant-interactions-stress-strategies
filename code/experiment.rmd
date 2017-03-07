@@ -10,17 +10,24 @@ output:
     toc_depth: 3
     number_sections: true
   geometry: margin=2cm
-
+  word_document:
+    highlight: zenburn
+    fig_width: 4
+    fig_height: 4
+    fig_caption: true
+    toc: true
 ---
 
 ```{r source_functions, echo = FALSE }
 source("data.R")
 library(gplots)
+library(knitr)
+library(dplyr)
+library(ggplot2)
 
-# http://yihui.name/knitr/options/#chunk_options
-# opts <- knit$set(progress = TRUE,
-#        	verbose = TRUE,
-# 	base.dir="../ressources/figures/")
+opts_chunk$set(fig.path='figures/', cache=FALSE, echo=FALSE, warning=FALSE,
+    message=FALSE, dev=c("pdf", "png"))
+
 ```
 
 \newpage
@@ -327,8 +334,16 @@ for (i in 1:length(va)) {
 
 ```
 
-# Functional traits analysis
+# Treatment distribution
 
+```{r watering, echo = FALSE}
+data.march.hole <- read.table("../data/data_mars_plant.csv", sep=";", dec=",",
+	header=T)
+out <- tapply(data.march.hole$watering, list(data.march.hole$plot), sum)
+knitr::kable(t(as.matrix(out)))
+```
+
+# Functional traits analysis
 
 ## Protocol
 
@@ -341,11 +356,10 @@ Those falcon tubes will be stored in glacial boxes.
 We collected only leaves in good shape, mature and the most exposed to the sunbeam. Furthermore, we collect only on the individuals which had sufficient leaves to not suffer of the sampling (subjective point of view).
 
 We collected 3 leaves by Pistachia, 5 leaves by Anthyllis and 10 leaves by Dorycnium by respect to the weight of species leaves.
+
 ### Lab
 
-When the leaves were taken from the tubes, we first rehydrated them with deionized water. Following this, we weighted them, scanned, measured them, put them in an envelope, and finally put them in the drier. 
-
-
+When the leaves were taken from the tubes, we first rehydrated them with deionized water during several minutes. Following this, we weighted them, scanned, measured them, put them in an envelope, and finally put them in the drier at least 48h at 72 celcius degrees. 
 
 ## Material
 
@@ -396,8 +410,8 @@ hist(growth.h)
 
 data.growth <- cbind(data.january[,c("ter", "plot", "label","ms", "com", "watering", "sp", "ind")], 
 	growth.d, growth.h)
-```
 
+```
 
 ## Growth January March
 
@@ -485,10 +499,43 @@ abline(0,0,col="red")
 
 ## Leaf Dry Matter Content
 
-
 ```{r ldmc_ms, echo = FALSE, fig.width=9, fig.height=8}
 oldw <- getOption("warn")
 options(warn = -1)
+
+microsite.stat <- data[data$com=="M" & data$sp=="pistachia",]
+plotmeans(ldmc~ interaction(ms, watering, sep="|"),
+       	data=microsite.stat,
+	connect=list(1:2,3:4,5:6),
+	n.label=F,
+	#ylim=c(0.2,0.6),
+	main="No Watering - Monoculture")
+
+
+
+microsite.stat <- data[data$com=="P",]
+plotmeans(ldmc~ interaction(ms, watering, sep="|"),
+       	data=microsite.stat,
+	connect=list(1:2,3:4,5:6),
+	n.label=F,
+	#ylim=c(0.2,0.6),
+	main="No Watering - Monoculture")
+
+microsite.stat <- data[data$com=="A",]
+plotmeans(ldmc~ interaction(ms, watering, sep="|"),
+       	data=microsite.stat,
+	connect=list(1:2,3:4,5:6),
+	n.label=F,
+	#ylim=c(0.2,0.6),
+	main="No Watering - Monoculture")
+
+microsite.stat <- data[data$com=="P",]
+plotmeans(ldmc~ interaction(ms, watering, sep="|"),
+       	data=microsite.stat,
+	connect=list(1:2,3:4,5:6),
+	n.label=F,
+	#ylim=c(0.2,0.6),
+	main="No Watering - Monoculture")
 
 par(mfrow=c(2,2))
 microsite.stat <- data[data$watering==0 & data$com!="M",]
@@ -525,9 +572,8 @@ plotmeans(ldmc~ interaction(ms, sp, sep="|"),
 abline(0,0,col="red")
 
 options(warn = oldw)
+
 ```
 
 The results show that the LDMC of Dorycnium and Anthyllis has shifted toward lower value, that means, a more acquisitive strategy (versus conservative). It's nice because it was predicted by the theory.
-
-
 

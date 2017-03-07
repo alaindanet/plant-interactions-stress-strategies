@@ -1,0 +1,38 @@
+
+---
+title: "Experiment in Spain - Summary document"
+output:
+  pdf_document:
+    highlight: zenburn
+    fig_width: 4
+    fig_height: 4
+    fig_caption: true
+    toc: true
+    toc_depth: 3
+    number_sections: true
+  geometry: margin=2cm
+
+---
+
+```{r packages, echo = FALSE}
+library(plyr)
+
+```
+
+```{r env_measurement, echo = FALSE, fig.height=8, fig.width=8 }
+env.al <- read.table("../data/data_mars_env.csv", sep=";",dec=",", header=T)
+for (i in 1:7) {
+	env.al[,i] <- as.factor(env.al[,i])
+}
+levels(env.al$label)
+
+env.ar <- read.table("../data/arturo.csv", sep=";",dec=",", header=T)
+for (i in 1:7) {
+	env.ar[,i] <- as.factor(env.ar[,i])
+}
+
+keys <- join.keys(env.ar, env.al,c("plot","label", "com"))
+matches <- match(keys$y, keys$x, nomatch=(1000))
+
+```
+

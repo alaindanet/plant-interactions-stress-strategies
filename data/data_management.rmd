@@ -1,0 +1,16 @@
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++                   Stuff to do with the data base                    +
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+## Mars
+
+- An Anthyllis was referenced with an pistachia label (874, pistachia, ind 1).
+
+- Be careful about the species order. We have to change them in data_march et data_january
+
+
+## June
+
+- plot 10:
+  - label 1010 does not exist. It is situed in plot 11 instead
+  - label 1013 does not exist. It is the 1113
