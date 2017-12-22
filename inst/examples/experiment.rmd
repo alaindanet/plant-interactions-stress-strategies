@@ -1,0 +1,1228 @@
+---
+title: "Experiment in Spain - Summary document"
+output:
+  pdf_document:
+    highlight: zenburn
+    fig_width: 4
+    fig_height: 4
+    fig_caption: true
+    toc: true
+    toc_depth: 3
+    number_sections: true
+  geometry: margin=2cm
+  word_document:
+    highlight: zenburn
+    fig_width: 4
+    fig_height: 4
+    fig_caption: true
+    toc: true
+---
+
+```{r source_functions, echo = FALSE }
+library(nlme)
+library(gplots)
+library(knitr)
+library(zoo)
+library(lubridate)
+library(tidyverse)
+library(stringr)
+library(forcats)
+library(testthat)
+library(survival)
+library(lme4)
+library(manipulate) 
+
+opts_chunk$set(fig.path='figures/', cache=FALSE, echo=FALSE, warning=FALSE,
+    message=FALSE, dev=c("pdf", "png"))
+
+surv_graph_conf <-  labs(x = "Number of month since the starting of the experiment", y = "Proportion of survival")
+n_index_graph_conf <-  labs(x = "Number of month since the starting of the experiment", y = "Interaction index (NIntA)")
+
+# Transform the january data set
+LoadPlant <- function (data="../data/data_january_plant.csv") {
+
+	data <- read.table(data, sep=";", dec=",", header=T)
+	data[, c("ind1","ind2","ind3")] <- matrix(c(rep(1,nrow(data)),
+			rep(2,nrow(data)),
+			rep(3,nrow(data))), ncol=3)
+
+	temp <- data[, c("ter", "plot", "label", "ms", "com", "watering")]
+	temp1 <- cbind(temp, data[, c("sp1", "ind1", "h1", "d1")])
+	colnames(temp1) <- c("ter", "plot", "label", "ms", "com", "watering",
+		"sp", "ind", "h", "d")
+	temp2 <- cbind(temp, data[, c("sp2", "ind2", "h2", "d2")])
+	colnames(temp2) <- c("ter", "plot", "label", "ms", "com", "watering",
+		"sp", "ind", "h", "d")
+	temp3 <- cbind(temp, data[, c("sp3", "ind3", "h3", "d3")])
+	colnames(temp3) <- c("ter", "plot", "label", "ms", "com", "watering",
+		"sp", "ind", "h", "d")
+
+	temp <- rbind(temp1,temp2,temp3)
+
+	to.factor <- c("ter", "plot", "label","ms", "com", "watering", "sp", "ind")
+	for (i in 1:length(to.factor)) {
+		temp[,to.factor[i]] <- as.factor(temp[,to.factor[i]])
+	}
+
+	temp
+
+}
+LoadPlantMarch <- function (data="../data/data_mars_plant.csv") {
+
+	data <- read.table(data, sep=";", dec=",", header=T, na.strings=c("Dead", "C", " "))
+	data[, c("ind1","ind2","ind3")] <- matrix(c(rep(1,nrow(data)),
+			rep(2,nrow(data)),
+			rep(3,nrow(data))), ncol=3)
+
+	temp <- data[, c("ter", "plot", "label", "ms", "com", "watering")]
+	temp1 <- cbind(temp, data[, c("sp1", "ind1", "h1", "d1", "hm1")])
+	colnames(temp1) <- c("ter", "plot", "label", "ms", "com", "watering",
+		"sp", "ind", "h", "d", "hm")
+	temp2 <- cbind(temp, data[, c("sp2", "ind2", "h2", "d2", "hm2")])
+	colnames(temp2) <- c("ter", "plot", "label", "ms", "com", "watering",
+		"sp", "ind", "h", "d", "hm")
+	temp3 <- cbind(temp, data[, c("sp3", "ind3", "h3", "d3", "hm3")])
+	colnames(temp3) <- c("ter", "plot", "label", "ms", "com", "watering",
+		"sp", "ind", "h", "d", "hm")
+
+	temp.fin <- rbind(temp1,temp2,temp3)
+
+	to.factor <- c("ter", "plot", "label","ms", "com", "watering", "sp", "ind")
+	for (i in 1:length(to.factor)) {
+		temp.fin[,to.factor[i]] <- as.factor(temp.fin[,to.factor[i]])
+	}
+
+	return(temp.fin)
+
+}
+# Transform the mars trait data set
+load.traits <- function (data="../data/data_mars_traits.csv") {
+
+	data <- read.table(data, sep=";", dec=",", header=T)
+	data[, c("ind1","ind2","ind3")] <- matrix(c(rep(1,nrow(data)),
+			rep(2,nrow(data)),
+			rep(3,nrow(data))), ncol=3)
+	temp <- data[, c("ter", "plot", "label", "ms", "com", "watering")]
+
+	list.ind <- list()
+	for (i in 1:3) {
+		colonne <- c(paste("sp",i,sep=""),
+			paste("ind",i,sep=""),
+			paste("fresh_mass",i,sep=""),
+			paste("fresh_m_f",i,sep=""),
+			paste("dry_mass",i,sep=""),
+			paste("dry_m_f",i,sep="")
+			)
+		list.ind[[i]] <- cbind(temp, data[, colonne])
+		colnames(list.ind[[i]]) <- c("ter",
+			"plot",
+			"label",
+			"ms",
+			"com",
+			"watering",
+			"sp",
+			"ind",
+			"fresh_mass",
+			"fresh_m_f",
+			"dry_mass",
+			"dry_m_f")
+
+	}
+	rbind(list.ind[[1]], list.ind[[2]], list.ind[[3]])
+
+}
+```
+
+\newpage
+
+# Plantation
+
+## Site 
+
+The plantation was going during three weeks from the ... to the ...  of November.
+
+  - To add: photos
+
+## The holes
+
+We re-used the holes which were used in a precedent experiment (Werviejmeren et al., in prep). Those have a size of $25 cm$ by $25 cm$ by $25 cm$ and were dug using a drilling machine. We selected only the holes where Artemisia were alive. Where it missed some holes, we dug some by ourself using picks.
+
+![A hole of 20 by 20 by 20 cm in patch/mixture treatment indicated by the black & blue color.](/home/alain/hole.JPG)
+
+
+\newpage
+
+# Allometric measurements
+
+After the plantation, we used 12 remaining saplings by species to do allometric measurements and measure functional traits. 
+
+## Protocol
+
+There was several individuals in each pot and their number were variable. Thus, we select the biggest stem to do our measurements. We measured the height of the stem, 2 measurements perpandicular of basal diameter and the Huber index (basal diameter without the bark). After this, the stem, the leaves and the roots were separated and dried at 65°C during 3 days to obtain the biomass. Before to be dried, the leaves were scanned to calculate the Specific Leaf Area.
+
+## Allometry between basal diameter, height and biomass
+
+```{r allometry, echo = FALSE , fig.cap="Relationship between total biomass part and basal diameter (on the left), and height (on the right). Black: Dorycnium, green: Pistachia, red: Anthyllis", fig.width=7, fig.path="../ressources"}
+
+data <- read.table("../data/biomass_t0.csv", sep=";", dec=",", header=T)
+
+data[, "biomass"] <- data[, "bio_stem"] + data[, "bio_roots"] + data[, "bio_leaves"]
+data[, "diameter"] <- ( data[, "dia1"] + data[, "dia2"] )/2
+
+par(pch=20, mfrow=c(1,2))
+variable <- c("diameter", "height")        #Explicative variables
+for (i in 1:length(variable)) {
+	plot( data[data$species=="Dorycnium", "biomass"] ~ data[data$species=="Dorycnium", variable[i]],
+		xlab=variable[i], ylab="Biomass (g)",
+		ylim=range(data$biomass), xlim=range(data[,variable[i]])
+		)
+	points(data[data$species=="Anthyllis", "biomass"] ~ data[data$species=="Anthyllis", variable[i]], col="red")
+	points(data[data$species=="Pistacia", "biomass"] ~ data[data$species=="Pistacia", variable[i]], col="green")
+	abline(lm(data[data$species=="Anthyllis", "biomass"] ~ data[data$species=="Anthyllis", variable[i]] ), col="red")
+	abline(lm(data[data$species=="Dorycnium", "biomass"] ~ data[data$species=="Dorycnium", variable[i]] ), col="black")
+	abline(lm(data[data$species=="Pistacia", "biomass"] ~ data[data$species=="Pistacia", variable[i]] ), col="green")
+
+}
+mod <- lm(biomass ~ diameter + diameter:species , data)
+#summary(mod)
+
+```
+
+\newpage
+
+# Plantation results
+
+## Distribution of the holes
+
+The goal of this part is to look if there were some mistakes during the holes attributions.
+Let's see the distribution of the holes by treatments.
+
+```{r, results="hide", echo = FALSE}
+data <- read.table("../data/data_january_transplant_shock.csv", sep=";",dec=",", header=T)
+str(data)
+data$ms <- as.factor(data$ms)
+```
+
+```{r, echo = FALSE}
+att <- tapply(data$com, list(data$ms, data$com), length)
+att <- as.matrix(att)
+colnames(att) <- c("Anthyllis", "Dorycnium", "Mixture", "Pistachia")
+rownames(att) <- c("Open","Patch")
+```
+
+```{r plant_plot, echo = FALSE, fig.height=5, fig.width=7}
+barplot(as.matrix(att), beside=TRUE,
+	col=c("white", "black"), 
+	names.arg= c("Anthyllis", "Dorycnium", "Mixture", "Pistachia"),
+	main="Number of holes distributed by treatments",
+	ylim=c(0,100))
+text(x = c(1.50, 2.50, 4.5, 5.5, 7.5, 8.5, 10.5, 11.5),
+	y = as.vector(att + 5),
+	labels = as.character(as.vector(att)))
+text(x = c(1.50, 2.50, 4.5, 5.5, 7.5, 8.5, 10.5, 11.5),
+	y = as.vector(3), labels = c("Open", "Patch"),
+	col = c("black" ,"white"))
+```
+
+## Transplantation shock
+
+The first measurements were done from the 11th to the 16th January. We measured the height, the basal diameter and the state of the saplings. Those measurements represent the starting of the experiment. We will keep only the holes in which all the individuals are alive because those individuals can be dead because of the transplant and so, not because of the treatments.
+
+To investigate the state of the saplings, we set up an index to characterize the state of the saplings (NOTE: find how to do a table in markdown). 
+
+ - 0/nothing: plant in a good shape, totally green
+ - 1: plant with some leaves which are not green
+ - 2: plant with all leaves which are not green
+ - 3: plant dead
+
+```{r transplant_result, echo = FALSE}
+
+data <- read.table("../data/data_january_transplant_shock2.csv", sep=";",dec=",", header=T)
+
+data[c("state")][is.na(data[c("state")])] <- 0
+
+tra <- data[data$state<=2,]
+art <- tapply(tra$com, list(tra$ms, tra$com), length)
+art <- as.matrix(art)
+colnames(art) <- c("Anthyllis", "Dorycnium", "Mixture", "Pistachia")
+rownames(art) <- c("Open","Patch")
+knitr::kable(art, caption="Number of holes with individuals in good shape")
+```
+
+```{r transplant_plot2, echo = FALSE, fig.height=5, fig.width=7}
+barplot(as.matrix(art), beside=TRUE,
+	col=c("white", "black"), 
+	names.arg= c("Anthyllis", "Dorycnium", "Mixture", "Pistachia"),
+	main="Number of holes distributed by treatments with good individuals",
+	ylim=c(0,100))
+text(x = c(1.50, 2.50, 4.5, 5.5, 7.5, 8.5, 10.5, 11.5),
+	y = as.vector(art + 5),
+	labels = as.character(as.vector(art)))
+text(x = c(1.50, 2.50, 4.5, 5.5, 7.5, 8.5, 10.5, 11.5),
+	y = as.vector(3), labels = c("Open", "Patch"),
+	col = c("black" ,"white"))
+```
+
+### Distribution of the transplant shock by terrace
+
+## Measurements
+
+We recorded the vegetative height and the basal diameter of the plants. Let's
+see the summary results. The vegetation height was measured as a light
+competitive trait. It means that we measured the plants without moving them.
+Note: Susana suggested that the length of the stem would be more relevant (
+calculate height/basal diameter to know the growth strategies of the plants)
+
+```{r first_measure, echo = FALSE }
+layout(matrix(c(1,2,3,4,5,6), 2, 3, byrow = FALSE))
+
+com <- c("A", "D", "P")
+for (i in 1:3) {
+	hist(data[which(data$com==com[i]),]$height, breaks=20, main=paste(com[i]," ","heights"), xlab="")
+	hist(data[which(data$com==com[i]),]$diameter, breaks=20, main=paste(com[i]," ","diameters"), xlab="")
+}
+for (i in 1:3) {
+	hist(data[which(data$com==com[i]),]$height, breaks=20, main=paste(com[i]," ","heights"), xlab="")
+	hist(data[which(data$com==com[i]),]$diameter, breaks=20, main=paste(com[i]," ","diameters"), xlab="")
+}
+```
+
+## Hole selection for the watering treatment
+
+For the transplantation shock, we saw that it is cleary unbalanced among treatments. We will select the holes that will be watered by selecting half of the holes whose all the plants have a score below than 2. We can that the watering treatment is almost distributed equally in each other treatments combination.
+
+```{r water_plot_selection, echo = FALSE, eval=FALSE }
+sampled <- data[data$e1<=2 & data$e2<=2 & data$e3<=2,]
+sampl <- c()
+for (i in 1:nlevels(sampled$com)) {
+	for (j in 1:nlevels(sampled$ms)) {
+		temp <- sampled[which(sampled$com==levels(sampled$com)[i] & sampled$ms==levels(sampled$ms)[j]),]$label
+		sampl <- c(sampl, sample(temp, size= round(length(temp)/2), replace=FALSE))
+	}
+}
+
+sampled$watering <- rep(0,times=length(sampled$label))
+sampled[which(sampled$label %in% sampl),]$watering <- 1
+tabl <- tapply(sampled$watering, list(sampled$ms, sampled$com), FUN= function(x) sum(x)/length(x))
+tabl <- round(tabl,3)
+knitr::kable(tabl, caption="fraction of holes which will be watered by treatments")
+```
+The new file with only the holes remaining in the experiment and the distribution of the watering treatment replaced the previous file. *NOTE: the different versions of the file were commited and taged in git.*
+
+## Error check in the data
+
+We did some logic tests to detect mistakes in the dataset. The code of those test can be found in the source of this file.
+```{r error_check, echo = FALSE, eval=FALSE}
+data <- read.table("../data/data_january_plant.csv", sep=";",dec=",", header=T)
+
+# Check if the species correspond to the community attribute 
+ck <- c()
+for (i in 1:length(data$com)) {
+	if ( data[i,]$com=="D" ) 
+	{ 
+		ck[i] <- data[i,]$sp1=="dorycnium"
+	}
+	if ( data[i,]$com=="P" ) 
+	{ 
+		ck[i] <- data[i,]$sp1=="pistachia"
+	}
+	if ( data[i,]$com=="A" ) 
+	{ 
+		ck[i] <- data[i,]$sp1=="anthyllis"
+	}
+	if ( data[i,]$com=="M" ) 
+	{ 
+		ck[i] <- NA
+	}
+}
+which(ck==FALSE)
+
+# check if all the dead are recorded
+ck <- c()
+for (i in 1:length(data$label)) {
+	if ( any(is.na(as.vector(data[i,c("h1","h2","h3", "d1", "d2", "d3")])))) 
+	{ 
+		ck[i] <- any(as.vector(data[i,c("e1", "e2", "e3")])==3) 
+	} else { ck[i] <- NA} 
+}
+which(ck==FALSE)
+
+for (i in 1:length(data[data$com=="M",]$label)) {
+	if ( any(is.na(data[data$com=="M",c("sp1","sp2","sp3")][i,]))) 
+	{ 
+		ck[i] <- as.vector(data[data$com=="M",]$label[i])
+	}else{ 
+		ck[i] <- 0
+
+	}
+
+}
+
+
+```
+
+# Environmental measurements
+
+
+Due to the holes selection for the treatments, some probes were not included in the measurements. The measurements of soil moisture were taken during the morning between 9 and 11 january, the PAR and the temperature between 13h30 and 15h. The measurements took place from wenesday 20 to friday 22th january (3 days). We watered one terrace by day and we did the measurements the day after the watering.
+
+```{r env_measures, echo = FALSE, fig.height=8, fig.width=8 }
+env <- read.table("../data/data_january_env.csv", sep=";",dec=",", header=T)
+for (i in 1:7) {
+	env[,i] <- as.factor(env[,i])
+}
+
+layout(matrix(c(1, 2, 3, 4), nrow=2, ncol=2, byrow=T))
+va <- c("PAR", "temperature")
+
+for (i in 1:length(va)) {
+	env.table <- tapply(env[,va[i]], list(env$ms, env$ter), mean, na.rm=T)
+	env.table
+	barplot(as.matrix(env.table), beside=TRUE,
+		col=c("white", "grey20"), 
+		names.arg= c("Terrace 2", "Terrace 3", "Terrace 4"),
+		main=paste(va[i]),
+		ylim=c(0, max(env[,va[i]],na.rm=T)+1.5*sd(env[,va[i]],na.rm=T))
+		)
+	text(x = c(1.50, 2.50, 4.5, 5.5, 7.5, 8.5, 10.5, 11.5),
+		y = as.vector(3), labels = c("Open", "Patch"),
+		col = c("black" ,"white"))
+	se.par <- tapply(env[,va[i]], list(env$ms, env$ter), FUN=function(x) sd(x, na.rm=T)/sqrt(length(!is.na(x))))
+	arrows(c(1.50, 2.50, 4.5, 5.5, 7.5, 8.5, 10.5, 11.5),
+		y0=as.vector(env.table-se.par*1.96),
+		y1=as.vector(env.table+se.par*1.96),
+		code=3, angle=90, length= 0.10)
+
+}
+
+# Effect of watering on soil moisture
+va <- c("soil.moisture")
+for (i in 1:length(va)) {
+	env.table <- tapply(env[,va[i]], list(env$water, env$ter), mean, na.rm=T)
+	env.table
+	barplot(as.matrix(env.table), beside=TRUE,
+		col=c("white", "grey60"), 
+		names.arg= c("Terrace 2", "Terrace 3", "Terrace 4"),#c("Water", "No water"),
+		main="Effect of watering on soil moisture",
+		ylim=c(0, max(env[,va[i]],na.rm=T)+1.5*sd(env[,va[i]],na.rm=T))
+		)
+	text(x = c(1.50, 2.50, 4.5, 5.5, 7.5, 8.5, 10.5, 11.5),
+		y = as.vector(3), labels = c("No watered", "Watered"),
+		col = c("black" ,"white"))
+	se.par <- tapply(env[,va[i]], list(env$ms, env$ter), FUN=function(x) sd(x, na.rm=T)/sqrt(length(!is.na(x))))
+	arrows(c(1.50, 2.50, 4.5, 5.5, 7.5, 8.5, 10.5, 11.5),
+		y0=as.vector(env.table-se.par*1.96),
+		y1=as.vector(env.table+se.par*1.96),
+		code=3, angle=90, length= 0.10)
+
+}
+
+# Effect of microsite on soil moisture
+va <- c("soil.moisture")
+for (i in 1:length(va)) {
+	env.table <- tapply(env[,va[i]], list(env$ms, env$ter), mean, na.rm=T)
+	env.table
+	barplot(as.matrix(env.table), beside=TRUE,
+		col=c("white", "grey60"), 
+		names.arg= c("Terrace 2", "Terrace 3", "Terrace 4"),#c("Water", "No water"),
+		main="Effect of microsite on soil moisture",
+		ylim=c(0, max(env[,va[i]],na.rm=T)+1.5*sd(env[,va[i]],na.rm=T))
+		)
+	text(x = c(1.50, 2.50, 4.5, 5.5, 7.5, 8.5, 10.5, 11.5),
+		y = as.vector(3), labels = c("Open", "Patch"),
+		col = c("black" ,"white"))
+	se.par <- tapply(env[,va[i]], list(env$ms, env$ter), FUN=function(x) sd(x, na.rm=T)/sqrt(length(!is.na(x))))
+	arrows(c(1.50, 2.50, 4.5, 5.5, 7.5, 8.5, 10.5, 11.5),
+		y0=as.vector(env.table-se.par*1.96),
+		y1=as.vector(env.table+se.par*1.96),
+		code=3, angle=90, length= 0.10)
+
+}
+
+```
+
+# Treatment distribution
+
+```{r watering, echo = FALSE}
+data.march.hole <- read.table("../data/data_mars_plant.csv", sep=";", dec=",",
+	header=T)
+out <- tapply(data.march.hole$watering, list(data.march.hole$plot), sum)
+knitr::kable(t(as.matrix(out)))
+```
+
+# Functional traits analysis
+
+## Protocol
+
+### Field
+
+We will measure functional traits during the month of march. We will measure
+Specific Leaf Area, $\delta C^{13}$, leaf height and leaf width.  We will
+collect one leaf by individual. Each leaf will be stored in Falcon tubes filled
+humid (deionized water) piece of soft paper.  Those falcon tubes will be stored
+in glacial boxes.
+
+We collected only leaves in good shape, mature and the most exposed to the
+sunbeam. Furthermore, we collect only on the individuals which had sufficient
+leaves to not suffer of the sampling (subjective point of view).
+
+We collected 3 leaves by Pistachia, 5 leaves by Anthyllis and 10 leaves by
+Dorycnium by respect to the weight of species leaves.
+
+### Lab
+
+When the leaves were taken from the tubes, we first rehydrated them with
+deionized water during several minutes. Following this, we weighted them,
+scanned, measured them, put them in an envelope, and finally put them in the
+drier at least 48h at 72 celcius degrees. 
+
+## Material
+
+- 640 envelopes
+- 500 falcon tubes
+- 4 glacial boxes (180 tubes by glacial boxes)
+- plastic bags
+- scissors
+
+
+\newpage
+
+# Results
+
+```{r load_data_traits, echo = FALSE }
+
+data <- load.traits(data="~/Documents/thesis/alicante/thesis_chap2_alicante/data/data_mars_traits.csv")
+
+data[, "ldmc"] <- data[, "dry_mass"]/data[, "fresh_mass"]
+
+# Transform numeric in factor
+to.factor <- c("ter", "plot", "label","ms", "com", "watering", "sp", "ind")
+for (i in 1:length(to.factor)) {
+	data[,to.factor[i]] <- as.factor(data[,to.factor[i]])
+}
+
+```
+
+```{r load_data_plant, echo = FALSE, fig.height=2, fig.width=2}
+
+# Holes data
+load("../data/rgr_data.RData")
+# Holes data normalized by mean height and mean diameter at the time of the
+#plantation
+load("../data/holes_data.RData")
+# Growth data 
+load("../data/rgr_data2.RData")
+rgr_data2 <- mutate(rgr_data2,
+    com = as_factor(com),
+    species = as_factor(species),
+    ms = as_factor(ms), 
+    ter = replace(ter, plot == 8, 5),
+    ter = replace(ter, plot == 12, 6),
+    ter = as_factor(as.character(ter)),
+    plot = as_factor(as.character(plot))
+    )
+
+```
+
+## Number of holes available
+```{r holes_alive_time, echo = FALSE, fig.width=8, fig.height=4}
+n_data_date <- holes_data %>%
+    group_by(date, species, ms, com, watering) %>%
+    filter(surv != 0) %>%
+    summarise(n_count = n())
+
+g <- ggplot(n_data_date, 
+    aes(y = n_count, x = date, fill = species, colour = ms, alpha = com)) +  
+    geom_bar(stat="identity", position = "dodge")
+g + facet_grid(. ~ watering)
+
+```
+The figure shows that the number of data by treatment and species stayed
+relatively constant across time until November. So we kept only data until June.
+
+## Terrace effect
+
+One question is to know is there is a strong terrace effect or not. We can that
+there is such an effect only on the first data point. 
+
+```{r terrace_effect_data, echo = FALSE}
+rgr_summary <- gather(rgr_data2, key = "variable", value = "value", rgr_d,
+    rgr_h, rgr_hm) %>%
+    group_by(ter, date, species, com, ms, watering, variable) %>%
+    summarise(
+	mean = mean(value, na.rm = TRUE),
+	ic_width = 1.96*sd(value, na.rm = TRUE)/sqrt(n())
+      	)
+
+```
+```{r terrace_effect_rgr_d, echo = FALSE, fig.width=8, fig.height=4}
+
+p <- ggplot(filter(rgr_summary, variable == "rgr_d"), 
+    aes(x = as.factor(date), y = mean)) + 
+    geom_point(aes(colour = ms, shape = watering)) +
+    ylab("RGR of basal diameter") 
+p + facet_grid(ter ~ species)
+```
+```{r terrace_effect_rgr_h, echo = FALSE, fig.width=8, fig.height=4, fig.cap=paste(cap), eval.after="fig.cap"}
+cap <- "Test"
+p <- ggplot(filter(rgr_summary, variable == "rgr_h"), 
+    aes(x = as.factor(date), y = mean)) + 
+    geom_point(aes(colour = ms, shape = watering)) +
+    ylab("RGR of height") 
+p + facet_grid(ter ~ species)
+```
+
+## Survival
+
+```{r survival, echo = FALSE}
+rgr_summary_tot <- rgr_data %>%
+    gather(key = variable, value = value, surv, rgr_hm, rgr_h, rgr_d) %>%
+    group_by(ms, com, species, watering, duration_m, variable) %>%
+    summarise(
+	mean = mean(value, na.rm = TRUE),
+	ic_width = 1.96*sd(value, na.rm = TRUE)/sqrt(length(value)),
+	n= length(value)
+	)
+
+p <- ggplot(filter(rgr_summary_tot, variable == "surv"), 
+    aes(x = duration_m, y = mean, colour = ms, linetype = watering)) + 
+#     scale_colour_grey() +
+    geom_line() + geom_point() +
+    geom_errorbar(aes(ymin = mean - ic_width, ymax = mean + ic_width), width = 0.025)
+p + facet_grid(com ~ species)
+
+```
+
+\newpage
+
+## Growth data 
+
+We computed the Relative Growth Rate for basal diameter and vegetative height.
+This index has the great advantage to make growth of different species
+comparable. It is define as:
+
+$$RGR_t = \dfrac{\ln(x_t) - \ln(x_0)}{dt}$$
+
+with $x_0$ being the mean value of the variable considered by species at the
+time of the experimental set up. We collected 12 individuals by species. We
+therefore assume that there was no bias in the planting between the different
+treatment combination. 
+
+```{r summary_growth_data, echo = FALSE}
+rgr_summary <- gather(rgr_data2, key = "variable", value = "value", rgr_d,
+    rgr_h, rgr_hm) %>%
+    group_by(date, species, com, ms, watering, variable) %>%
+    summarise(
+	mean = mean(value, na.rm = TRUE),
+	ic_width = 1.96*sd(value, na.rm = TRUE)/sqrt(n())
+      	)
+```
+
+### Diameter
+
+```{r growth_d_box, eval = FALSE, fig.width=8, fig.height=4, fig.caption= "Holes data for the relative growth rate of basal diameter"}
+p <- ggplot(rgr_data2, 
+    aes(x = as.factor(date), y = rgr_d)) + 
+    geom_boxplot(aes(linetype = watering, colour = ms)) +
+    ylab("RGR of basal diameter") 
+p + facet_grid(com ~ species)
+
+```
+```{r growth_d_means, echo = FALSE, fig.width=8, fig.height=4, fig.caption="Holes data for the relative growth rate of basal diameter"}
+
+p <- ggplot(filter(rgr_summary, variable == "rgr_d"), 
+    aes(x = date, y = mean, colour = ms, linetype = watering)) + 
+    geom_line() + geom_point() +
+    geom_errorbar(aes(ymin = mean - ic_width, ymax = mean + ic_width), width = 0.025)
+p + facet_grid(com ~ species)
+
+```
+\newpage
+
+### Height
+
+```{r growth_h, eval = FALSE, fig.width=8, fig.height=4}
+
+p <- ggplot(rgr_data2, 
+    aes(x = as.factor(date), y = rgr_h)) + 
+    geom_boxplot(aes(linetype = watering, colour = ms)) +
+    ylab("RGR of height") 
+p + facet_grid(com ~ species)
+```
+```{r growth_h_means, echo = FALSE, fig.width=8, fig.height=4, fig.caption="Holes data for the relative growth rate of vegetative height"}
+
+p <- ggplot(filter(rgr_summary, variable == "rgr_h"), 
+    aes(x = date, y = mean, colour = ms, linetype = watering)) + 
+    geom_line() + geom_point() +
+    ylab("RGR of height") +
+    geom_errorbar(aes(ymin = mean - ic_width, ymax = mean + ic_width), width = 0.025)
+p + facet_grid(com ~ species)
+
+```
+\newpage
+
+The curve for diameter and height RGR looks like a Michaelis-Menten function.
+Here is the classical one: 
+
+$$ 
+y = \frac{ax}{b + x}
+$$
+with $a$ being the asymptote and $\frac{a}{b}$ being the slope.
+When $x = 0$, $y = 0$ and when $x \to \infty$, $y = a$
+
+This function has a great advantage to be linear if we transform it:
+
+$$
+\begin{aligned} 
+\frac{x}{y} &= \frac{x}{\frac{ax}{b + x}} \\
+ &= \frac{x(b + x)}{ax} \\
+ &= \frac{b + x}{a} \\
+ &= \frac{x}{a} + \frac{b}{a} \\
+ &= \frac{1}{a}x + \frac{b}{a} \\
+\end{aligned} 
+$$
+
+
+```{r michaelis_function, echo = FALSE, eval = FALSE}
+micmen2 <- function(x, a = 2, b = 1) {
+    a * x/(b + x)
+}
+curve(micmen2(x), from = 0, to = 100, ylim = c(0, 10))
+curve(micmen2(x, b = 3), add = TRUE, col = "blue")
+curve(micmen2(x, a = 8), add = TRUE, col = "red")
+abline(h = 8)
+```
+
+- What do we need ?
+    - Asymptote: where the RGR becomes null ($a$)
+    - Scale: How the RGR accelerate and slow across time ($b$)
+    - Abscissa: Where the x axis begin ($c$) 
+    - Origin: how much the plant loose after the plantation ($d$)
+
+$$ 
+y = \frac{a(x - c)}{b + (x - c)} + d
+$$
+
+
+```{r michaelis_function2, echo = FALSE, eval = FALSE}
+micmen3 <- function(x, a = 1, b = 0.8, c = 0) {
+#     expect_true(c <= a) # origin should be lower than the asymptote.
+    #expect_true(a >= 0)
+    #expect_true(b >= 0)
+
+    y <- a * x/(b + x) + c
+    return(y)
+}
+curve(micmen3(x), from = 0, to = 10, ylim = c(0, 1))
+curve(micmen3(x, c = 1), add = TRUE, col = "blue")
+curve(micmen3(x, a = 8), add = TRUE, col = "red")
+abline(h = 8)
+
+micmen4 <- function(x, a = 0.5, b = 0.15, c = 3, d = 0.5) {
+    y <- a * (x - c)/(b + (x - c)) + d
+}
+curve(micmen4(x), from = 3, to = 12, ylim = c(0, 1))
+curve(micmen4(x, d = 0.2), add = TRUE, col = "blue")
+curve(micmen4(x, b = 0.19), add = TRUE, col = "red")
+abline(h = 8)
+```
+```{r nls_try, echo = FALSE, eval = FALSE}
+
+# Obtain starting parameter
+## from SSmicmen function:
+pars <- as.vector(coef(lm(1/(rgr_d+1) ~ I(1/duration_m), data = rgr_data2)))
+b_start <- pars[2]/pars[1]
+
+# Compute parameter estimation
+d <- nls(rgr_d + 1 ~ micmen4(duration_m, a, b, c = 3, d), 
+    start = list(a = 0.5, b = b_start, d = 0.5),
+    data = rgr_data2)
+## Parameters
+coef_d <- coef(d)
+## compute prediction
+pred <- tibble(date = seq(3, 10, 0.1)) %>%
+    mutate(pred = map_dbl(date, micmen4, a = coef_d["a"], b = coef_d["b"], c =
+	    3, d = coef_d["d"]))
+
+rgr_data2_summary_date <- group_by(rgr_data2, duration_m) %>%
+    summarise(rgr_d = mean(rgr_d, na.rm = TRUE))
+
+ggplot(rgr_data2, aes(y = rgr_d +1, x = duration_m)) +
+    geom_point() +
+    geom_point(data = rgr_data2_summary_date, 
+	aes(y = rgr_d + 1, x = duration_m, size = 4, colour = "red")) + 
+    geom_line(data = pred, aes(y = pred, x = date))
+
+```
+```{r michaelis_simple_linearise, echo = FALSE, eval = FALSE}
+ggplot(rgr_data2, aes(y = duration_m/(rgr_d +1), x = duration_m)) +
+    geom_point() +
+    geom_point(data = rgr_data2_summary_date, 
+	aes(y = duration_m/(rgr_d +1), x = duration_m, size = 4, colour = "red")) +
+    geom_smooth(method = "lm", se = TRUE)
+
+```
+```{r lm_linearize , echo = FALSE, eval = FALSE}
+# Please see p.413 and 414 of the Bolker's book
+
+# This function can only take one grouping factor, for example species
+nlsList((rgr_d +1) ~ a*duration_m/(b + duration_m) | species, data = rgr_data2,
+	start = list(a = 0.1, b = 2.7), na.action = na.omit)
+
+# Does not work well
+nls_try <- gnls((rgr_d +1) ~ a*duration_m/(b + duration_m), data = rgr_data2, na.action = na.omit,
+    start = c(1, rep(1, 5) , rep(0.5, 6)), params = list(a ~ species + ms + com + watering, b ~ species + ms + com + watering
+	))
+summary(nls_try)
+```
+```{r glm_linearize, echo = FALSE, eval = FALSE}
+#?family
+ggplot(rgr_data2, aes(y = rgr_d +1, x = duration_m)) +
+    geom_point()# +
+    #geom_smooth(method = "lm", aes(colour = "red")) +
+    #geom_smooth(method = "glm", method.args = list(family = gaussian(link = "inverse")))
+
+mod <- glm(rgr_d ~ duration_m, data = rgr_data2, 
+    family = gaussian(link = "inverse"),
+   start = c(1,0.1))
+
+mod1 <- lm(1/(rgr_d +1) ~ I(1/date_m)+ ms + watering + com + species,
+    rgr_data2)
+mod2 <- lm(1/(rgr_d +1) ~ I(1/date_m):ms + I(1/date_m):watering + I(1/date_m):com
+    + I(1/date_m):species + I(1/date_m):ter, rgr_data2) 
+summary(mod)
+plot(mod)
+
+## Multiple comparison
+library(multcomp)
+K <- cbind(0, diag(length(coef(mod)) - 1))
+rownames(K) <- names(coef(mod))[-1]
+mod_glht <- glht(mod, linfct = mcp(ms = "Tukey"))
+
+
+
+```
+```{r parameters_estimations, echo = FALSE, eval = FALSE}
+
+nls_map <- function(data){
+    pars <- as.vector(coef(lm(1/(rgr_d+1) ~ I(1/duration_m), data = rgr_data2)))
+    b_start <- pars[2]/pars[1]
+    nls(rgr_d + 1 ~ micmen4(duration_m, a, b, c = 3, d), 
+	start = list(a = 0.5, b = b_start, d = 0.5), data = data, 
+	control = nls.control(minFactor = 1/(1024*3), tol= 1e-08 ),
+	algorithm = "port", 
+	lower = c(0, 0, 0))
+}
+
+nls_micmen <- rgr_data2 %>%
+    group_by(species, ms, com, watering) %>%
+    nest() %>%
+    mutate(model = map(data, nls_map))
+
+# b parameter looks pretty hard to estimate
+summary(nls_micmen[5, "model"][[1]][[1]])
+
+# Second method
+nls_try <- gnls(
+    (rgr_d +1) ~ micmen4(duration_m, a, b, c = 3, d), data =
+    rgr_data2, na.action = na.omit, 
+start = c(rep(0.5, 6),rep(1.21, 6), rep(0.5, 6)), 
+params = list(a ~ species + ms + com + watering, b ~ species + ms + com +
+    watering, d ~ species + ms + com + watering))
+summary(nls_try)
+
+```
+
+<!--
+## Leaf Dry Matter Content
+
+```{r ldmc_ms, echo = FALSE, fig.width=9, fig.height=8, eval = FALSE}
+oldw <- getOption("warn")
+options(warn = -1)
+
+microsite.stat <- data[data$com=="M" & data$sp=="pistachia",]
+plotmeans(ldmc~ interaction(ms, watering, sep="|"),
+       	data=microsite.stat,
+	connect=list(1:2,3:4,5:6),
+	n.label=F,
+	#ylim=c(0.2,0.6),
+	main="No Watering - Monoculture")
+
+microsite.stat <- data[data$com=="P",]
+plotmeans(ldmc~ interaction(ms, watering, sep="|"),
+       	data=microsite.stat,
+	connect=list(1:2,3:4,5:6),
+	n.label=F,
+	#ylim=c(0.2,0.6),
+	main="No Watering - Monoculture")
+
+microsite.stat <- data[data$com=="A",]
+plotmeans(ldmc~ interaction(ms, watering, sep="|"),
+       	data=microsite.stat,
+	connect=list(1:2,3:4,5:6),
+	n.label=F,
+	#ylim=c(0.2,0.6),
+	main="No Watering - Monoculture")
+
+microsite.stat <- data[data$com=="P",]
+plotmeans(ldmc~ interaction(ms, watering, sep="|"),
+       	data=microsite.stat,
+	connect=list(1:2,3:4,5:6),
+	n.label=F,
+	#ylim=c(0.2,0.6),
+	main="No Watering - Monoculture")
+
+par(mfrow=c(2,2))
+microsite.stat <- data[data$watering==0 & data$com!="M",]
+plotmeans(ldmc~ interaction(ms, com, sep="|"),
+       	data=microsite.stat,
+	connect=list(1:2,3:4,5:6),
+	n.label=F,
+	ylim=c(0.2,0.6),
+	main="No Watering - Monoculture")
+abline(0,0,col="red")
+microsite.stat <- data[data$watering==1 & data$com!="M",]
+plotmeans(ldmc~ interaction(ms, com, sep="|"),
+       	data=microsite.stat,
+	connect=list(1:2,3:4,5:6),
+	n.label=F,
+	ylim=c(0.2,0.6),
+	main="Watering - Monoculture")
+abline(0,0,col="red")
+microsite.stat <- data[data$watering==0 & data$com=="M",]
+plotmeans(ldmc~ interaction(ms, sp, sep="|"),
+       	data=microsite.stat,
+	connect=list(1:2,3:4,5:6),
+# 	n.label=F,
+	ylim=c(0.2,0.6),
+	main="No Watering - Polyculture")
+abline(0,0,col="red")
+microsite.stat <- data[data$watering==1 & data$com=="M",]
+plotmeans(ldmc~ interaction(ms, sp, sep="|"),
+       	data=microsite.stat,
+	connect=list(1:2,3:4,5:6),
+# 	n.label=F,
+	ylim=c(0.2,0.6),
+	main="Watering - Polyculture")
+abline(0,0,col="red")
+
+options(warn = oldw)
+
+```
+
+The results show that the LDMC of Dorycnium and Anthyllis has shifted toward
+lower value, that means, a more acquisitive strategy (versus conservative). It's
+nice because it was predicted by the theory.
+--!>
+
+# Questions
+
+## Are the species represent a continum of C-S strategy ?
+
+There are several ways to evaluate the relative C-S strategy, one most direct
+could focus on survival:
+
+  - [x] comparison of survival in open sites in the no watered treatment 
+  - [ ] comparison of increase in  performance in open site with watering 
+
+```{r open_survival_graph, echo = FALSE, fig.cap = "Survival in open site/no watered treatment combination", fig.width=8, fig.height=8}
+p <- ggplot(filter(rgr_summary_tot, variable == "surv", ms == "Open", watering
+	== "No Watered"), 
+    aes(x = duration_m, y = mean, colour = species)) + 
+    surv_graph_conf +
+    geom_line() + geom_point() +
+    geom_errorbar(aes(ymin = mean - ic_width, ymax = mean + ic_width), width = 0.025)
+p + facet_grid(com ~.)
+
+```
+
+It looks like we have a nice gradient of  C-S strategy. Anthyllis being the
+best adapted to stress, Dorycnium the middle and Pistachia the less adapted. 
+
+```{r open_survival_model, echo = FALSE}
+
+```
+
+\newpage
+
+## Is the distance to optimum hold ?
+
+Are the sapling-nurse net effect is more positive (or less negative) when the species is less
+adapted ?
+
+We can try with the interaction indices developed by Ruben. 
+
+```{r interaction_indices_functions, echo = FALSE}
+
+n_int_c <- function(open, patch) {
+    # Index works only with non-negative data  
+    stopifnot(min(open, na.rm = TRUE) >= 0, min(patch, na.rm = TRUE) >= 0)
+    p_sum <- open + patch
+    delta_p <- patch - open
+    res <- 2*delta_p/(p_sum + abs(delta_p))
+    return(res)
+}
+n_int_a <- function(open, patch) {
+    # Index works only with non-negative data  
+    stopifnot(min(open, na.rm = TRUE) >= 0, min(patch, na.rm = TRUE) >= 0)
+    p_sum <- open + patch
+    delta_p <- patch - open
+    res <- 2*delta_p/(open + abs(delta_p))
+    return(res)
+}
+
+```
+```{r pseudo_ter_data, echo = FALSE}
+ter_data <- rgr_data2 %>%
+    group_by(duration_m, ter, com, species, ms, watering) %>%
+    summarise(
+	surv = mean(surv, na.rm = TRUE),
+	rgr_hm = mean(rgr_hm, na.rm = TRUE),
+	rgr_hm1 = mean(rgr_hm + 1, na.rm = TRUE),
+	rgr_h = mean(rgr_h, na.rm = TRUE),
+	rgr_h1 = mean(rgr_h +1, na.rm = TRUE),
+	rgr_d = mean(rgr_d, na.rm = TRUE),
+	rgr_d1 = mean(rgr_d + 1, na.rm = TRUE),
+	n = n()
+       	)
+ter_data_n_index <- ter_data %>%
+    gather(key = variable, value = value, rgr_hm1, rgr_h1, rgr_d1) %>%
+    select(-surv, -n, -rgr_d, -rgr_hm, -rgr_h) %>%
+    spread(ms, value) %>%
+    mutate(
+	n_int_a = map2_dbl(Open, Patch, n_int_a),
+	n = n()) %>%
+    select(-Open, -Patch)
+
+ter_data_n_index_summary <- ter_data_n_index %>%
+    gather(key = index, value = value, n_int_a) %>%
+     group_by(duration_m, species, com, watering, variable, index) %>%
+    summarise(
+	mean = mean(value, na.rm = TRUE),
+	sd = sd(value, na.rm = TRUE), 
+	ic_width = 1.96*sd/sqrt(n())
+      	)   
+```
+```{r pseudo_pairs, echo = FALSE, eval = TRUE}
+load("../data/try2.RData")
+holes_pairs <- filter(try2, date == "janv. 2016", ind == "1") %>%
+    select(ter, label, ms, com, watering) %>%
+    group_by(ter, com, watering) %>%
+    arrange(label) %>%
+    nest()
+
+pair_find <- function(x){
+
+    # List of open holes
+    a <- unlist(filter(x, ms == "0")[, "label"])
+    names(a) <- a
+    # List of patch holes
+    b <- unlist(filter(x, ms == "1")[, "label"])
+    names(b) <- b
+
+    ## Matrice de distance entre les trous
+    d <- abs(outer(a, b, "-"))
+
+    ## On attribue les trous les plus proches (1)
+    #col1 <- names(b)[which(apply(d, 2, min) == 1)]
+    #row1 <- names(a)[which(apply(d, 1, min) == 1)]
+
+    ##
+    #d2 <- d[- which(names(a) %in% row1), - which(names(b) %in% col1) ]
+    #d2 <- as.data.frame(d2)
+    ## Check which is the longest
+    j <- min(dim(d))
+
+    ## control that it stays some pairs
+    if(any(dim(d)) == 0){
+	return(print("prout!"))
+	return("prout!")
+	#return(list(a,b))
+    }
+
+    for(i in 1:(j-1)){
+
+	temp_col <- which(d == min(d), arr.ind=TRUE)[1, "col"]
+	temp_row <- which(d == min(d), arr.ind=TRUE)[1, "row"]
+
+
+	if(i == 1){
+	row1 <- dimnames(d)[[1]][temp_row]
+	col1 <- dimnames(d)[[2]][temp_col]
+	}else{
+
+	row1 <- c(row1, dimnames(d)[[1]][temp_row])
+	col1 <- c(col1, dimnames(d)[[2]][temp_col])
+	}
+
+	d <- d[-which(dimnames(d)[[1]] %in% row1), -which(dimnames(d)[[2]] %in% col1)]
+	## Bug quand la matrice devient une matrice colonne,
+	# Quand i == j-1 -> TRUE
+	# Mettre une condition spécifique
+	#d <- d[, -which(dimnames(d)[[2]] %in% col1)]
+
+	if(i == (j-1)){ 
+	    # Where there is only one remaining
+	    temp_row <- names(a)[which(! names(a) %in% row1)[1]] 
+	    temp_col <- names(b)[which(! names(b) %in% col1)[1]]
+	    row1 <- c(row1, temp_row)
+	    col1 <- c(col1, temp_col)
+	}
+    }
+    return(as_tibble(list("Patch" = col1, "Open" = row1)))
+}
+
+# Make the pairs
+holes_pairs2 <- holes_pairs %>%
+    mutate(pair = map(data, pair_find)) %>%
+    unnest(pair) %>%
+    mutate(
+	pair_id = as.numeric(rownames(holes_pairs2)),
+	Patch = as.integer(Patch),
+	Open = as.integer(Open)
+	)
+
+# Make open and patch dataset
+test <- rgr_data2 %>%
+    group_by(duration_m, label, species, com, ms, watering) %>%
+    summarise(
+	surv = mean(surv, na.rm = TRUE),
+	rgr_hm = mean(rgr_hm, na.rm = TRUE),
+	rgr_hm1 = mean(rgr_hm + 1, na.rm = TRUE),
+	rgr_h = mean(rgr_h, na.rm = TRUE),
+	rgr_h1 = mean(rgr_h +1, na.rm = TRUE),
+	rgr_d = mean(rgr_d, na.rm = TRUE),
+	rgr_d1 = mean(rgr_d + 1, na.rm = TRUE),
+	n = n()
+       	) %>%
+    gather(key = variable, value = value, rgr_hm1, rgr_h1, rgr_d1) %>%
+    select(-surv, -n, -rgr_d, -rgr_hm, -rgr_h) 
+
+## Open dataset
+test_open <- filter(test, ms == "Open", label %in% holes_pairs2$Open) %>%
+    left_join(., select(holes_pairs2, Open, pair_id) %>% rename(label = Open)) %>% 
+    arrange(pair_id) %>%
+    ungroup() %>%
+    select(-ms, - label) %>% rename(Open = value)
+## Patch dataset    
+test_patch <- filter(test, ms == "Patch", label %in% holes_pairs2$Patch) %>%
+    left_join(., select(holes_pairs2, Patch, pair_id) %>% rename(label =
+	    Patch)) %>%
+    arrange(pair_id) %>%
+    ungroup() %>%
+    select(-ms, - label) %>% rename(Patch = value)
+## Join dataset
+paired_data <- left_join(test_open, test_patch)
+paired_index <- paired_data %>%
+    mutate(n_int_a = map2_dbl(Open, Patch, n_int_a)) %>%
+    select(-Open, -Patch)
+
+paired_index_summary <- paired_index %>%
+    group_by(duration_m, species, com, watering, variable) %>%
+    summarise(
+	mean = mean(n_int_a, na.rm = TRUE),
+	sd = sd(n_int_a, na.rm = TRUE),
+	ic_width = 1.96*sd/sqrt(n())
+      	)  
+
+```
+```{r plot_pseudo_ter, echo = FALSE, eval = FALSE}
+
+p <- ggplot(filter(ter_data_n_index_summary, 
+	com == "Mono"), 
+    aes(x = duration_m, y = mean, colour = species)) + 
+    geom_line() + geom_point() +
+    ylab("Interaction index (NIntA)") +
+    geom_errorbar(aes(ymin = mean - ic_width, ymax = mean + ic_width), width = 0.025)
+p + facet_grid(variable ~ watering)
+
+p <- ggplot(filter(ter_data_n_index_summary, watering == "Watered", com == "Mono"), 
+    aes(x = duration_m, y = mean, colour = species)) + 
+    geom_line() + geom_point() +
+    ylab("Interaction index NIntA") +
+    geom_errorbar(aes(ymin = mean - ic_width, ymax = mean + ic_width), width = 0.025)
+p + facet_grid(variable ~ .)
+
+p <- ggplot(filter(ter_data_n_index_summary, watering == "No Watered" ), 
+    aes(x = duration_m, y = mean, colour = com)) + 
+    geom_line() + geom_point() +
+    n_index_graph_conf +    
+    geom_errorbar(aes(ymin = mean - ic_width, ymax = mean + ic_width), width = 0.025)
+p + facet_grid(variable ~ species)
+
+p <- ggplot(filter(ter_data_n_index_summary, watering == "Watered" ), 
+    aes(x = duration_m, y = mean, colour = com)) + 
+    geom_line() + geom_point() +
+    n_index_graph_conf +    
+    geom_errorbar(aes(ymin = mean - ic_width, ymax = mean + ic_width), width = 0.025)
+p + facet_grid(variable ~ species)
+
+```
+
+
+Theory predicts that the rank of net effects in the no watered treatment should
+be from the more positive to more negative: Pistachia, Dorycnium, Anthyllis. We
+found roughly Pistachia, Anthyllis, Dorycnium. 
+
+```{r optimum_dist_graph, echo = FALSE, fig.width=8, fig.height=8}
+p <- ggplot(filter(paired_index_summary, com == "Mono"), 
+    aes(x = duration_m, y = mean, colour = species)) + 
+    geom_line() + geom_point() +
+    ylab("Interaction index (NIntA)") +
+    geom_errorbar(aes(ymin = mean - ic_width, ymax = mean + ic_width), width = 0.025)
+p + facet_grid(variable ~ watering)
+
+```
+
+\newpage
+
+## Is diversity modulate those patterns ?
+
+### Survival 
+
+Expect for Anthyllis in the no watered treatment, it looks like that the
+saplings performed better when there were in diverse communities in open
+communities.
+
+```{r diversity_open, echo = FALSE,  fig.width=8, fig.height=8}
+p <- ggplot(filter(rgr_summary_tot, variable == "surv", ms == "Open"), 
+    aes(x = duration_m, y = mean, colour = com)) + 
+    geom_line() + geom_point() +
+    surv_graph_conf +
+    geom_errorbar(aes(ymin = mean - ic_width, ymax = mean + ic_width), width = 0.025)
+p + facet_grid(species ~ watering)
+```
+
+```{r diversity_patch , echo = FALSE, fig.width=8, fig.height=8}
+p <- ggplot(filter(rgr_summary_tot, variable == "surv", ms == "Patch"), 
+    aes(x = duration_m, y = mean, colour = com)) + 
+    geom_line() + geom_point() +
+    surv_graph_conf +
+    geom_errorbar(aes(ymin = mean - ic_width, ymax = mean + ic_width), width = 0.025)
+p + facet_grid(species ~ watering)
+```
+
+### Growth 
+
+We can see there is may be an effect of diversity in the starting of the
+experiement, saplings being more facilitated when there are with other species.
+
+```{r diameter_interaction_diversity , echo = FALSE,  fig.width=8, fig.height=8, fig.cap="No watered treatment"}
+p <- ggplot(filter(paired_index_summary, watering == "No Watered" ), 
+    aes(x = duration_m, y = mean, colour = com)) + 
+    geom_line() + geom_point() +
+    n_index_graph_conf +    
+    geom_errorbar(aes(ymin = mean - ic_width, ymax = mean + ic_width), width = 0.025)
+p + facet_grid(variable ~ species)
+
+```
+
+```{r diameter_interaction_diversity_watered , echo = FALSE,  fig.width=8, fig.height=8, fig.cap="Watered treatment"}
+p <- ggplot(filter(paired_index_summary, watering == "Watered" ), 
+    aes(x = duration_m, y = mean, colour = com)) + 
+    geom_line() + geom_point() +
+    n_index_graph_conf +    
+    geom_errorbar(aes(ymin = mean - ic_width, ymax = mean + ic_width), width = 0.025)
+p + facet_grid(variable ~ species)
+
+```
