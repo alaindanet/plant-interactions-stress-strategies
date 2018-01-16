@@ -8,14 +8,11 @@
 #
 #####################################################################
 
-# library
-library(vimcom)
-
 # TODO: Define the cutting with Mart's data
 #Treatment code: 0,1,2,3; no grazed, low, high, rabbit 
 
 # Analysis of data from Mart
-data <- read.table("~/Documents/Mart_data.csv", #Data from data
+data <- read.table("./data/raw/mart/Mart_data.csv", #Data from data
 		   sep=";",
 		   dec=",",
 		   header=T)

@@ -1,14 +1,14 @@
 #'#'####################################################################
-#'                              Random                               #'
+#'                              Random                                #'
+#'                   Select holes to recolt leaves                    #'
 #'#####################################################################'
 
-# Selection of random replicates among treatments
-
+# 
 set.seed(1246)
 
 #Load a data set
 
-data <- read.table("../data/data_january_plant.csv", sep=";", dec=",", header=T)
+data <- read.table("../data/raw/data_january_plant.csv", sep=";", dec=",", header=T)
 
 #by terraces
 
@@ -34,12 +34,12 @@ data[data$label %in% label_sampled, c("ter", "plot", "label", "com", "ms", "wate
 
 tapply(data$label, list(data$plot,data$ms, data$watering, data$com), length)
 
-write.table(data[data$label %in% label_sampled, c("ter", "plot", "label", "ms", "com", "watering")],
-	file="selected_functional_traits_terrace_3_4.csv",
-	quote=F,
-	sep=";",
-	dec=",",
-	row.names=F,
-	col.names=T)
+#write.table(data[data$label %in% label_sampled, c("ter", "plot", "label", "ms", "com", "watering")],
+	#file="selected_functional_traits_terrace_3_4.csv",
+	#quote=F,
+	#sep=";",
+	#dec=",",
+	#row.names=F,
+	#col.names=T)
 
 

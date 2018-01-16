@@ -33,6 +33,13 @@ library(GGally)
 library(xtable)
 library(survival)
 ```
+```{r load_function, echo = FALSE}
+
+source("../../R/pairs.r")
+source("../../R/plot.r")
+
+```
+
 ```{r graph_conf, echo = FALSE}
 
 surv_graph_conf <-  labs(x = "# month since the starting of the experiment", y = "Proportion of survival")
@@ -250,6 +257,8 @@ g2 <- plot_grid(
     nrow = 2,
     rel_heights = c(9, 1)
     )
+
+
 save_plot(filename = "cs_gradient.pdf",
     plot = g2,
     base_height = 71,
@@ -274,28 +283,6 @@ caption(surv_table_ok) <- paste("Proportion of survival summary according to
 
 print(surv_table_ok, include.rownames = FALSE,
     file = "~/Documents/thesis/papers/spain_diversity/surv_table.tex")
-
-```
-### Interaction indices
-
-```{r interaction_indices_functions, echo = FALSE}
-
-n_int_c <- function(open, patch) {
-    # Index works only with non-negative data  
-    stopifnot(min(open, na.rm = TRUE) >= 0, min(patch, na.rm = TRUE) >= 0)
-    p_sum <- open + patch
-    delta_p <- patch - open
-    res <- 2*delta_p/(p_sum + abs(delta_p))
-    return(res)
-}
-n_int_a <- function(open, patch) {
-    # Index works only with non-negative data  
-    stopifnot(min(open, na.rm = TRUE) >= 0, min(patch, na.rm = TRUE) >= 0)
-    p_sum <- open + patch
-    delta_p <- patch - open
-    res <- 2*delta_p/(open + abs(delta_p))
-    return(res)
-}
 
 ```
 
@@ -372,124 +359,10 @@ var_rep <- "rgr_d1"
 ## Choose explicative variable
 var_exp <- c("label", "species", "ms", "com", "watering", "duration")
 
-pair_find <- function(x){
-
-    # List of open holes
-    a <- unlist(filter(x, ms == "0")[, "label"])
-    names(a) <- a
-    # List of patch holes
-    b <- unlist(filter(x, ms == "1")[, "label"])
-    names(b) <- b
-
-    ## Matrice de distance entre les trous
-    d <- abs(outer(a, b, "-"))
-
-    ## On attribue les trous les plus proches (1)
-    #col1 <- names(b)[which(apply(d, 2, min) == 1)]
-    #row1 <- names(a)[which(apply(d, 1, min) == 1)]
-
-    ##
-    #d2 <- d[- which(names(a) %in% row1), - which(names(b) %in% col1) ]
-    #d2 <- as.data.frame(d2)
-    ## Check which is the longest
-    j <- min(dim(d))
-
-    ## control that it stays some pairs
-    if(any(dim(d)) == 0){
-	return(print("prout!"))
-	return("prout!")
-	#return(list(a,b))
-    }
-
-    for(i in 1:(j-1)){
-
-	temp_col <- which(d == min(d), arr.ind=TRUE)[1, "col"]
-	temp_row <- which(d == min(d), arr.ind=TRUE)[1, "row"]
-
-
-	if(i == 1){
-	row1 <- dimnames(d)[[1]][temp_row]
-	col1 <- dimnames(d)[[2]][temp_col]
-	}else{
-
-	row1 <- c(row1, dimnames(d)[[1]][temp_row])
-	col1 <- c(col1, dimnames(d)[[2]][temp_col])
-	}
-
-	d <- d[-which(dimnames(d)[[1]] %in% row1), -which(dimnames(d)[[2]] %in% col1)]
-	## Bug quand la matrice devient une matrice colonne,
-	# Quand i == j-1 -> TRUE
-	# Mettre une condition spécifique
-	#d <- d[, -which(dimnames(d)[[2]] %in% col1)]
-
-	if(i == (j-1)){ 
-	    # Where there is only one remaining
-	    temp_row <- names(a)[which(! names(a) %in% row1)[1]] 
-	    temp_col <- names(b)[which(! names(b) %in% col1)[1]]
-	    row1 <- c(row1, temp_row)
-	    col1 <- c(col1, temp_col)
-	}
-    }
-    return(as_tibble(list("Patch" = col1, "Open" = row1)))
-}
-
-# Solve thanks to the Hungarian algorithm
-#https://stackoverflow.com/questions/13961493/finding-the-best-matching-pairwise-points-from-2-vectors
-pair_find2 <- function(x){
-
-    # List of open holes
-    open_sites <- unlist(filter(x, ms == "0")[, "label"])
-    names(open_sites) <- open_sites 
-
-    # List of patch holes
-    patch_sites <- unlist(filter(x, ms == "1")[, "label"])
-    names(patch_sites) <- patch_sites
-
-    # Compute the distance between open et patch algorythm
-    distances <- rdist(open_sites, patch_sites)
-    dimnames(distances) <- list(
-	names(open_sites), 
-	names(patch_sites))
-
-    # Hungarian algorithm works only with square matrix
-    n_open_sites <- length(open_sites)
-    names(n_open_sites)  <- "open_sites"
-    n_patch_sites <- length(patch_sites)
-    names(n_patch_sites)  <- "patch_sites"
-
-    #https://s-mat-pcs.oulu.fi/~mpa/matreng/ematr1_2.htm
-    if((n_open_sites != n_patch_sites)){
-	deficit <- abs(n_open_sites - n_patch_sites)
-	lower <- c(n_open_sites, n_patch_sites)
-	which_lower <- names(lower)[which.min(lower)]
-
-	# Dummy rows/columns
-	add <- matrix(0, 
-	    nrow = ifelse(which_lower == "open_sites", deficit, nrow(distances)),
-	    ncol = ifelse(which_lower == "patch_sites", deficit, ncol(distances))
-	    )
-
-	# Add the dummies
-	if(which_lower == "open_sites") {
-	    distances  <- rbind(distances, add)
-	    # The vector of the same size to not recycle the vector:
-	    length(open_sites) = length(patch_sites) 
-	}else{ 
-	    distances  <- cbind(distances, add)
-	}
-    }
-
-    #Hungarian algorithm, return columns assigns to row 
-    columns_order <- unlist(solve_LSAP(distances))
-    temp <- as_tibble(
-	cbind("Open" = open_sites, "Patch" = patch_sites[columns_order])
-	)
-    temp
-}
 
 # Make the pairs
 holes_pairs2 <- holes_pairs %>%
-    mutate(pair = map(data, pair_find2)) %>%
+    mutate(pair = map(data, pair_find)) %>%
     unnest(pair) %>%
     mutate(
 	pair_id = as.numeric(rownames(.)),

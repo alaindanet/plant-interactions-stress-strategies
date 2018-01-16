@@ -13,7 +13,7 @@ NBrep <- 27
 
 # Terrace 2,3,4
 
-data <- read.table("/home/alain/Documents/thesis/thesis_chap2_alicante/Mart_data_octobre.csv",
+data <- read.table("./data/raw/mart/Mart_data_octobre.csv",
 	sep    = ";",                         #Treatment==3 : rabbit plot 
 	dec    = ",",
 	header = T)

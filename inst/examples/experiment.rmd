@@ -913,6 +913,19 @@ options(warn = oldw)
 The results show that the LDMC of Dorycnium and Anthyllis has shifted toward
 lower value, that means, a more acquisitive strategy (versus conservative). It's
 nice because it was predicted by the theory.
+
+
+## Probability of survival depending of your diameter
+prob_surv11 <- filter(holes_data, date == "nov. 2016") %>%
+    select(surv)
+trait03 <- filter(holes_data, date == "mars 2016") %>%
+    select(d, h, hm)
+surv_d <- inner_join(prob_surv11, trait03) %>%
+    inner_join(., label_characteristics)
+p <- ggplot(surv_d, aes(x = h, y = surv)) + 
+    geom_point()
+p + facet_grid(species ~ com)
+
 --!>
 
 # Questions

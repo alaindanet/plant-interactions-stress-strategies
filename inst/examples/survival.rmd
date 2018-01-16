@@ -1,0 +1,49 @@
+---
+title: "Survival analysis"
+output:
+  pdf_document:
+    highlight: zenburn
+    fig_width: 4
+    fig_height: 4
+    fig_caption: true
+    toc: true
+    toc_depth: 3
+    number_sections: true
+  geometry: margin=2cm
+  word_document:
+    highlight: zenburn
+    fig_width: 4
+    fig_height: 4
+    fig_caption: true
+    toc: true
+---
+
+```{r load_library, echo = FALSE}
+library(tidyverse)
+library(magrittr)
+```
+
+```{r load_data, echo = FALSE}
+rp_pattern <- c(
+    "Anthyllis" = "anthyllis",
+    "Pistacia" = "pistachia",
+    "Dorycnium" = "dorycnium") 
+expe_duration <- function(date, starting = as.yearmon("nov. 2015")) {
+time_span <- interval(starting, date) / duration(1, units = "weeks")
+res  <- time_span/4 # Convert in  month
+as.integer(res)
+}
+
+load("../../data/processed/holes_data.RData")
+
+load("../../data/processed/try2.RData")
+```
+```{r contingency_table, echo = FALSE}
+holes_data %<>% select(-hm, -d, -h)
+
+plot(surv ~ date, holes_data)
+
+```
+
+
+

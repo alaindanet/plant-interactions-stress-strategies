@@ -66,11 +66,10 @@ for (i in 1:nrow(iterations)){
   }
 
 ### Result
-hist(result$slope)
+hist(result$slope1)
 plot(rsqr~sd,result)
 
 ### Mean by parameter combinations
-> tapply(result$slope1, list(mean=result$mean, sd=result$sd),function(x) hist(x))
+tapply(result$slope1, list(mean=result$mean, sd=result$sd),function(x) hist(x))
 
 
-res <- 

@@ -1,3 +1,8 @@
+##############################
+#  Produce a study site map  #
+##############################
+
+
 library(tidyverse)
 library(maps)
 library(mapdata)
@@ -8,7 +13,7 @@ library(fields)
 library(GISTools)
 
 
-pdf("map_field.pdf")
+pdf("../figures/map_field.pdf")
 ## Carte d'Espagne
 expe_site <- unlist(geocode(c("Cabezo de la plata spain")))
 maps::map(database="worldHires", interior=FALSE, 
