@@ -2,6 +2,12 @@
 Overview of the Project
 ###############################
 
+# To do
+
+- [ ] `./R/`: add documentation to functions 
+- [ ] `./R/`: add stopifnot conditions
+- [ ] `./tests/`: add tests to functiqns 
+
 # Resume
 
 The goal of this project is to investigate the modulation of shrub-saplings

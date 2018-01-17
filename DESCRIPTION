@@ -11,5 +11,6 @@ Suggests: testthat
 Imports: dplyr,
     tibble,
     stringr,
-    zoo
+    zoo,
+    magrittr
 RoxygenNote: 6.0.1
