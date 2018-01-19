@@ -14,12 +14,22 @@
 #' start of the experiment. 
 #'
 #' @examples
+#'yearmon2month(date = zoo::as.yearmon("janv. 2016"))
 #'
 #' @export
 yearmon2month <- function(date, starting = zoo::as.yearmon("nov. 2015")) {
 
-    time_span <- lubridate::interval(starting, date) / lubridate::duration(1, units = "weeks")
-    res  <- time_span/4 # Convert in  month
-    as.integer(res)
+    stopifnot(!is.na(date), !is.na(starting))
+    stopifnot(class(date) == "yearmon", class(starting) == "yearmon")
+
+    time_span <- lubridate::interval(starting, date) / lubridate::duration(1,units = "weeks") 
+    month_nb  <- time_span/4 # Convert in  month
+    res <- as.integer(month_nb)
+    
+    if(any(res < 1)){ 
+	warning("The duration is negative. Your date is certainly anterior to
+	    the starting date")
+    }
+
     return(res)
 }

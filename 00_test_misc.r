@@ -5,4 +5,3 @@ devtools::document()
 
 data(holes_data)
 data(rgr_data)
-

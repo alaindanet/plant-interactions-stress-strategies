@@ -21,7 +21,6 @@ output:
 ```{r load_library, echo = FALSE}
 library(fields)
 library(clue)
-library(zoo)
 library(lubridate)
 library(tidyverse)
 library(broom)
@@ -32,12 +31,6 @@ library(lme4)
 library(GGally)
 library(xtable)
 library(survival)
-```
-```{r load_function, echo = FALSE}
-
-source("../../R/pairs.r")
-source("../../R/plot.r")
-
 ```
 
 ```{r graph_conf, echo = FALSE}
@@ -75,15 +68,11 @@ p_stars <- function(x){
 ## Material & Methods
 
 ```{r load_data, echo = FALSE}
-rp_pattern <- c(
-    "Anthyllis" = "anthyllis",
-    "Pistacia" = "pistachia",
-    "Dorycnium" = "dorycnium") 
 
-data_0 <- read_csv2("../../data/raw/biomass_t0.csv") %>%
+data_0 <- read_csv2("./data-raw/biomass_t0.csv") %>%
     select(species, ind, height, dia1, dia2) %>%
     mutate(
-	species = str_replace_all(species, rp_pattern),
+	species = str_to_lower(species),
 	d = rowMeans(cbind(dia1, dia2), na.rm = TRUE)) %>%
     select(-dia1, -dia2)
 
@@ -99,13 +88,7 @@ mean_sp_0 <- summary_sp_0 %>%
     select(-sd) %>%
     spread(variable, mean)
 
-load("../../data/processed/holes_data.RData")
-
-expe_duration <- function(date, starting = as.yearmon("nov. 2015")) {
-time_span <- interval(starting, date) / duration(1, units = "weeks")
-res  <- time_span/4 # Convert in  month
-as.integer(res)
-}
+data(holes_data)
 
 ```
 
@@ -135,14 +118,14 @@ simul_t0 <- inner_join(summary_sp_0, n_jan) %>%
 
 ## first method
 holes_data2 <- inner_join(holes_data, mean_sp_0) %>%
-mutate(ln_d = log(d) - log(d0),
-ln_h = log(h) - log(h0), 
-ln_hm = log(hm) - log(h0),
-duration = expe_duration(date),
-rgr_d = ln_d/duration,
-rgr_h = ln_h/duration,
-rgr_hm = ln_hm/duration
-)
+    mutate(ln_d = log(d) - log(d0),
+	ln_h = log(h) - log(h0), 
+	ln_hm = log(hm) - log(h0),
+	duration = yearmon2month(date),
+	rgr_d = ln_d/duration,
+	rgr_h = ln_h/duration,
+	rgr_hm = ln_hm/duration
+	)
 
 rgr_data <- select(holes_data2, -ln_d, -ln_h, -ln_hm, -duration, -d0, -h0, -hm , -h, -d) %>%
 ungroup() %>%
@@ -160,8 +143,8 @@ rgr2 <- group_by(holes_data, label, species) %>%
     mutate(ln_d = c(NA,diff(log(d))),
 ln_h = c(NA,diff(log(h))), 
 ln_hm = c(NA,diff(log(hm))),
-duration = expe_duration(date),
-duration = duration + 1,
+duration = yearmon2month(date),
+duration = as.integer(duration + 1),
 rgr_d = ln_d/duration,
 rgr_h = ln_h/duration,
 rgr_hm = ln_hm/duration 
@@ -177,7 +160,7 @@ rgr2_summary <- gather(rgr2, key = "variable", value = "value", rgr_d,
       	)
 
 # ind data surv 
-load("../../data/processed/try2.RData")
+load("./data/try2.RData")
 try2_ok <- try2 %>%
     mutate(date_m = month(date), duration_m = date_m + 2) %>%
     mutate(

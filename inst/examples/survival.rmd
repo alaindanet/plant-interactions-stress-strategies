@@ -18,22 +18,62 @@ output:
     toc: true
 ---
 
-```{r load_data, echo = FALSE}
-rp_pattern <- c(
-    "Anthyllis" = "anthyllis",
-    "Pistacia" = "pistachia",
-    "Dorycnium" = "dorycnium") 
+# Resume
 
-load("../../data/processed/holes_data.RData")
+I analyzed the data according to the `vignette("adjcurve")`. Firstly, we wanted
+to test if the survival curves are different according to the variables designed
+in the experiment. 
 
-load("../../data/processed/try2.RData")
+
+```{r loading}
+library(tidyverse)
+library(magrittr) #use pipe
+library(zoo)
+library(survival)
+library(survminer)
+data(holes_data)
+
 ```
-```{r contingency_table, echo = FALSE}
-holes_data %<>% select(-hm, -d, -h)
 
-plot(surv ~ date, holes_data)
+```{r transform_data}
+holes_data %<>% select(-hm, -d, -h) %>%
+    mutate(death = ifelse(surv == 1, 0, 1), 
+	duration = yearmon2month(date))# needed in survival package 
 
 ```
 
+```{r basic_survfit}
+sfit <- survfit(Surv(time = duration, event = death) ~ species, holes_data)
 
+survminer::ggsurvplot(sfit, data = holes_data)
+
+```
+
+# Open
+
+
+# Complete model
+
+```{r Kaplan-Meyer_analysis}
+#Fit
+sfit <- survfit(Surv(time = duration, event = death) ~ interaction(ms,species,watering,com), holes_data)
+surv_summary(sfit)
+
+#Test
+sdiff <- survdiff(Surv(time = duration, event = death) ~ interaction(ms,species,watering,com), holes_data)
+summary(sdiff)
+
+```
+
+```{r cox_hazard_analysis}
+#http://www.sthda.com/english/wiki/cox-proportional-hazards-model
+#Fit
+coxfit <- coxph(Surv(time = duration, event = death) ~ interaction(ms,species,watering,com), holes_data)
+summary(coxfit)
+
+#Test
+sdiff <- survdiff(Surv(time = duration, event = death) ~ interaction(ms,species,watering,com), holes_data)
+summary(sdiff)
+
+```
 
