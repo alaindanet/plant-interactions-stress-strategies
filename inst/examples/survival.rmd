@@ -31,9 +31,20 @@ library(magrittr) #use pipe
 library(zoo)
 library(survival)
 library(survminer)
+
+devtools::load_all()
 data(holes_data)
 
 ```
+
+# Data transformation
+
+The data are summarized by holes and by species. For survival, it results that the survival
+variable (`surv`) can take the values `r round(unique(holes_data$surv), 1)` in
+the monoculture treatment but `r round(unique(holes_data[holes_data$com ==
+"Poly",]$surv), 1)` in polyculture. To overcome this problem, we transformed the
+survival variable in binomial 0/1 data in monoculture. It means that we analyzed
+the occurrence of the first dead in the hole.
 
 ```{r transform_data}
 holes_data %<>% select(-hm, -d, -h) %>%
@@ -43,10 +54,11 @@ holes_data %<>% select(-hm, -d, -h) %>%
 ```
 
 ```{r basic_survfit}
-sfit <- survfit(Surv(time = duration, event = death) ~ species, holes_data)
+sfit <- survfit(Surv(time = duration, event = death) ~ ms + species + com + watering, holes_data)
 
-survminer::ggsurvplot(sfit, data = holes_data)
-
+g <- survminer::ggsurvplot(sfit, data = holes_data)
+curv_facet <- g$plot + facet_grid(ms ~ com  + watering)
+curv_facet
 ```
 
 # Open
@@ -54,26 +66,29 @@ survminer::ggsurvplot(sfit, data = holes_data)
 
 # Complete model
 
-```{r Kaplan-Meyer_analysis}
+```{r Kaplan-Meyer_analysis, echo = FALSE}
 #Fit
 sfit <- survfit(Surv(time = duration, event = death) ~ interaction(ms,species,watering,com), holes_data)
-surv_summary(sfit)
-
+ssfit <- surv_summary(sfit)
+# TODO: faire un beau plot facet_grid pour la survie
 #Test
-sdiff <- survdiff(Surv(time = duration, event = death) ~ interaction(ms,species,watering,com), holes_data)
-summary(sdiff)
+#sdiff <- survdiff(Surv(time = duration, event = death) ~ interaction(ms,species,watering,com), holes_data)
+#summary(sdiff)
 
 ```
 
-```{r cox_hazard_analysis}
+```{r cox_hazard_analysis, eval = FALSE}
 #http://www.sthda.com/english/wiki/cox-proportional-hazards-model
 #Fit
-coxfit <- coxph(Surv(time = duration, event = death) ~ interaction(ms,species,watering,com), holes_data)
+coxfit <- coxph(Surv(time = duration, event = death) ~
+    interaction(ms,species,watering,com), holes_data) 
 summary(coxfit)
 
 #Test
-sdiff <- survdiff(Surv(time = duration, event = death) ~ interaction(ms,species,watering,com), holes_data)
-summary(sdiff)
+#sdiff <- survdiff(Surv(time = duration, event = death) ~
+    #interaction(ms,species,watering,com), holes_data) 
+#summary(sdiff)
 
 ```
 
+## Plant plant interaction effects on survival

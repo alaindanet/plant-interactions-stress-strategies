@@ -491,7 +491,7 @@ drier at least 48h at 72 celcius degrees.
 
 ```{r load_data_traits, echo = FALSE }
 
-data <- load.traits(data="~/Documents/thesis/alicante/thesis_chap2_alicante/data/data_mars_traits.csv")
+data <- load.traits(data="~/Documents/thesis/alicante/thesis_chap2_alicante/data-raw/data_mars_traits.csv")
 
 data[, "ldmc"] <- data[, "dry_mass"]/data[, "fresh_mass"]
 
@@ -500,6 +500,16 @@ to.factor <- c("ter", "plot", "label","ms", "com", "watering", "sp", "ind")
 for (i in 1:length(to.factor)) {
 	data[,to.factor[i]] <- as.factor(data[,to.factor[i]])
 }
+
+str(data)
+nrow(dplyr::filter(data, plot == 14, !is.na(fresh_mass) ))
+# Data from Claire
+# Plot 5: 92
+# Plot 9: 47
+# Plot 11: 52 
+# Plot 13: 64
+# Plot 14: 56 
+
 
 ```
 
