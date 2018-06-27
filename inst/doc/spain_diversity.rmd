@@ -7,7 +7,6 @@ output:
     fig_height: 4
     fig_caption: true
     toc: true
-    toc_depth: 3
     number_sections: true
   geometry: margin=2cm
   word_document:
@@ -19,6 +18,7 @@ output:
 ---
 
 ```{r load_library, echo = FALSE}
+devtools::load_all()
 library(fields)
 library(clue)
 library(lubridate)
@@ -69,12 +69,13 @@ p_stars <- function(x){
 
 ```{r load_data, echo = FALSE}
 
-data_0 <- read_csv2("./data-raw/biomass_t0.csv") %>%
+data_0 <- read_csv2("../../data-raw/biomass_t0.csv") %>%
     select(species, ind, height, dia1, dia2) %>%
     mutate(
 	species = str_to_lower(species),
 	d = rowMeans(cbind(dia1, dia2), na.rm = TRUE)) %>%
-    select(-dia1, -dia2)
+    select(-dia1, -dia2) %>%
+    mutate(species = str_replace_all(species, "pistacia", "pistachia") )
 
 summary_sp_0 <- data_0 %>%
     gather(key = variable, value = value, height, d) %>%
@@ -87,11 +88,9 @@ summary_sp_0 <- data_0 %>%
 mean_sp_0 <- summary_sp_0 %>%
     select(-sd) %>%
     spread(variable, mean)
-
 data(holes_data)
 
 ```
-
 ```{r data simulation, echo = FALSE, eval = FALSE}
 ## Simulate data from t0 
 
@@ -111,10 +110,9 @@ simul_t0 <- inner_join(summary_sp_0, n_jan) %>%
 #    spread(key = variable, value = simul)
 
 ```
-
 ```{r rgr_computation, echo = FALSE}
 ###############################################################################
-# RGR data  building
+## RGR data  building
 
 ## first method
 holes_data2 <- inner_join(holes_data, mean_sp_0) %>%
@@ -127,16 +125,17 @@ holes_data2 <- inner_join(holes_data, mean_sp_0) %>%
 	rgr_hm = ln_hm/duration
 	)
 
-rgr_data <- select(holes_data2, -ln_d, -ln_h, -ln_hm, -duration, -d0, -h0, -hm , -h, -d) %>%
-ungroup() %>%
-mutate(date_m = month(date),
-duration_m = date_m + 2)
+rgr_data <- select(holes_data2, -ln_d, -ln_h, -ln_hm, -duration, -d0, -h0, -hm , -h, -d) %>% ungroup() %>%
+    mutate(
+	date_m = month(date),
+	duration_m = date_m + 2)
 
 rgr_t0 <- filter(rgr_data, date != "nov. 2016", surv != 0) %>%
 ungroup() %>%
 mutate(date_m = month(date),
 duration = date_m + 2,
 rgr_d1 = rgr_d + 1)
+unique(holes_data2$species)
 
 ## Second method
 rgr2 <- group_by(holes_data, label, species) %>% 
@@ -147,9 +146,10 @@ duration = yearmon2month(date),
 duration = as.integer(duration + 1),
 rgr_d = ln_d/duration,
 rgr_h = ln_h/duration,
-rgr_hm = ln_hm/duration 
+rgr_hm = ln_hm/duration,
+rgr_d1 = rgr_d + 1
 ) %>% 
-filter(surv != 0)#date != "nov. 2016", 
+filter(surv != 0) #date != "nov. 2016", 
 
 rgr2_summary <- gather(rgr2, key = "variable", value = "value", rgr_d,
     rgr_h, rgr_hm) %>%
@@ -160,7 +160,8 @@ rgr2_summary <- gather(rgr2, key = "variable", value = "value", rgr_d,
       	)
 
 # ind data surv 
-load("./data/try2.RData")
+#load("../data/try2.RData")
+data(try2)
 try2_ok <- try2 %>%
     mutate(date_m = month(date), duration_m = date_m + 2) %>%
     mutate(
@@ -194,9 +195,9 @@ holes_data_surv_summary <- holes_data2  %>%
 ```{r pre_rgr_boxplot, echo = FALSE}
 p <- ggplot(rgr2, 
     aes(x = as.factor(date), y = rgr_d)) + 
-    geom_boxplot(aes(linetype = watering, colour = ms)) +
+    geom_violin(aes(linetype = watering, colour = ms)) +
     ylab("RGR of basal diameter") 
-p + facet_grid(com ~ species)
+p + ggplot2::facet_grid(com ~ species)
 
 ```
 ```{r pre_rgr_plotmeans, echo = FALSE}
@@ -206,10 +207,14 @@ p <- ggplot(filter(rgr2_summary, variable == "rgr_d"),
     geom_errorbar(aes(ymin = mean - ic_width, ymax = mean + ic_width), width = 0.025)
 p + facet_grid(com ~ species)
 ```
-```{r data_mars, echo = FALSE}
+```{r data_mois, echo = FALSE}
 rgr2_march  <- filter(rgr2, date == "mars 2016") %>%
     select(ter, plot, label,  ms, com, watering, species, rgr_d, duration) %>%
     mutate(rgr_d1 = rgr_d +1)
+rgr2_t0_janv  <- filter(rgr_t0, date == "janv. 2016") %>%
+    select(ter, plot, label,  ms, com, watering, species, rgr_d, duration) %>%
+    mutate(rgr_d1 = rgr_d +1)
+
 ```
 
 ## Analysis
@@ -217,8 +222,7 @@ rgr2_march  <- filter(rgr2, date == "mars 2016") %>%
 ### Gradient CS
 
 ```{r gradient_CS_plot, echo = FALSE}
-p <- ggplot(filter(holes_data_surv_summary, ms == "Open", watering
-	== "No Watered"), 
+p <- ggplot(filter(holes_data_surv_summary, ms == "Open", watering == "No Watered"), 
     aes(x = duration_m, y = mean, colour = species)) + 
     geom_line() + geom_point() +
     geom_errorbar(aes(ymin = mean - ic_width, ymax = mean + ic_width), width = 0.025) +
@@ -240,7 +244,6 @@ g2 <- plot_grid(
     nrow = 2,
     rel_heights = c(9, 1)
     )
-
 
 save_plot(filename = "cs_gradient.pdf",
     plot = g2,
@@ -326,7 +329,7 @@ print(anova_table_ok, include.rownames = FALSE,
 
 ```
 ```{r pseudo_pairs, echo = FALSE, eval = TRUE}
-load("../../data/processed/try2.RData")
+data(try2)
 holes_pairs <- filter(try2, date == "janv. 2016", ind == "1") %>%
     select(ter, label, ms, com, watering) %>%
     group_by(ter, com, watering) %>%
@@ -335,17 +338,16 @@ holes_pairs <- filter(try2, date == "janv. 2016", ind == "1") %>%
 
 ##dataset to choose:
 # - rgr2 or rgr2_march: d or rgr(t) = (ln(X_t) - ln(X_{t-1}))/(T_t - T_{t-1})
-# - rgr_t0: rgr(t) = (ln(X_t) - ln(X_{t-1}))/(T_t - T_0)
-dataset_ok <- rgr_t0
+# - rgr_t0 or rgr_t0_janv: rgr(t) = (ln(X_t) - ln(X_{t-1}))/(T_t - T_0)
+dataset_ok <- rgr2_march
 ## Choose response variable
 var_rep <- "rgr_d1"
 ## Choose explicative variable
 var_exp <- c("label", "species", "ms", "com", "watering", "duration")
 
-
 # Make the pairs
 holes_pairs2 <- holes_pairs %>%
-    mutate(pair = map(data, pair_find)) %>%
+    mutate(pair = purrr::map(data, pair_find)) %>%
     unnest(pair) %>%
     mutate(
 	pair_id = as.numeric(rownames(.)),
@@ -387,7 +389,7 @@ paired_index_summary <- paired_index %>%
 
 ## Survival analysis
 
-```{r survival, echo = FALSE}
+```{r survival, echo = FALSE, eval = FALSE}
 holes_data_surv2  <- filter(holes_data_surv, ms == "Open") %>% ungroup() %>%
     mutate(species = as.factor(species))
 try_data_surv  <- filter(try2_ok, ms == "Open")
@@ -437,7 +439,7 @@ print(cox_table_ok, include.rownames = FALSE, sanitize.colnames.function =
 ## Dist to optimum
 
 ```{r plot_duration, echo = FALSE}
-p <- ggplot(filter(paired_index_summary, com == "Mono", duration == 5), 
+p <- ggplot(filter(paired_index_summary, com == "Mono"), 
     aes(x = species, y = mean)) + 
     geom_point() +
     ylab("Interaction index (NIntA)") +
@@ -446,24 +448,24 @@ p + facet_grid(. ~ watering)
 
 ```
 ```{r plot_duration2, echo = FALSE}
-p <- ggplot(filter(paired_index, duration == 5), 
+p <- ggplot(paired_index, 
     aes(x = species, y = n_int_a)) + 
-    geom_boxplot() +
+    geom_violin() +
     ylab("Interaction index (NIntA)") +
     geom_hline(yintercept = 0, color = "red")
 p + facet_grid(com ~ watering)
 
 ```
 ```{r dist_opt_cor, echo = FALSE}
-dist2opt_temp <- filter(paired_index, duration == 5) 
+dist2opt_temp <- paired_index 
 dist2opt_table <- group_by(dist2opt_temp, com, watering) %>%
     mutate(rank_sp = as.numeric(as.factor(species))) %>%
     summarise(
 	spearman = cor( x = rank_sp, y = n_int_a, method = "spearman",
 	   use = "pairwise.complete.obs"),
        spearman.p = cor.test( x = rank_sp, y = n_int_a, method = "spearman",
-	   use = "pairwise.complete.obs", alternative = "greater", exact = FALSE)$p.value
-       )
+	   use = "pairwise.complete.obs", alternative = "greater", exact =
+	       FALSE)$p.value)
 
 #map2_dbl(rank_sp, n_int_a, cor, method = "spearman")
 test_table <-  mutate(dist2opt_table,
@@ -480,7 +482,7 @@ g1 <- p + facet_grid(com ~ watering) +
 	size = letter_size -1,
 	parse = TRUE # Important to display math
 	)
-
+g1
 #save_plot(filename = "dist_optimum.pdf",
     #plot = g1,
     #base_height = 100,
@@ -494,16 +496,15 @@ g1 <- p + facet_grid(com ~ watering) +
 ## Diversity effect
 
 ```{r div_effect_plot_sp, echo = FALSE}
-p <- ggplot(filter(paired_index, duration == 5), 
+p <- ggplot(paired_index, 
     aes(x = species, y = n_int_a, color= com)) + 
-    geom_boxplot() +
+    geom_violin() +
     ylab("Interaction index (NIntA)") +
     geom_hline(yintercept = 0, color = "red")
 p + facet_grid(. ~ watering)
-
 ```
 ```{r div_effect_test, echo = FALSE}
-div_effect_temp <- filter(paired_index, duration == 5) 
+div_effect_temp <- paired_index 
 div_effect_table <- group_by(div_effect_temp, species, watering) %>%
     spread(com, value = n_int_a) %>%
     do(tidy(wilcox.test(.$Mono, .$Poly, na.rm= TRUE)) 
@@ -513,7 +514,7 @@ div_effect_table <- group_by(div_effect_temp, species, watering) %>%
 	p.value = round(p.value, 3))
 
 ```
-```{r div_effect_plot_sp, echo = FALSE}
+```{r div_effect_plot_sp2, echo = FALSE}
 g1 <- p + facet_grid(. ~ watering) +
     geom_text(data = div_effect_table, 
 	aes(label = paste(stars,
@@ -523,11 +524,7 @@ g1 <- p + facet_grid(. ~ watering) +
 	) + 
     theme(axis.text.x = element_text(angle=-45, hjust=0))
 g1
-
 ```
-
-Idea: put a forth panel with the boxplot containing all the data and the t-test
-
 ```{r div_effect_test_tot, echo = FALSE}
 div_effect_table_tot <- group_by(div_effect_temp) %>%
     spread(com, value = n_int_a) %>%
@@ -536,11 +533,10 @@ div_effect_table_tot <- group_by(div_effect_temp) %>%
     mutate(n_int_a = 0.4, com = 1.5,
 	p.value = round(p.value, 3))
 ```
-
 ```{r div_effect_plot_tot, echo = FALSE}
 p <- ggplot(filter(paired_index, duration == 5), 
     aes(x = com, y = n_int_a)) + 
-    geom_boxplot() +
+    geom_violin() +
     ylab("Interaction index (NIntA)") +
     geom_hline(yintercept = 0, color = "red")
 
@@ -552,11 +548,11 @@ g2 <- p + geom_text(data = div_effect_table_tot,
 	)
 
 ```
-
 ```{r div_effect_plot_gather, echo = FALSE}
 g3 <- plot_grid(g1, g2, labels = "auto", align = 'h', rel_widths =
     c(1, 0.5))
 
+g3
 #save_plot(filename = "div_effect.pdf",
     #plot = g3,
     #base_height = 71,
@@ -572,7 +568,7 @@ g3 <- plot_grid(g1, g2, labels = "auto", align = 'h', rel_widths =
 Test if in poly there is a negative correlation of NIntA between species 
 
 ```{r div_dominance_correlation, echo = FALSE}
-dominance_data <- filter(paired_index, com == "Poly", duration == 5) %>% 
+dominance_data <- filter(paired_index, com == "Poly") %>% 
 spread(species, value = n_int_a) 
 
 ggpairs(select(dominance_data, watering, anthyllis:pistachia), ggplot2::aes(colour =
@@ -640,11 +636,10 @@ p <- ggplot(rgr2_march,
 p + facet_grid(ms ~ watering)
 ```
 
-
 # Appendices 
 
 ```{r allometry_assessment, echo = FALSE}
-data <- read.table("../data/biomass_t0.csv", sep=";", dec=",", header=T)
+data <- read.table("../../data-raw/biomass_t0.csv", sep=";", dec=",", header=T)
 
 data[, "biomass"] <- data[, "bio_stem"] + data[, "bio_roots"] + data[, "bio_leaves"]
 data[, "diameter"] <- ( data[, "dia1"] + data[, "dia2"] )/2

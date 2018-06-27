@@ -1,10 +1,10 @@
 #' Commutative Intensity Neighbor Index  
 #' 
-#' @param open a vector containing non-negatives real values. 
-#' @param patch a vector containing non-negatives real values. 
+#' @param without a vector containing non-negatives real values. 
+#' @param with_nbs a vector containing non-negatives real values. 
 #'
-#' @usage patch contains the performance of individuals with a neighbor.
-#' open contains the performance of individual without a neighbor.
+#' @usage with_nbs contains the performance of individuals with a neighbor.
+#' without contains the performance of individual without a neighbor.
 #'
 #' @details This function computes the Commutative Intensity Neighbor Index developed by
 #' Dìaz-Sierra et al. (2016). Positive values indicates a positive net effect of
@@ -16,28 +16,28 @@
 #' @seealso n_int_a
 #'
 #' @examples
-#' n_int_c(open = 1, patch = 4)
-#' n_int_c(open = 0.4, patch = 0.1)
+#' n_int_c(without = 1, with_nbs = 4)
+#' n_int_c(without = 0.4, with_nbs = 0.1)
 #' 
 #'
 #' @export
 
-n_int_c <- function(open, patch) {
-    # Index works only with non-negative data  
-    stopifnot(min(open, na.rm = TRUE) >= 0, min(patch, na.rm = TRUE) >= 0)
-    p_sum <- open + patch
-    delta_p <- patch - open
-    res <- 2*delta_p/(p_sum + abs(delta_p))
-    return(res)
+n_int_c <- function(without, with_nbs) {
+  check_int_arg(without, with_nbs)
+
+  p_sum <- without + with_nbs
+  delta_p <- with_nbs - without
+  res <- 2*delta_p/(p_sum + abs(delta_p))
+  return(res)
 }
 
 #' Additive Intensity Neighbor Index  
 #' 
-#' @param open a vector containing non-negatives real values. 
-#' @param patch a vector containing non-negatives real values. 
+#' @param without a vector containing non-negatives real values. 
+#' @param with_nbs a vector containing non-negatives real values. 
 #'
-#' @usage patch contains the performance of individuals with a neighbor.
-#' open contains the performance of individual without a neighbor.
+#' @usage with_nbs contains the performance of individuals with a neighbor.
+#' without contains the performance of individual without a neighbor.
 #'
 #' @details This function computes the Additive Intensity Neighbor Index developed by
 #' Dìaz-Sierra et al. (2016). Positive values indicates a positive net effect of
@@ -49,15 +49,36 @@ n_int_c <- function(open, patch) {
 #' @seealso n_int_c
 #'
 #' @examples
-#' n_int_a(open = 1, patch = 4)
-#' n_int_a(open = 0.4, patch = 0.1)
+#' n_int_a(without = 1, with_nbs = 4)
+#' n_int_a(without = 0.4, with_nbs = 0.1)
 #'
 #' @export
-n_int_a <- function(open, patch) {
-    # Index works only with non-negative data  
-    stopifnot(min(open, na.rm = TRUE) >= 0, min(patch, na.rm = TRUE) >= 0)
-    p_sum <- open + patch
-    delta_p <- patch - open
-    res <- 2*delta_p/(open + abs(delta_p))
-    return(res)
+n_int_a <- function(without, with_nbs) {
+  check_int_arg(without, with_nbs)
+
+  delta_p <- with_nbs - without
+  res <- 2 * delta_p / (without + abs(delta_p))
+  return(res)
 }
+
+#' Check interaction index data
+#' 
+#' Check if the arguments are in the good format to compute the index. Returns
+#' NA if with_nbs or/and without is NA
+#'
+#' @param without data from the without
+#' @param with_nbs data from the without
+#'
+#' @export
+
+check_int_arg <- function(without, with_nbs) {
+  #Drop if NA
+
+  if(any(is.na(without), is.na(with_nbs))) {
+   return(NA)
+  }
+
+  # Index works only with non-negative data
+  stopifnot(min(without, na.rm = TRUE) >= 0, min(with_nbs, na.rm = TRUE) >= 0)
+}
+
