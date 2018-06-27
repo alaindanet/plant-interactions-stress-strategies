@@ -2,6 +2,7 @@
 #                     Dataset sent to Claire to fill area                      #
 ################################################################################
 
+library(tidyverse)
 
 data <- load.traits(data="~/Documents/thesis/alicante/thesis_chap2_alicante/data-raw/data_mars_traits.csv")
 
@@ -20,4 +21,4 @@ test <- data %>%
   select(-watering, - ms, - fresh_m_f, -ldmc, - dry_m_f) %>%
   filter(!(is.na(fresh_mass) & is.na(dry_mass)))
 
-write_csv(test, path = "../../data/empty_file_for_traits.csv")
+write_delim(test, path = "../../data/empty_file_for_traits.csv", delim = ";")
