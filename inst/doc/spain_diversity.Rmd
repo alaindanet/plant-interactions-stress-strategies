@@ -39,21 +39,21 @@ surv_graph_conf <-  labs(x = "# month since the starting of the experiment", y =
 n_index_graph_conf <-  labs(x = "Number of month since the starting of the experiment", y = "Interaction index (NIntA)")
 
 dodge <- position_dodge(width=0.9)
-font_size = 8 
+font_size = 8
 letter_size = 3
 theme_set(theme_cowplot(font_size=font_size))
 conf <- theme(
     plot.margin = unit(c(6,0,6,0), "pt"),
     #axis.text.x = element_text(face="italic"),
     #axis.title.x = element_blank(),
-    legend.position="none" 
+    legend.position="none"
     )
 
 p_stars <- function(x){
     stopifnot(is.numeric(x), is.vector(x))
    star <- vector("character", length(x))
-   star[round(x, 2) >= 0.05] <- "n.s." 
-   star[round(x, 2) == 0.05] <- "." 
+   star[round(x, 2) >= 0.05] <- "n.s."
+   star[round(x, 2) == 0.05] <- "."
    star[round(x, 3) < 0.05] <- "*"
    star[round(x, 3) < 0.01] <- "**"
    star[round(x, 4) < 0.001] <- "***"
@@ -69,7 +69,7 @@ p_stars <- function(x){
 
 ```{r load_data, echo = FALSE}
 
-data_0 <- read_csv2("../../data-raw/biomass_t0.csv") %>%
+data_0 <- read_csv2(here::here("data-raw/biomass_t0.csv")) %>%
     select(species, ind, height, dia1, dia2) %>%
     mutate(
 	species = str_to_lower(species),
@@ -84,7 +84,7 @@ summary_sp_0 <- data_0 %>%
     summarise(
 	mean = mean(value, na.rm = TRUE),
 	sd = sd(value, na.rm = TRUE)
-	) 
+	)
 mean_sp_0 <- summary_sp_0 %>%
     select(-sd) %>%
     spread(variable, mean)
@@ -92,32 +92,32 @@ data(holes_data)
 
 ```
 ```{r data simulation, echo = FALSE, eval = FALSE}
-## Simulate data from t0 
+## Simulate data from t0
 
-## simulate the same number of data that in january 
+## simulate the same number of data that in january
 n_jan <- filter(holes_data, date == "janv. 2016") %>%
     group_by(species) %>%
-    summarise(n= n()) 
+    summarise(n= n())
 
 ## Simulation
 simul_t0 <- inner_join(summary_sp_0, n_jan) %>%
-    mutate(simul = pmap(list(n, mean, sd), 
+    mutate(simul = pmap(list(n, mean, sd),
 	    function(n, mean, sd) rnorm(n = n, mean = mean, sd = sd))) %>%
     ungroup() %>%
     select(-n, -mean, -sd) %>%
-    unnest() %>% 
+    unnest() %>%
     mutate(date = "nov. 2015") #%>%
 #    spread(key = variable, value = simul)
 
 ```
+
 ```{r rgr_computation, echo = FALSE}
-###############################################################################
 ## RGR data  building
 
 ## first method
 holes_data2 <- inner_join(holes_data, mean_sp_0) %>%
     mutate(ln_d = log(d) - log(d0),
-	ln_h = log(h) - log(h0), 
+	ln_h = log(h) - log(h0),
 	ln_hm = log(hm) - log(h0),
 	duration = yearmon2month(date),
 	rgr_d = ln_d/duration,
@@ -138,28 +138,61 @@ rgr_d1 = rgr_d + 1)
 unique(holes_data2$species)
 
 ## Second method
-rgr2 <- group_by(holes_data, label, species) %>% 
-    mutate(ln_d = c(NA,diff(log(d))),
-ln_h = c(NA,diff(log(h))), 
-ln_hm = c(NA,diff(log(hm))),
-duration = yearmon2month(date),
-duration = as.integer(duration + 1),
-rgr_d = ln_d/duration,
-rgr_h = ln_h/duration,
-rgr_hm = ln_hm/duration,
-rgr_d1 = rgr_d + 1
-) %>% 
-filter(surv != 0) #date != "nov. 2016", 
+rgr2 <- group_by(holes_data, label, species, com, ms, watering) %>%
+  arrange(date) %>%
+  mutate(
+    diff_d = c(NA,diff(d)),
+    diff_h = c(NA,diff(h)),
+    diff_hm = c(NA,diff(hm)),
+    ln_d = c(NA,diff(log(d))),
+    ln_h = c(NA,diff(log(h))),
+    ln_hm = c(NA,diff(log(hm)))
+    ) %>%
+  mutate(
+      duration = yearmon2month(date),
+      month_lag = c(NA,diff(as.integer(duration))),
+      agr_d = diff_d/month_lag,
+      agr_h = diff_h/month_lag,
+      agr_hm = diff_hm/month_lag,
+      agr_d1 = agr_d + 1,
+      rgr_d = ln_d/month_lag,
+      rgr_h = ln_h/month_lag,
+      rgr_hm = ln_hm/month_lag,
+      rgr_d1 = rgr_d + 1
+  ) %>%
+  filter(date != "janv. 2016") %>%
+  ungroup()
+
+
+agr2_summary <- gather(rgr2, key = "variable", value = "value", agr_d, agr_h,
+  agr_hm) %>%
+group_by(duration, species, com, ms, watering, variable) %>%
+summarise(
+  mean = mean(value, na.rm = TRUE),
+  ic_width = 1.96*sd(value, na.rm = TRUE)/sqrt(n())
+)
 
 rgr2_summary <- gather(rgr2, key = "variable", value = "value", rgr_d,
-    rgr_h, rgr_hm) %>%
-    group_by(duration, species, com, ms, watering, variable) %>%
-    summarise(
-	mean = mean(value, na.rm = TRUE),
-	ic_width = 1.96*sd(value, na.rm = TRUE)/sqrt(n())
-      	)
+  rgr_h, rgr_hm) %>%
+group_by(duration, species, com, ms, watering, variable) %>%
+summarise(
+  mean = mean(value, na.rm = TRUE),
+  ic_width = 1.96*sd(value, na.rm = TRUE)/sqrt(n())
+)
 
-# ind data surv 
+```
+
+```{r}
+rgr2 %>%
+  ggplot(aes(x = as.factor(date), y = agr_d)) +
+  geom_boxplot(aes(linetype = watering, colour = ms)) +
+  ylab("AGR of basal diameter") +
+  ggplot2::facet_grid(com ~ species)
+```
+
+
+```{r}
+# ind data surv
 #load("../data/try2.RData")
 data(try2)
 try2_ok <- try2 %>%
@@ -193,16 +226,16 @@ holes_data_surv_summary <- holes_data2  %>%
 ### RGR max
 
 ```{r pre_rgr_boxplot, echo = FALSE}
-p <- ggplot(rgr2, 
-    aes(x = as.factor(date), y = rgr_d)) + 
-    geom_violin(aes(linetype = watering, colour = ms)) +
-    ylab("RGR of basal diameter") 
+p <- ggplot(rgr2,
+    aes(x = as.factor(date), y = rgr_d)) +
+    geom_boxplot(aes(linetype = watering, colour = ms)) +
+    ylab("RGR of basal diameter")
 p + ggplot2::facet_grid(com ~ species)
 
 ```
 ```{r pre_rgr_plotmeans, echo = FALSE}
-p <- ggplot(filter(rgr2_summary, variable == "rgr_d"), 
-    aes(x = duration, y = mean, colour = ms, linetype = watering)) + 
+p <- ggplot(filter(rgr2_summary, variable == "rgr_d"),
+    aes(x = duration, y = mean, colour = ms, linetype = watering)) +
     geom_line() + geom_point() +
     geom_errorbar(aes(ymin = mean - ic_width, ymax = mean + ic_width), width = 0.025)
 p + facet_grid(com ~ species)
@@ -222,12 +255,12 @@ rgr2_t0_janv  <- filter(rgr_t0, date == "janv. 2016") %>%
 ### Gradient CS
 
 ```{r gradient_CS_plot, echo = FALSE}
-p <- ggplot(filter(holes_data_surv_summary, ms == "Open", watering == "No Watered"), 
-    aes(x = duration_m, y = mean, colour = species)) + 
+p <- ggplot(filter(holes_data_surv_summary, ms == "Open", watering == "No Watered"),
+    aes(x = duration_m, y = mean, colour = species)) +
     geom_line() + geom_point() +
     geom_errorbar(aes(ymin = mean - ic_width, ymax = mean + ic_width), width = 0.025) +
     labs(colour = "") + # Remove legend title
-    theme(legend.position = "bottom") 
+    theme(legend.position = "bottom")
 
 p + facet_grid(com ~.)
 
@@ -235,12 +268,12 @@ legend <- get_legend(p)
 legend_b <- get_legend(p + theme(legend.position = "bottom"))
 legend_t <- get_legend(p + theme(legend.position = "top"))
 
-g1 <- p + facet_grid(com ~.) + 
+g1 <- p + facet_grid(com ~.) +
     surv_graph_conf +
     conf
 g2 <- plot_grid(
-    g1, 
-    legend_b, 
+    g1,
+    legend_b,
     nrow = 2,
     rel_heights = c(9, 1)
     )
@@ -252,11 +285,10 @@ save_plot(filename = "cs_gradient.pdf",
     path = "~/Documents/thesis/papers/spain_diversity/figures",
     unit = "mm"
     )
-
 ```
 ```{r gradient_CS_table, echo = FALSE}
-
-holes_data_surv_summary_open <- filter(holes_data_surv_summary, ms == "Open")%>% 
+#holes_data_surv_summary
+holes_data_surv_summary_open <- filter(holes_data_surv_summary, ms == "Open")%>%
     ungroup() %>%
     select(-ms) %>%
     mutate(duration_m = as.factor(duration_m))
@@ -272,9 +304,158 @@ print(surv_table_ok, include.rownames = FALSE,
 
 ```
 
+## Survival
+
+```{r survival, echo = FALSE, eval = FALSE}
+holes_data_surv2  <- filter(holes_data_surv, ms == "Open") %>% ungroup() %>%
+    mutate(species = as.factor(species))
+try_data_surv  <- filter(try2_ok, ms == "Open")
+test <- survfit(Surv(holes_data_surv2$duration_m, surv) ~ species + com +
+    watering, holes_data_surv2)
+plot(test)
+str(test)
+
+lm_surv <- survdiff(Surv(holes_data_surv2$duration_m, surv) ~ com + ms +
+    watering, holes_data_surv2, rho=0)
+summary(lm_surv)
+
+my.surv <- Surv(try2_ok$duration_m, try2_ok$surv)
+my.fit <- summary(survfit(my.surv ~ 1))
+coxph.fit <- coxph(my.surv ~ species * com * watering, data = try2_ok,
+    method="breslow")
+coxph.fit
+anova(coxph.fit)
+
+test <- summary(coxph.fit)
+ajusted_r_squared <- round(test$rsq[1], 2)
+test2 <- test$coefficients
+term <- dimnames(test2)[[1]]
+term
+term2 <- c("dorycnium", "pistachia", "com", "watering", "dorycnium:com",
+    "pistachia:com", "dorycnium:watering", "pistachia:watering", "com:watering",
+    "dorycnium:com:watering", "pistachia:com:watering")
+
+test3 <- as_tibble(test2) %>%
+    mutate(Factor = term2) %>%
+select(Factor, coef, `exp(coef)`, `se(coef)`, z, `Pr(>|z|)`) %>%
+    rename(`$\\beta$` = coef, `$e^\\beta$` =`exp(coef)`, SE = `se(coef)`,
+	`Z-values` = z, `P-values` = `Pr(>|z|)`)
+
+cox_table_ok <- xtable(test3)
+label(cox_table_ok) <- c("tab:cox")
+digits(cox_table_ok) <- c(1, 1, 2, 2, 2, 3, 4)
+caption(cox_table_ok) <- paste("Summary of the Cox proportional hazards. The adjusted R squared equaled to $", ajusted_r_squared, "$.",
+    sep="")
+
+print(cox_table_ok, include.rownames = FALSE, sanitize.colnames.function =
+    identity, file = "~/Documents/thesis/papers/spain_diversity/cox_table.tex")
+
+```
+
+```{r}
+library(glmmTMB)
+surv <- glmmTMB(survival ~ ms + duration_m + species + com + watering + (1 + ms|plot), data = try2_ok, family = "binomial")
+
+surv_by_plot <- holes_data2 %>%
+    mutate(
+      date_m = month(date),
+      duration_m = date_m + 2,
+      duration_m = as.factor(duration_m),
+      ter = as.factor(ter),
+      plot = as.factor(plot),
+      com = as.factor(com),
+      ms = as.factor(ms),
+      ) %>%
+    group_by(duration_m, ms, com, watering, species, ter, plot) %>%
+    summarise(prop_surv = mean(surv, na.rm = T))
+
+
+summary_surv_by_plot <- surv_by_plot %>%
+    group_by(duration_m, ms, com, watering, species) %>%
+    summarise(
+      mean = mean(prop_surv, na.rm = T),
+      ci = sd(prop_surv, na.rm = T) / sqrt(n())
+      )
+
+summary_surv_by_plot %>%
+  ggplot(aes(y = mean, x = duration_m, color = ms, linetype = watering)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = mean - ci, ymax = mean + ci), width = 0.025) +
+  facet_grid(com ~ species)
+
+# interaction
+int_surv <- surv_by_plot %>%
+  ungroup() %>%
+  spread(ms, prop_surv) %>%
+  mutate(surv_n_int_a = map2_dbl(Open, Patch, n_int_a))
+
+# Data unbalanced at plot scale for watering
+filter(surv_by_plot, duration_m == 3, com == "Mono", ter == 3, plot == 10) %>%
+  spread(ms, prop_surv)
+
+summary_int_surv <- int_surv %>%
+    group_by(duration_m, com, watering, species) %>%
+    summarise(
+      mean = mean(surv_n_int_a, na.rm = T),
+      ci = sd(surv_n_int_a, na.rm = T) / sqrt(n())
+      )
+
+int_surv %>%
+  filter(duration_m %in% c(8, 13)) %>%
+  ggplot(aes(y = surv_n_int_a, x = as.factor(duration_m), color = species, linetype = watering)) +
+  geom_boxplot() +
+  geom_hline(yintercept = 0) +
+  facet_grid(com ~ .)
+
+surv_mod <- lmer(
+  formula = surv_n_int_a ~ duration_m + com + species + watering  + (1|ter/plot),
+  data = filter(int_surv, duration_m %in% c(8, 13))
+)
+
+mySumm2 <- function(.) {
+  c(beta=fixef(.),sigma=sigma(.), sig01=sqrt(unlist(VarCorr(.))))
+}
+surv_boot <- bootMer(surv_mod, mySumm2, nsim = 100)
+surv_ci <- confint(surv_boot)
+#surv_colin <- car::vif(surv_mod) not use if one response
+surv_sum <- piecewiseSEM::rsquared(surv_mod, method = "nagelkerke") %>%
+  mutate_at(vars(Conditional, Marginal), ~round(., 2))
+
+pred <- ggeffects::ggpredict(surv_mod,
+  terms = c("species", "duration_m", "watering", "com"),
+  type = "fe")
+surv_pred <- pred %>%
+  as_tibble() %>%
+  rename(
+    n_int_a = predicted,
+    species = x,
+    duration_m = group,
+    watering= facet,
+    com = panel
+  )
+
+surv_pred %>%
+  ggplot(aes(
+      y = n_int_a,
+      x = as.factor(duration_m),
+      color = species, linetype = as.factor(com))) +
+  geom_point(position = position_dodge(width = 0.9)) +
+  geom_hline(yintercept = 0) +
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high),
+      position = position_dodge(width = 0.9), width = .2) +
+  facet_grid(cols = vars(watering)) +
+  geom_jitter(
+    position = position_dodge(width = 0.9),
+    data = int_surv %>%
+      rename(n_int_a = surv_n_int_a) %>%
+      filter(duration_m %in% c(8, 13)),
+    inherit.aes = TRUE)
+```
+
+
 # Results
 
-## ANOVA
+## RGR d
 
 ```{r anova, echo = FALSE}
 
@@ -300,13 +481,13 @@ test5 <- lm(rgr_d ~ ms*species*watering*com , anova_data)
 anova(test, test2, test3, test4, test5)
 summary(test5)
 
-anova_table <- anova(test5) 
+anova_table <- anova(test5)
 anova_table2 <- tidy(anova_table) %>%
     mutate(stars = p_stars(p.value)) %>%
  arrange(desc(statistic)) %>%
     rename(Factor = term, DF = df, SS = sumsq, MS = meansq, "F-values"
 	= statistic, "P-values" = p.value, "sig. lvl" = stars)
-    
+
 anova_table3 <- glance(anova_table)
 
 anova_table_ok <- xtable(anova_table2)
@@ -339,9 +520,9 @@ holes_pairs <- filter(try2, date == "janv. 2016", ind == "1") %>%
 ##dataset to choose:
 # - rgr2 or rgr2_march: d or rgr(t) = (ln(X_t) - ln(X_{t-1}))/(T_t - T_{t-1})
 # - rgr_t0 or rgr_t0_janv: rgr(t) = (ln(X_t) - ln(X_{t-1}))/(T_t - T_0)
-dataset_ok <- rgr2_march
+dataset_ok <- rgr2
 ## Choose response variable
-var_rep <- "rgr_d1"
+var_rep <- "agr_d1"
 ## Choose explicative variable
 var_exp <- c("label", "species", "ms", "com", "watering", "duration")
 
@@ -360,11 +541,11 @@ test <- select_(dataset_ok, .dots = c(var_rep, var_exp))
 
 ## Open dataset
 test_open <- filter(test, ms == "Open", label %in% holes_pairs2$Open) %>%
-    left_join(., select(holes_pairs2, Open, pair_id) %>% rename(label = Open)) %>% 
+    left_join(., select(holes_pairs2, Open, pair_id) %>% rename(label = Open)) %>%
     arrange(pair_id) %>%
     ungroup() %>%
     select(-ms, - label) %>% rename_(Open = var_rep)
-## Patch dataset    
+## Patch dataset
 test_patch <- filter(test, ms == "Patch", label %in% holes_pairs2$Patch) %>%
     left_join(., select(holes_pairs2, Patch, pair_id) %>% rename(label =
 	    Patch)) %>%
@@ -387,78 +568,104 @@ paired_index_summary <- paired_index %>%
 
 ```
 
-## Survival analysis
+```{r}
+growth_plot <- rgr2 %>%
+  mutate(
+    date_m = month(date),
+    duration_m = date_m + 2,
+    duration_m = as.factor(duration_m),
+    ter = as.factor(ter),
+    plot = as.factor(plot),
+    com = as.factor(com),
+    ms = as.factor(ms)
+    ) %>%
+  group_by(duration_m, ms, com, watering, species, ter, plot) %>%
+  summarise(agr_d1 = mean(agr_d1, na.rm = T))
 
-```{r survival, echo = FALSE, eval = FALSE}
-holes_data_surv2  <- filter(holes_data_surv, ms == "Open") %>% ungroup() %>%
-    mutate(species = as.factor(species))
-try_data_surv  <- filter(try2_ok, ms == "Open")
-test <- survfit(Surv(holes_data_surv2$duration_m, surv) ~ species + com +
-    watering, holes_data_surv2) 
-plot(test)
-str(test)
+int_growth <- growth_plot %>%
+  ungroup() %>%
+  spread(ms, agr_d1) %>%
+  mutate(agr_n_int_a = map2_dbl(Open, Patch, n_int_a))
 
-lm_surv <- survdiff(Surv(holes_data_surv2$duration_m, surv) ~ com + ms +
-    watering, holes_data_surv2, rho=0)
-summary(lm_surv)
+int_growth %>%
+  ggplot(aes(y = agr_n_int_a, x = as.factor(duration_m), color = species, linetype = watering)) +
+  geom_boxplot() +
+  geom_hline(yintercept = 0) +
+  facet_grid(com ~ .)
 
-my.surv <- Surv(try2_ok$duration_m, try2_ok$surv)
-my.fit <- summary(survfit(my.surv ~ 1))
-coxph.fit <- coxph(my.surv ~ species * com * watering, data = try2_ok,
-    method="breslow")
-coxph.fit
-anova(coxph.fit)
+growth_mod <- lmer(
+  formula = agr_n_int_a ~ duration_m + com + species + watering + (1|ter/plot),
+  data = int_growth
+)
 
+mySumm2 <- function(.) {
+  c(beta=fixef(.),sigma=sigma(.), sig01=sqrt(unlist(VarCorr(.))))
+}
+growth_boot <- bootMer(growth_mod, mySumm2, nsim = 100)
+growth_ci <- confint(growth_boot)
+#growth_colin <- car::vif(growth_mod) not use if one response
+growth_sum <- piecewiseSEM::rsquared(growth_mod, method = "nagelkerke") %>%
+  mutate_at(vars(Conditional, Marginal), ~round(., 2))
 
-test <- summary(coxph.fit)
-ajusted_r_squared <- round(test$rsq[1], 2)
-test2 <- test$coefficients
-term <- dimnames(test2)[[1]]
-term
-term2 <- c("dorycnium", "pistachia", "com", "watering", "dorycnium:com",
-    "pistachia:com", "dorycnium:watering", "pistachia:watering", "com:watering",
-    "dorycnium:com:watering", "pistachia:com:watering")
+pred <- ggeffects::ggpredict(growth_mod,
+  terms = c("species", "duration_m", "watering", "com"),
+  type = "fe")
+growth_pred <- pred %>%
+  as_tibble() %>%
+  rename(
+    n_int_a = predicted,
+    species = x,
+    duration_m = group,
+    watering= facet,
+    com = panel
+  )
 
-test3 <- as_tibble(test2) %>% 
-    mutate(Factor = term2) %>%
-select(Factor, coef, `exp(coef)`, `se(coef)`, z, `Pr(>|z|)`) %>%
-    rename(`$\\beta$` = coef, `$e^\\beta$` =`exp(coef)`, SE = `se(coef)`,
-	`Z-values` = z, `P-values` = `Pr(>|z|)`)
-
-cox_table_ok <- xtable(test3)
-label(cox_table_ok) <- c("tab:cox")
-digits(cox_table_ok) <- c(1, 1, 2, 2, 2, 3, 4)
-caption(cox_table_ok) <- paste("Summary of the Cox proportional hazards. The adjusted R squared equaled to $", ajusted_r_squared, "$.",
-    sep="")
-
-print(cox_table_ok, include.rownames = FALSE, sanitize.colnames.function =
-    identity, file = "~/Documents/thesis/papers/spain_diversity/cox_table.tex")
+growth_pred %>%
+  ggplot(aes(
+      y = n_int_a,
+      x = as.factor(duration_m),
+      color = species, linetype = as.factor(com))) +
+  geom_point(position = position_dodge(width = 0.9)) +
+  geom_hline(yintercept = 0) +
+  geom_errorbar(aes(ymin = conf.low, ymax = conf.high),
+      position = position_dodge(width = 0.9), width = .2) +
+  facet_grid(cols = vars(watering)) +
+  geom_jitter(
+    position = position_dodge(width = 0.9),
+    data = int_surv %>%
+      rename(n_int_a = surv_n_int_a) %>%
+      filter(duration_m %in% c(8, 13)),
+    inherit.aes = TRUE)
 
 ```
+
+
+## Survival analysis
+
 
 ## Dist to optimum
 
 ```{r plot_duration, echo = FALSE}
-p <- ggplot(filter(paired_index_summary, com == "Mono"), 
-    aes(x = species, y = mean)) + 
-    geom_point() +
-    ylab("Interaction index (NIntA)") +
-    geom_errorbar(aes(ymin = mean - ic_width, ymax = mean + ic_width), width = 0.025)
+p <- ggplot(filter(paired_index, com == "Mono"),
+    aes(x = as.factor(duration), y = n_int_a)) +
+    geom_violin(aes(fill = species)) +
+    #geom_errorbar(aes(ymin = mean - ic_width, ymax = mean + ic_width), width = 0.025)+
+    ylab("Interaction index (NIntA)")
 p + facet_grid(. ~ watering)
 
 ```
 ```{r plot_duration2, echo = FALSE}
-p <- ggplot(paired_index, 
-    aes(x = species, y = n_int_a)) + 
-    geom_violin() +
+p <- ggplot(paired_index,
+    aes(x = as.factor(duration), y = n_int_a, color = species, linetype = com)) +
+    geom_boxplot() +
     ylab("Interaction index (NIntA)") +
     geom_hline(yintercept = 0, color = "red")
-p + facet_grid(com ~ watering)
+p + facet_grid(. ~ watering)
 
 ```
 ```{r dist_opt_cor, echo = FALSE}
-dist2opt_temp <- paired_index 
-dist2opt_table <- group_by(dist2opt_temp, com, watering) %>%
+dist2opt_temp <- paired_index
+dist2opt_table <- group_by(dist2opt_temp, com, watering, duration) %>%
     mutate(rank_sp = as.numeric(as.factor(species))) %>%
     summarise(
 	spearman = cor( x = rank_sp, y = n_int_a, method = "spearman",
@@ -475,8 +682,8 @@ test_table <-  mutate(dist2opt_table,
     spearman.p = round(spearman.p, 4)
     )
 
-g1 <- p + facet_grid(com ~ watering) + 
-    geom_text(data = test_table, 
+g1 <- p + facet_grid(com ~ watering) +
+    geom_text(data = test_table,
 	aes(label = paste("Spearman~~", "rho==", spearman, "~~P==", spearman.p,
 		sep = "")), #, " = ", spearman, ", P = ", spearman.p
 	size = letter_size -1,
@@ -496,18 +703,18 @@ g1
 ## Diversity effect
 
 ```{r div_effect_plot_sp, echo = FALSE}
-p <- ggplot(paired_index, 
-    aes(x = species, y = n_int_a, color= com)) + 
+p <- ggplot(paired_index,
+    aes(x = as.factor(duration), y = n_int_a, color= com)) +
     geom_violin() +
     ylab("Interaction index (NIntA)") +
     geom_hline(yintercept = 0, color = "red")
-p + facet_grid(. ~ watering)
+p + facet_grid(species ~ watering)
 ```
 ```{r div_effect_test, echo = FALSE}
-div_effect_temp <- paired_index 
-div_effect_table <- group_by(div_effect_temp, species, watering) %>%
+div_effect_temp <- paired_index
+div_effect_table <- group_by(div_effect_temp, species, watering, duration) %>%
     spread(com, value = n_int_a) %>%
-    do(tidy(wilcox.test(.$Mono, .$Poly, na.rm= TRUE)) 
+    do(tidy(wilcox.test(.$Mono, .$Poly, na.rm= TRUE))
        ) %>%
     mutate(n_int_a = 0.4, com = "Poly",
 	stars = p_stars(p.value),
@@ -516,31 +723,31 @@ div_effect_table <- group_by(div_effect_temp, species, watering) %>%
 ```
 ```{r div_effect_plot_sp2, echo = FALSE}
 g1 <- p + facet_grid(. ~ watering) +
-    geom_text(data = div_effect_table, 
+    geom_text(data = div_effect_table,
 	aes(label = paste(stars,
-		sep = "")), 
+		sep = "")),
 	size = letter_size -1,
 	parse = FALSE # Important to display math
-	) + 
+	) +
     theme(axis.text.x = element_text(angle=-45, hjust=0))
 g1
 ```
 ```{r div_effect_test_tot, echo = FALSE}
 div_effect_table_tot <- group_by(div_effect_temp) %>%
     spread(com, value = n_int_a) %>%
-    do(tidy(wilcox.test(.$Mono, .$Poly, na.rm= TRUE)) 
+    do(tidy(wilcox.test(.$Mono, .$Poly, na.rm= TRUE))
        )%>%
     mutate(n_int_a = 0.4, com = 1.5,
 	p.value = round(p.value, 3))
 ```
 ```{r div_effect_plot_tot, echo = FALSE}
-p <- ggplot(filter(paired_index, duration == 5), 
-    aes(x = com, y = n_int_a)) + 
+p <- ggplot(filter(paired_index, duration == 5),
+    aes(x = com, y = n_int_a)) +
     geom_violin() +
     ylab("Interaction index (NIntA)") +
     geom_hline(yintercept = 0, color = "red")
 
-g2 <- p + geom_text(data = div_effect_table_tot, 
+g2 <- p + geom_text(data = div_effect_table_tot,
 	aes(label = paste("Wilcoxon~~", "W==", statistic, "~~P==", p.value,
 		sep = "")), #, " = ", spearman, ", P = ", spearman.p
 	size = letter_size -1,
@@ -565,78 +772,44 @@ g3
 
 ## Dominance effect  
 
-Test if in poly there is a negative correlation of NIntA between species 
+Test if in poly there is a negative correlation of NIntA between species
 
 ```{r div_dominance_correlation, echo = FALSE}
-dominance_data <- filter(paired_index, com == "Poly") %>% 
-spread(species, value = n_int_a) 
+dominance_data <- int_surv %>%
+  select(-Open, - Patch) %>%
+  filter(com == "Poly", duration_m %in% c(8, 13)) %>%
+  spread(species, value = surv_n_int_a)
 
-ggpairs(select(dominance_data, watering, anthyllis:pistachia), ggplot2::aes(colour =
-	watering))
-
-cor(select(dominance_data, anthyllis:pistachia), use = "pairwise.complete.obs")
-```
-We have negative correlations between Anthyllis and Pistachia in watered,
-between Dorycnium and Anthyllis in no watered treatment, and a positive
-correlation between Pistachia and Dorycnium in the watered treatment.
-
-Let's check the ranking of the species (rgr_d) in each treatment to check if
-there are patterns helping to make the difference between micro-environment and
-dominance.  (correlation between rank rgr_d in poly)
-
-```{r rank_species_d, echo = FALSE}
-rank_sp <- filter(paired_data, com == "Poly", duration == 5) %>%
-    group_by(pair_id) %>%
-    mutate(
-	open_rank = rank(Open),
-	patch_rank = rank(Patch)
-	)
-temp <- filter(paired_index, com == "Poly", duration == 5) %>%
-    group_by(pair_id) %>%
-    mutate(int_rank = rank(n_int_a))
-rank_sp2 <- left_join(rank_sp, temp); rm(temp)
-
-rank_sp2 %>%
-    gather(variable, value, Open, Patch, n_int_a)
-
-cor(filter(rank_sp2, watering == "No Watered") %>%
-    select(open_rank, patch_rank, int_rank), 
-    use = "pairwise.complete.obs")
-
-ggpairs(select(rank_sp2, open_rank, patch_rank, int_rank, species, watering), ggplot2::aes(colour =
-	species, shape = watering))
-
+cor(select(dominance_data, anthyllis:pistachia),
+  use = "pairwise.complete.obs", method = "spearman")
 ```
 
-## Competition more intense in open ?
+## Traits
 
-```{r test_compet_div, echo = FALSE}
-rgr2_march
+```{r}
+mypath <- rprojroot::find_package_root_file
+source(mypath("inst", "doc", "misc.R"))
+traits <- read_csv2(mypath("data-raw","data_mars_traits.csv"))
 
-p <- ggplot(filter(rgr2_march, ms == "Open"), 
-    aes(x = species, y = rgr_d, color= com)) + 
-    geom_boxplot() +
-    ylab("Interaction index (NIntA)") +
-    geom_hline(yintercept = 0, color = "red")
-p + facet_grid(. ~ watering)
+traits %>%
+  select(sp1, fresh_mass1, fresh_m_f1, sp2, fresh_mass2, fresh_m_f2)
+# Dorycnium does not have measurement without petiole
 
+ %>% is.na(.)
+map(c("1", "2", "3"), function (x) {
 
-p <- ggplot(filter(rgr2_march, ms == "Patch"), 
-    aes(x = species, y = rgr_d, color= com)) + 
-    geom_boxplot() +
-    ylab("Interaction index (NIntA)") +
-    geom_hline(yintercept = 0, color = "red")
-p + facet_grid(. ~ watering)
+  expe_trt <- c("ter", "plot", "label", "ms", "com", "watering")
+  col_in_sp <- str_match(names(traits), x) %>% .[,1]
+  tmp <- trait[, names(traits) %in% c(expe_trt, col_in_sp)]
 
-p <- ggplot(rgr2_march, 
-    aes(x = species, y = rgr_d, color= com)) + 
-    geom_boxplot() +
-    ylab("Interaction index (NIntA)") +
-    geom_hline(yintercept = 0, color = "red")
-p + facet_grid(ms ~ watering)
+  col_fresh_mass <- c(paste0("fress_mass", x), paste0())
+  tmp %>%
+
+  })
 ```
 
-# Appendices 
+
+# Appendices
 
 ```{r allometry_assessment, echo = FALSE}
 data <- read.table("../../data-raw/biomass_t0.csv", sep=";", dec=",", header=T)
@@ -671,7 +844,7 @@ summary(mod)
 
 ## Number of holes available
 
-Number of holes in which there is still at least one sapling alive 
+Number of holes in which there is still at least one sapling alive
 
 ```{r holes_alive_time, echo = FALSE, fig.width=8, fig.height=4}
 n_data_date <- holes_data %>%
@@ -681,8 +854,8 @@ n_data_date <- holes_data %>%
     filter(surv != 0) %>%
     summarise(n_count = n())
 
-g <- ggplot(n_data_date, 
-    aes(y = n_count, x = duration_m, fill = species, colour = ms, alpha = com)) +  
+g <- ggplot(n_data_date,
+    aes(y = n_count, x = duration_m, fill = species, colour = ms, alpha = com)) +
     geom_bar(stat="identity", position = "dodge")+
     labs(x = "Number of months since the beginning of the experiment", y =
 	"Count")
@@ -708,8 +881,8 @@ rgr_summary <- gather(rgr_t0, key = "variable", value = "value", rgr_d,
 	ic_width = 1.96*sd(value, na.rm = TRUE)/sqrt(n())
       	)
 
-p <- ggplot(filter(rgr_summary, variable == "rgr_d"), 
-    aes(x = duration_m, y = mean, colour = ms, linetype = watering)) + 
+p <- ggplot(filter(rgr_summary, variable == "rgr_d"),
+    aes(x = duration_m, y = mean, colour = ms, linetype = watering)) +
 labs(x = "Number of months since the beginning of the experiment", y = "Basal
     diameter RGR (mm.month^-1)") +
     geom_line() + geom_point() +

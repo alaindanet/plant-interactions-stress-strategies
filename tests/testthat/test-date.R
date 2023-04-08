@@ -1,6 +1,5 @@
 context("Date conversion to number of month")
 
-
 test_that("return a number of month", {
     duration <- yearmon2month(date = zoo::as.yearmon("janv. 2016"))
 
