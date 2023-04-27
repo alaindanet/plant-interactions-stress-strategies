@@ -1,0 +1,331 @@
+---
+title: "Supplementary Figures"
+author: "Alain Danet, Susana Bautista, ..., Fabien Anthelme, Sonia Kéfi"
+date: ""
+output:
+  bookdown::pdf_document2:
+    latex_engine: xelatex
+    keep_tex: true
+    spacing: double
+    number_sections: false
+  officedown::rdocx_document:
+bibliography: "bibliography.bib"
+csl: "nature.csl"
+link-citations: true
+toc: false
+linestretch: 2.0
+---
+
+
+```{r}
+tar_load(c(inla_surv_sp_effects, inla_surv_sp_odd))
+
+s_t <- get_effect_ci(effect = inla_surv_sp_odd, term = "duration_m", ci_lvl =
+  "0.95", p = FALSE, r = 2)
+
+s_dor <- get_effect_ci(effect = inla_surv_sp_odd, term = "speciesdorycnium",
+  ci_lvl = "0.95")
+s_pis <- get_effect_ci(effect = inla_surv_sp_odd, term =
+  "speciespistachia", ci_lvl = "0.95")
+
+s_ca <- get_effect_ci(effect = inla_surv_sp_odd, term = "comPoly", ci_lvl = "0.95", p = FALSE, r = 2)
+s_cd <- get_effect_ci(effect = inla_surv_sp_odd, term = "comPoly:speciesdorycnium", ci_lvl = "0.95", p = FALSE, r = 2)
+s_cp <- get_effect_ci(effect = inla_surv_sp_odd, term = "comPoly:speciespistachia", ci_lvl = "0.95", r = 0)
+
+s_ma <- get_effect_ci(effect = inla_surv_sp_odd, term = "msPatch", ci_lvl = "0.80")
+s_md <- get_effect_ci(effect = inla_surv_sp_odd, term = "msPatch:speciesdorycnium", ci_lvl = "0.80")
+s_mp <- get_effect_ci(effect = inla_surv_sp_odd, term = "msPatch:speciespistachia", ci_lvl = "0.80")
+
+s_cma <- get_effect_ci(effect = inla_surv_sp_odd, term = "comPoly:msPatch", ci_lvl = "0.90")
+s_cmd <- get_effect_ci(effect = inla_surv_sp_odd, term = "comPoly:msPatch:speciesdorycnium", ci_lvl = "0.80")
+s_cmp <- get_effect_ci(effect = inla_surv_sp_odd, term = "comPoly:msPatch:speciespistachia", ci_lvl = "0.80")
+
+s_wa <- get_effect_ci(effect = inla_surv_sp_odd, term = "wateringWatered", ci_lvl = "0.95")
+s_wd <- get_effect_ci(effect = inla_surv_sp_odd, term = "wateringWatered:speciesdorycnium", ci_lvl = "0.80")
+s_wp <- get_effect_ci(effect = inla_surv_sp_odd, term = "wateringWatered:speciespistachia", ci_lvl = "0.95")
+
+s_wma <- get_effect_ci(effect = inla_surv_sp_odd, term = "msPatch:wateringWatered", ci_lvl = "0.80")
+s_wmd <- get_effect_ci(effect = inla_surv_sp_odd, term = "msPatch:wateringWatered:speciesdorycnium", ci_lvl = "0.80")
+s_wmp <- get_effect_ci(effect = inla_surv_sp_odd, term = "msPatch:wateringWatered:speciespistachia", ci_lvl = "0.80")
+
+s_wca <- get_effect_ci(effect = inla_surv_sp_odd, term = "comPoly:wateringWatered", ci_lvl = "0.95")
+s_wcd <- get_effect_ci(effect = inla_surv_sp_odd, term = "comPoly:wateringWatered:speciesdorycnium", ci_lvl = "0.95")
+s_wcp <- get_effect_ci(effect = inla_surv_sp_odd, term = "comPoly:wateringWatered:speciespistachia", ci_lvl = "0.95")
+
+s_wcma <- get_effect_ci(effect = inla_surv_sp_odd, term = "comPoly:msPatch:wateringWatered", ci_lvl = "0.95")
+s_wcmd <- get_effect_ci(effect = inla_surv_sp_odd, term = "comPoly:msPatch:wateringWatered:speciesdorycnium", ci_lvl = "0.80")
+s_wcmp <- get_effect_ci(effect = inla_surv_sp_odd, term = "comPoly:msPatch:wateringWatered:speciespistachia", ci_lvl = "0.80")
+unique(inla_surv_perc$term)
+```
+
+```{r}
+plot_inla_fixed_effect(inla_surv_odd, color_var = NULL, intercept = 1) +
+  labs(x = "Change in survival likelihood (%)") +
+  theme(axis.title.y = element_blank())
+```
+
+```{r}
+tar_load(c(inla_surv_effects, inla_surv_odd))
+
+s_t <- get_effect_ci(effect = inla_surv_odd, term = "duration_m", ci_lvl =
+  "0.95", p = FALSE, r = 2)
+
+s_dor <- get_effect_ci(effect = inla_surv_odd, term = "speciesdorycnium",
+  ci_lvl = "0.95")
+s_pis <- get_effect_ci(effect = inla_surv_odd, term =
+  "speciespistachia", ci_lvl = "0.95")
+
+s_ca <- get_effect_ci(effect = inla_surv_odd, term = "comPoly", ci_lvl = "0.95", p = FALSE, r = 2)
+s_cd <- get_effect_ci(effect = inla_surv_odd, term = "comPoly:speciesdorycnium", ci_lvl = "0.95", p = FALSE, r = 2)
+s_cp <- get_effect_ci(effect = inla_surv_odd, term = "comPoly:speciespistachia", ci_lvl = "0.95", r = 0)
+
+s_ma <- get_effect_ci(effect = inla_surv_odd, term = "msPatch", ci_lvl = "0.80")
+s_md <- get_effect_ci(effect = inla_surv_odd, term = "msPatch:speciesdorycnium", ci_lvl = "0.80")
+s_mp <- get_effect_ci(effect = inla_surv_odd, term = "msPatch:speciespistachia", ci_lvl = "0.80")
+
+s_cma <- get_effect_ci(effect = inla_surv_odd, term = "comPoly:msPatch", ci_lvl = "0.90")
+s_cmd <- get_effect_ci(effect = inla_surv_odd, term = "comPoly:msPatch:speciesdorycnium", ci_lvl = "0.80")
+s_cmp <- get_effect_ci(effect = inla_surv_odd, term = "comPoly:msPatch:speciespistachia", ci_lvl = "0.80")
+
+s_wa <- get_effect_ci(effect = inla_surv_odd, term = "wateringWatered", ci_lvl = "0.95")
+s_wd <- get_effect_ci(effect = inla_surv_odd, term = "wateringWatered:speciesdorycnium", ci_lvl = "0.80")
+s_wp <- get_effect_ci(effect = inla_surv_odd, term = "wateringWatered:speciespistachia", ci_lvl = "0.95")
+
+s_wma <- get_effect_ci(effect = inla_surv_odd, term = "msPatch:wateringWatered", ci_lvl = "0.80")
+s_wmd <- get_effect_ci(effect = inla_surv_odd, term = "msPatch:wateringWatered:speciesdorycnium", ci_lvl = "0.80")
+s_wmp <- get_effect_ci(effect = inla_surv_odd, term = "msPatch:wateringWatered:speciespistachia", ci_lvl = "0.80")
+
+s_wca <- get_effect_ci(effect = inla_surv_odd, term = "comPoly:wateringWatered", ci_lvl = "0.95")
+s_wcd <- get_effect_ci(effect = inla_surv_odd, term = "comPoly:wateringWatered:speciesdorycnium", ci_lvl = "0.95")
+s_wcp <- get_effect_ci(effect = inla_surv_odd, term = "comPoly:wateringWatered:speciespistachia", ci_lvl = "0.95")
+
+s_wcma <- get_effect_ci(effect = inla_surv_odd, term = "comPoly:msPatch:wateringWatered", ci_lvl = "0.95")
+s_wcmd <- get_effect_ci(effect = inla_surv_odd, term = "comPoly:msPatch:wateringWatered:speciesdorycnium", ci_lvl = "0.80")
+s_wcmp <- get_effect_ci(effect = inla_surv_odd, term = "comPoly:msPatch:wateringWatered:speciespistachia", ci_lvl = "0.80")
+unique(inla_surv_perc$term)
+```
+
+---
+#We found strong evidence that time decreased odd of survival (Odd-Ratio = `r s_t`).
+#We further found strong evidence that *Pistachia lentiscus* and
+#*Dorycnium pentaphyllum* saplings had a lower survival likelihood than
+#*Anthyllis citisoides* (respectively OR = `r s_pis`, OR: `r s_dor`).
+#We found strong evidence that diverse communities decreased the odd of survival
+#of *A. citisoides* (OR = `r s_ca`), but increase the odds of survival of
+#*D. pentaphyllum* and *P. lentiscus* (resp. OR: `r s_cd` and `r s_cp`).
+#Surpringly, we did not evidence of an overall effect of being in a patch of *A.
+#herba-alba* on the odd of survivals of the sapling species (OR = `r s_ma`,
+#`s_md`, `s_mp`, for *A. citisoides*, *D. pentaphyllum*, and *P. lentiscus*
+#resp.), but we found moderate evidence that *A. herba-alba* had an higher
+#positive effect on odds of survival in diverse communities (OR = `r s_cma`),
+#independently of species identity (OR = `r s_cmd` and `r s_cmp`). Finally,
+#the watering treatment decreased the positive effect of *A. herba-alba* in diverse
+#communities for *A. citisoides* (strong evidence, OR = `r s_wcma`), but enhanced
+#it for *D. pentaphyllum* and *P. lentiscus* (weak evidence, OR = `r s_wcmd` and
+#`r s_wcmp` resp.).
+#
+#We found strong evidence that the watering treatment increased the odds of
+#survival in the open sites for *A. citisoides*, and *P. lentiscus*
+#(OR = `r s_wa`, `r s_wd` resp.), but did not affect *D. pentaphyllum*
+#(OR = `r s_wp`). The effect of being in a patch of *A. herba-alba* was not affected
+#by watering (OR = `r s_wma` and `r s_wmd` for *A. citisoides* and *D.
+#pentaphyllum*) but decreased the odds of survival for *P. lentiscus* (weak
+#evidence, OR = `r s_wmp`). We futher found strong evidence that watering
+#increased even more the odd of survival in *A. citisoides* (OR = `r s_wca`) in
+#diverse communities, but decreased it for *D. pentaphyllum* and *P. lentiscus*
+#(OR = `r s_wcd`, `r s_wcp` resp.).
+---
+
+```{r}
+plot_inla_fixed_effect(bm_inla_scaled_effects,
+  color_var = response, intercept = 0) +
+  labs(x = "Change in survival likelihood (%)") +
+  theme(axis.title.y = element_blank())
+```
+
+```{r}
+ldmc_scaled_effects <- leaf_inla_sp_scaled_effects %>%
+  filter(response == "ldmc")
+l_t <- get_effect_ci(effect = ldmc_scaled_effects, term = "duration_m", ci_lvl =
+  "0.95", p = FALSE, r = 2)
+l_dor <- get_effect_ci(effect = ldmc_scaled_effects, term = "speciesdorycnium",
+  ci_lvl = "0.95")
+l_pis <- get_effect_ci(effect = ldmc_scaled_effects, term =
+  "speciespistachia", ci_lvl = "0.95")
+l_ca <- get_effect_ci(effect = ldmc_scaled_effects, term = "comPoly", ci_lvl = "0.95", p = FALSE, r = 2)
+l_cd <- get_effect_ci(effect = ldmc_scaled_effects, term = "comPoly:speciesdorycnium", ci_lvl = "0.95", p = FALSE, r = 2)
+l_cp <- get_effect_ci(effect = ldmc_scaled_effects, term = "comPoly:speciespistachia", ci_lvl = "0.95", r = 0)
+l_ma <- get_effect_ci(effect = ldmc_scaled_effects, term = "msPatch", ci_lvl = "0.80")
+l_md <- get_effect_ci(effect = ldmc_scaled_effects, term = "msPatch:speciesdorycnium", ci_lvl = "0.80")
+l_mp <- get_effect_ci(effect = ldmc_scaled_effects, term = "msPatch:speciespistachia", ci_lvl = "0.80")
+l_cma <- get_effect_ci(effect = ldmc_scaled_effects, term = "comPoly:msPatch", ci_lvl = "0.90")
+l_cmd <- get_effect_ci(effect = ldmc_scaled_effects, term = "comPoly:msPatch:speciesdorycnium", ci_lvl = "0.80")
+l_cmp <- get_effect_ci(effect = ldmc_scaled_effects, term = "comPoly:msPatch:speciespistachia", ci_lvl = "0.80")
+l_wa <- get_effect_ci(effect = ldmc_scaled_effects, term = "wateringWatered", ci_lvl = "0.95")
+l_wd <- get_effect_ci(effect = ldmc_scaled_effects, term = "wateringWatered:speciesdorycnium", ci_lvl = "0.80")
+l_wp <- get_effect_ci(effect = ldmc_scaled_effects, term = "wateringWatered:speciespistachia", ci_lvl = "0.95")
+l_wma <- get_effect_ci(effect = ldmc_scaled_effects, term = "msPatch:wateringWatered", ci_lvl = "0.80")
+l_wmd <- get_effect_ci(effect = ldmc_scaled_effects, term = "msPatch:wateringWatered:speciesdorycnium", ci_lvl = "0.80")
+l_wmp <- get_effect_ci(effect = ldmc_scaled_effects, term = "msPatch:wateringWatered:speciespistachia", ci_lvl = "0.80")
+l_wca <- get_effect_ci(effect = ldmc_scaled_effects, term = "comPoly:wateringWatered", ci_lvl = "0.95")
+l_wcd <- get_effect_ci(effect = ldmc_scaled_effects, term = "comPoly:wateringWatered:speciesdorycnium", ci_lvl = "0.95")
+l_wcp <- get_effect_ci(effect = ldmc_scaled_effects, term = "comPoly:wateringWatered:speciespistachia", ci_lvl = "0.95")
+l_wcma <- get_effect_ci(effect = ldmc_scaled_effects, term = "comPoly:msPatch:wateringWatered", ci_lvl = "0.95")
+l_wcmd <- get_effect_ci(effect = ldmc_scaled_effects, term = "comPoly:msPatch:wateringWatered:speciesdorycnium", ci_lvl = "0.80")
+l_wcmp <- get_effect_ci(effect = ldmc_scaled_effects, term = "comPoly:msPatch:wateringWatered:speciespistachia", ci_lvl = "0.80")
+```
+Leaf traits were found to vary across treatments, traits, and species.
+*Pistachia lentiscus* and *Dorycnium pentaphyllum* had overall and higher LDMC
+and lower SLA than *Anthyllis citisoides* (strong evidence). We did not find
+evidence for an overall effect of community diversity for leat trait in any species ().
+
+```{r, eval = FALSE}
+tar_load(c(leaf_trait, leaf_inla_sp_scaled_effects))
+plot_inla_fixed_effect(leaf_inla_sp_scaled_effects)
+
+leaf_species <- plot_inla_fixed_effect(
+  leaf_inla_sp_scaled_effects %>%
+    filter(str_detect(term, "dorycnium|pistachia")), #, response %in% c("d", "h")
+  color_var = response) +
+  labs(x = "Change in survival likelihood (%)")
+leaf_base <- plot_inla_fixed_effect(leaf_inla_sp_scaled_effects %>%
+    filter(!str_detect(term, "dorycnium|pistachia")), #, response %in% c("d", "h")
+  color_var = response) +
+  labs(x = "Change in survival likelihood (%)")
+
+plot_grid(leaf_base, leaf_species)
+
+leaf_trait %>%
+  group_by(ms, com, watering, species, plot) %>%
+  summarise(ldmc = mean(ldmc)) %>%
+  ggplot(aes(y = ldmc, x = species, color = ms, shape = com, alpha = .5)) +
+  geom_jitter() +
+  #geom_line(data = inla_surv_sp_pred, aes(y = mean, linetype = com)) +
+  facet_grid(rows = vars(watering)) +
+  theme_bw()
+
+surv_data_modelling %>%
+  group_by(duration_m, ms, com, watering, species, plot) %>%
+  summarise(survival = sum(survival) / n()) %>%
+  ggplot(aes(y = survival, x = duration_m + 6, color = ms, shape = com, alpha = .5)) +
+  geom_jitter() +
+  geom_line(data = inla_surv_pred, aes(y = mean, linetype = com)) +
+  facet_grid(cols = vars(species), rows = vars(watering)) +
+  theme_bw()
+```
+
+```{r}
+tar_load(bm_inla_sp_scaled_effects)
+
+bm_species <- plot_inla_fixed_effect(
+  bm_inla_sp_scaled_effects %>%
+    filter(str_detect(term, "dorycnium|pistachia")), #, response %in% c("d", "h")
+  color_var = response) +
+  labs(x = "Change in survival likelihood (%)")
+bm_base <- plot_inla_fixed_effect(bm_inla_sp_scaled_effects %>%
+    filter(!str_detect(term, "dorycnium|pistachia")), #, response %in% c("d", "h")
+  color_var = response) +
+  labs(x = "Change in survival likelihood (%)")
+
+plot_grid(bm_base, bm_species)
+```
+
+```{r, eval=FALSE}
+tar_load(inla_surv_sp_perc)
+surv_species <- plot_inla_fixed_effect(
+  inla_surv_sp_perc %>%
+    filter(str_detect(term, "dorycnium|pistachia")),
+  color_var = NULL) +
+  labs(x = "Change in survival likelihood (%)") +
+  theme(
+    axis.title.y = element_blank(),
+    axis.text.y.right = element_blank(),
+    axis.ticks.y.right = element_blank()
+    ) +
+  scale_x_break(c(1500, 8000))
+surv_base <- plot_inla_fixed_effect(inla_surv_sp_perc %>%
+    filter(!str_detect(term, "dorycnium|pistachia")),
+  color_var = NULL) +
+  labs(x = "Change in survival likelihood (%)") +
+  theme(
+    axis.title.y = element_blank(),
+    axis.text.y.right = element_blank(),
+    axis.ticks.y.right = element_blank()
+    ) +
+  scale_x_break(c(1500, 3000))
+
+plot_grid(print(surv_base), print(surv_species))
+```
+
+```{r, eval=TRUE}
+tar_load(c(surv_data, surv_data_modelling, inla_surv_pred))
+tar_load(inla_surv_sp_pred)
+tar_load(surv_raw_data)
+
+surv_raw_data %>%
+  pivot_longer(cols = c(h, d, hm), names_to = "variable", values_to = "values") %>%
+  group_by(month, variable) %>%
+  summarise(n_na = sum(is.na(values))) %>%
+  ggplot(aes(x = month, y = n_na)) +
+  geom_line() +
+  facet_grid(cols = vars(variable))
+
+surv_data_modelling %>%
+  group_by(duration_m, ms, com, watering, species, plot) %>%
+  summarise(survival = sum(survival) / n()) %>%
+  ggplot(aes(y = survival, x = duration_m + 6, color = ms, shape = com, alpha = .5)) +
+  geom_jitter() +
+  geom_line(data = inla_surv_sp_pred, aes(y = mean, linetype = com)) +
+  facet_grid(cols = vars(species), rows = vars(watering)) +
+  theme_bw()
+
+surv_data_modelling %>%
+  group_by(duration_m, ms, com, watering, species, plot) %>%
+  summarise(survival = sum(survival) / n()) %>%
+  ggplot(aes(y = survival, x = duration_m + 6, color = ms, shape = com, alpha = .5)) +
+  geom_jitter() +
+  geom_line(data = inla_surv_pred, aes(y = mean, linetype = com)) +
+  facet_grid(cols = vars(species), rows = vars(watering)) +
+  theme_bw()
+```
+
+```{r}
+tar_load(c(bm_inla_pred, bm_inla_sp_pred))
+surv_data_modelling %>%
+  group_by(duration_m, ms, com, watering, species, plot) %>%
+  summarise(d = mean(d, na.rm = TRUE)) %>%
+  ggplot(aes(y = d, x = duration_m + 6, color = ms, shape = com, alpha = .5)) +
+  geom_jitter() +
+  geom_line(data = bm_inla_sp_pred %>% filter(response == "d"), aes(y = mean, linetype = com)) +
+  facet_grid(cols = vars(species), rows = vars(watering)) +
+  theme_bw()
+
+surv_data_modelling %>%
+  group_by(duration_m, ms, com, watering, species, plot) %>%
+  summarise(h = mean(h, na.rm = TRUE)) %>%
+  ggplot(aes(y = h, x = duration_m + 6, color = ms, shape = com, alpha = .5)) +
+  geom_jitter() +
+  geom_line(data = bm_inla_sp_pred %>% filter(response == "h"), aes(y = mean, linetype = com)) +
+  facet_grid(cols = vars(species), rows = vars(watering)) +
+  theme_bw()
+
+surv_data_modelling %>%
+  group_by(duration_m, ms, com, watering, species, plot) %>%
+  summarise(bm = mean(bm, na.rm = TRUE)) %>%
+  ggplot(aes(y = bm, x = duration_m + 6, color = ms, shape = com, alpha = .5)) +
+  geom_jitter() +
+  geom_line(data = bm_inla_sp_pred %>% filter(response == "bm"), aes(y = mean, linetype = com)) +
+  facet_grid(cols = vars(species), rows = vars(watering)) +
+  theme_bw()
+```
+
+```{r}
+int_tot %>%
+  select(response, duration_m, com, watering, species, response, inta) %>%
+  pivot_wider(names_from = "response", values_from = "inta") %>%
+  ggplot(aes(y = survival, x = duration_m, color = com, shape = watering)) +
+  geom_line() +
+  facet_grid(cols = vars(species)) +
+  theme_bw()
+```
+

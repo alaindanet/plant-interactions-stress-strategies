@@ -46,26 +46,139 @@ We first define some global options/functions common to all targets. The functio
 
 ```{targets example-globals, tar_globals = TRUE}
 options(tidyverse.quiet = TRUE)
-tar_option_set(packages = c("tidyverse"))
+library(tidyverse)
+library(magrittr)
+library(here)
+library(zoo)
+library(ecocom)
+tar_option_set(packages = c("tidyverse", "here", "magrittr", "lubridate", "INLA", "zoo", "ecocom"))
+source(here::here("R","inla_helpers.R"))
+source(here::here("R","clean_data.R"))
+source(here::here("R","string_replacements.R"))
 ```
 
 # Targets
 
-Our first target borrows the `airquality` dataset built into base R.
-
 ```{targets raw-data}
 load(here::here("data", "holes_data.RData"))
-tar_target(raw_data, airquality)
-```
-
-Our next targets preprocess the data, make a histogram, and fit a model.
-
-```{targets downstream-targets}
+load(here::here("data", "try2.RData"))
 list(
-  tar_target(data, raw_data %>% filter(!is.na(Ozone))),
-  tar_target(hist, create_plot(data))
+tar_target(surv_raw_data, try2),
+tar_target(growth_raw_data, holes_data),
+tar_target(leaf_raw_data, read_csv2(here("data-raw", "leafs", "mars", "empty_file_for_traits-2.csv"))),
+tar_target(leaf_mass_raw_data, read_csv2(here("data-raw", "data_mars_traits.csv"))),
+tar_target(biomass_t0_raw, read_csv2(here::here("data-raw", "biomass_t0.csv")))
 )
 ```
+
+
+
+```{targets clean-trait-data, eval = TRUE}
+list(
+  tar_target(treatment_label, get_treatment_by_label(x = growth_raw_data)),
+  tar_target(leaf_trait, get_leaf_trait_data(mass_data = leaf_mass_raw_data,
+      leaf_data = leaf_raw_data) %>%
+    left_join(treatment_label)),
+  tar_target(biomass_t0, biomass_t0_raw %>%
+  mutate(
+    species = tolower(species),
+    species = str_replace(species, "pistacia", "pistachia"),
+    d = (dia1 + dia2) / 2,
+    log_d = log(d),
+    h = height,
+    log_h = h,
+    duration_m = 0,
+    bm_above = bio_leaves + bio_stem,
+    bm_total = bio_leaves + bio_stem + bio_roots,
+    bm_below = bio_roots
+  ))
+)
+```
+
+
+```{targets clean-growth-data, eval = TRUE}
+list(
+  tar_target(surv_data,
+    surv_raw_data %>%
+      mutate(
+        duration_m = month(date) + 2,
+        surv = ifelse(survival == 0, TRUE, FALSE),
+        com = ifelse(com %in% c("A", "D", "P"), "Mono", "Poly"),
+        ms = ifelse(ms == "0", "Open", "Patch"),
+        watering = ifelse(watering == "0", "No Watered", "Watered"),
+      ) %>%
+      mutate(across(
+        c(com, ms, watering, species, ter, plot, label, ind),
+        as.factor)
+        )
+      ),
+    tar_target(growth_data,
+      growth_raw_data  %>%
+        mutate(duration_m = month(date) + 2) %>%
+        mutate(across(c(com, ms, watering, species, ter, plot, label),
+        as.factor))
+    )
+)
+```
+
+```{targets data_modelling, eval = TRUE}
+list(
+  tar_target(surv_data_modelling,
+    surv_data %>%
+      mutate(
+        bm = exp(predict(biomass_modelling$log_mod_bm_tot_h, newdata = surv_data %>% mutate(log_d = log(d), log_h = log(h)))),
+        # Center duration in June 2016:
+        duration_m = duration_m - 8,
+        IDtp = seq_len(nrow(surv_data)),
+        IDtpl = seq_len(nrow(surv_data)),
+        IDtpli = seq_len(nrow(surv_data))
+      )
+  ),
+  tar_target(pred_surv_data, get_pred_data(x = surv_data_modelling,
+    predictor = c("com", "ms", "watering", "species", "duration_m"))),
+  tar_target(surv_data_modelling_scaled,
+    surv_data_modelling %>%
+      mutate(across(biomass_trait, ~scale(.x, center = TRUE, scale = TRUE)[,1])) %>%
+      mutate(duration_m = scale(duration_m, center = FALSE, scale = TRUE)[,1])
+  ),
+  tar_target(leaf_trait_modelling,
+    leaf_trait %>%
+      mutate(
+        IDtp = seq_len(nrow(leaf_trait)),
+        IDtpl = seq_len(nrow(leaf_trait)),
+        IDtpli = seq_len(nrow(leaf_trait))
+      )
+  ),
+  tar_target(leaf_trait_modelling_scaled,
+    leaf_trait_modelling %>%
+      mutate(across(c("ldmc", "sla"), ~scale(.x, center = TRUE, scale = TRUE)[,1]))
+  )
+)
+```
+
+```{targets model-biomass}
+list(
+  tar_target(biomass_modelling, list(
+      # Good model
+      log_mod_bm_tot_h = lm(log(bm_total) ~ log_d + log_h + species, biomass_t0),
+      mod_bm_tot_h = lm(bm_total ~ (d+h)*species, biomass_t0),
+      log_mod_bm_tot_h = lm(log(bm_total) ~ (log_d+log_h)*species, biomass_t0),
+      mod_bm_tot = lm(bm_total ~ (d)*species, biomass_t0),
+      mod_bm_tot_simple = lm(bm_total ~ (d) + species, biomass_t0),
+      log_mod_bm_tot = lm(log(bm_total) ~ (log_d)*species, biomass_t0),
+      mod_bm_above = lm(bm_above ~ (d)*species, biomass_t0),
+      mod_bm_above_h = lm(bm_above ~ (d+h)*species, biomass_t0)
+    )
+    ),
+  tar_target(biomass_modelling_r2, map_dfr(biomass_modelling,
+  ~performance::r2(.x) %>%.[c("R2", "R2_adjusted")],
+  .id = "model"
+    )
+  )
+)
+```
+
+
 
 Set the `tar_simple` chunk option to `TRUE` to define a single target with the
 command in the code chunk. The chunk below only contains `biglm(Ozone ~ Wind +
@@ -74,9 +187,265 @@ for `tar_target(name = fit, command = biglm(Ozone ~ Wind + Temp, data))`. All
 other arguments to `tar_target()` are set to their default values (configurable
 with `tar_option_set()`).
 
-```{targets fit, tar_simple = TRUE}
-biglm(Ozone ~ Wind + Temp, data)
+
+```{targets inla_surv_model, tar_simple = TRUE, eval = TRUE}
+inla(
+  survival ~ 1 +
+    duration_m + com * ms * watering +
+    ter +
+    species +
+    f(IDtp, model = "z",
+      Z = as(model.matrix(~ 0 + ter:plot, data = surv_data_modelling), "Matrix")) +
+    f(IDtpl, model = "z",
+      Z = as(model.matrix(~ 0 + ter:plot:label, data = surv_data_modelling), "Matrix")),
+    data = rbind(surv_data_modelling, pred_surv_data),
+    family = "binomial",
+    control.predictor = list(compute = TRUE, link = 1)
+)
 ```
+
+```{targets inla_surv_sp_model, tar_simple = TRUE, eval = TRUE}
+inla(
+  survival ~ 1 +
+    duration_m + com * ms * watering * species +
+    ter +
+    f(IDtp, model = "z",
+      Z = as(model.matrix(~ 0 + ter:plot, data = surv_data_modelling), "Matrix")) +
+    f(IDtpl, model = "z",
+      Z = as(model.matrix(~ 0 + ter:plot:label, data = surv_data_modelling), "Matrix")),
+    data = rbind(surv_data_modelling, pred_surv_data),
+    family = "binomial",
+    control.predictor = list(compute = TRUE, link = 1)
+)
+```
+
+```{targets model-effects, eval=TRUE}
+list(
+tar_target(inla_surv_effects, get_hpdmarginal_inla(inla_surv_model, type = "fixed")),
+tar_target(inla_surv_odd, inla_surv_effects %>%
+  mutate(across(c(low, high, mean), ~ exp(.x)))
+),
+tar_target(inla_surv_perc, inla_surv_effects %>%
+  mutate(across(c(low, high, mean), ~ (exp(.x) - 1) * 100))
+),
+tar_target(inla_surv_pred,
+  inla_surv_model$summary.fitted.values[(nrow(surv_data_modelling) + 1):nrow(inla_surv_model$summary.fitted.values),] %>%
+    cbind(pred_surv_data[, c("duration_m", "ms", "com", "watering", "species")]) %>%
+    as_tibble()
+    ),
+tar_target(inla_surv_sp_effects, get_hpdmarginal_inla(inla_surv_sp_model, type = "fixed")),
+tar_target(inla_surv_sp_odd, inla_surv_sp_effects %>%
+  mutate(across(c(low, high, mean), ~ exp(.x)))
+),
+tar_target(inla_surv_sp_perc, inla_surv_sp_effects %>%
+  mutate(across(c(low, high, mean), ~ (exp(.x) - 1) * 100))
+),
+tar_target(inla_surv_sp_pred,
+  inla_surv_sp_model$summary.fitted.values[(nrow(surv_data_modelling) + 1):nrow(inla_surv_sp_model$summary.fitted.values),] %>%
+    cbind(pred_surv_data[, c("duration_m", "ms", "com", "watering", "species")]) %>%
+    as_tibble()
+  )
+)
+```
+
+## Model for basal diameter and height
+
+```{targets model-biomass-trait, eval = TRUE}
+list(
+  tar_target(biomass_trait, c("d", "h", "hm", "bm")),
+  tar_target(bm_inla,
+    tibble(
+      response = biomass_trait,
+      mod = list(try(inla(
+            formula = formula_inla(
+              response = biomass_trait,
+              dataset_name = "surv_data_modelling"),
+            control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE,
+              return.marginals=TRUE, return.marginals.predictor=TRUE),
+            control.predictor = list(compute = T),
+            verbose = F,
+            data = rbind(surv_data_modelling, pred_surv_data),
+            )))),
+    pattern = map(biomass_trait)
+    ),
+  tar_target(bm_inla_pred,
+    bm_inla %>%
+      mutate(pred = map(mod,
+          ~.x$summary.fitted.values[(nrow(surv_data_modelling) + 1):nrow(.x$summary.fitted.values),] %>%
+        cbind(pred_surv_data[, c("duration_m", "ms", "com", "watering", "species")]) %>%
+        as_tibble())) %>%
+    select(-mod) %>%
+    unnest(cols = c(pred))
+  ),
+  tar_target(bm_inla_effects, format_inla_model_list(x = bm_inla)),
+  tar_target(bm_inla_scaled,
+    tibble(
+      response = biomass_trait,
+      mod = list(try(inla(
+            formula = formula_inla(
+              response = biomass_trait,
+              dataset_name = "surv_data_modelling_scaled"),
+            control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE,
+              return.marginals=TRUE, return.marginals.predictor=TRUE),
+            control.predictor = list(compute = T),
+            verbose = F,
+            data = surv_data_modelling_scaled,
+            )))),
+    pattern = map(biomass_trait)
+    ),
+  tar_target(bm_inla_scaled_effects, format_inla_model_list(x = bm_inla_scaled)),
+  tar_target(bm_inla_sp,
+    tibble(
+      response = biomass_trait,
+      mod = list(try(inla(
+            formula = formula_inla(
+              response = biomass_trait,
+              species = TRUE,
+              dataset_name = "surv_data_modelling"),
+            control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE,
+              return.marginals=TRUE, return.marginals.predictor=TRUE),
+            control.predictor = list(compute = T),
+            verbose = F,
+            data = rbind(surv_data_modelling, pred_surv_data),
+            )))),
+    pattern = map(biomass_trait)
+    ),
+  tar_target(bm_inla_sp_effects, format_inla_model_list(x = bm_inla_sp)),
+  tar_target(bm_inla_sp_pred,
+    bm_inla_sp %>%
+      mutate(pred = map(mod,
+          ~.x$summary.fitted.values[(nrow(surv_data_modelling) + 1):nrow(.x$summary.fitted.values),] %>%
+        cbind(pred_surv_data[, c("duration_m", "ms", "com", "watering", "species")]) %>%
+        as_tibble())) %>%
+    select(-mod) %>%
+    unnest(cols = c(pred))
+  ),
+  tar_target(bm_inla_sp_scaled,
+    tibble(
+      response = biomass_trait,
+      mod = list(try(inla(
+            formula = formula_inla(
+              response = biomass_trait,
+              species = TRUE,
+              dataset_name = "surv_data_modelling_scaled"),
+            control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE,
+              return.marginals=TRUE, return.marginals.predictor=TRUE),
+            control.predictor = list(compute = T),
+            verbose = F,
+            data = surv_data_modelling_scaled,
+            )))),
+    pattern = map(biomass_trait)
+    ),
+  tar_target(bm_inla_sp_scaled_effects, format_inla_model_list(x = bm_inla_sp_scaled))
+)
+```
+
+## Compute plant-plant interaction from model prediction
+
+```{targets pp_int, tar_simple = TRUE}
+rbind(bm_inla_sp_pred,
+  inla_surv_sp_pred %>%
+    mutate(response = "survival")
+  ) %>%
+  select(-c(sd, `0.5quant`, mode)) %>%
+  pivot_wider(
+    names_from = ms,
+    names_glue = "{ms}_{.value}",
+    values_from = c(mean, `0.025quant`, `0.975quant`)
+  ) %>%
+  mutate(
+    inta = n_int_a(without = Open_mean, with_nbs = Patch_mean),
+    inta_low = n_int_a(without = Open_0.025quant, with_nbs = Patch_0.025quant),
+    inta_high = n_int_a(without = Open_0.975quant, with_nbs = Patch_0.975quant),
+    intc = n_int_c(without = Open_mean, with_nbs = Patch_mean),
+    intc_low = n_int_c(without = Open_0.025quant, with_nbs = Patch_0.025quant),
+    intc_high = n_int_c(without = Open_0.975quant, with_nbs = Patch_0.975quant)
+  )
+```
+
+```{targets pp_int_global, tar_simple = TRUE}
+rbind(bm_inla_pred, inla_surv_pred %>% mutate(response = "survival")) %>%
+  select(-c(sd, `0.5quant`, mode)) %>%
+  pivot_wider(
+    names_from = ms,
+    names_glue = "{ms}_{.value}",
+    values_from = c(mean, `0.025quant`, `0.975quant`)
+  ) %>%
+  mutate(
+    inta = n_int_a(without = Open_mean, with_nbs = Patch_mean),
+    inta_low = n_int_a(without = Open_0.025quant, with_nbs = Patch_0.025quant),
+    inta_high = n_int_a(without = Open_0.975quant, with_nbs = Patch_0.975quant),
+    intc = n_int_c(without = Open_mean, with_nbs = Patch_mean),
+    intc_low = n_int_c(without = Open_0.025quant, with_nbs = Patch_0.025quant),
+    intc_high = n_int_c(without = Open_0.975quant, with_nbs = Patch_0.975quant)
+  )
+```
+
+
+## Model for leaf trait
+
+```{r}
+tar_load(leaf_trait_modelling)
+```
+
+```{targets model-leaf-trait, eval = TRUE}
+list(
+  tar_target(leaf_trait_var, c("ldmc", "sla")),
+  tar_target(leaf_inla,
+    tibble(
+      response = leaf_trait_var,
+      mod = list(try(inla(
+            formula = formula_inla(
+              response = leaf_trait_var,
+              time = FALSE,
+              dataset_name = "leaf_trait_modelling"),
+            control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE,
+              return.marginals=TRUE, return.marginals.predictor=TRUE),
+            control.predictor = list(link = 1, compute = T),
+            verbose = F,
+            data = leaf_trait_modelling,
+            )))),
+    pattern = map(leaf_trait_var)
+    ),
+  tar_target(leaf_inla_scaled,
+    tibble(
+      response = leaf_trait_var,
+      mod = list(try(inla(
+            formula = formula_inla(
+              response = leaf_trait_var,
+              time = FALSE,
+              dataset_name = "leaf_trait_modelling_scaled"),
+            control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE,
+              return.marginals=TRUE, return.marginals.predictor=TRUE),
+            control.predictor = list(link = 1, compute = T),
+            verbose = F,
+            data = leaf_trait_modelling_scaled,
+            )))),
+    pattern = map(leaf_trait_var)
+    ),
+  tar_target(leaf_inla_effects_scaled, format_inla_model_list(x = leaf_inla_scaled)),
+  tar_target(leaf_inla_sp_scaled,
+    tibble(
+      response = leaf_trait_var,
+      mod = list(try(inla(
+            formula = formula_inla(
+              response = leaf_trait_var,
+              time = FALSE,
+              species = TRUE,
+              dataset_name = "leaf_trait_modelling_scaled"),
+            control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE,
+              return.marginals=TRUE, return.marginals.predictor=TRUE),
+            control.predictor = list(link = 1, compute = T),
+            verbose = F,
+            data = leaf_trait_modelling_scaled,
+            )))),
+    pattern = map(leaf_trait_var)
+    ),
+  tar_target(leaf_inla_sp_scaled_effects, format_inla_model_list(x = leaf_inla_sp_scaled))
+)
+```
+
+
 
 # Pipeline
 
@@ -88,16 +457,139 @@ tar_make()
 
 # Output
 
-You can retrieve results from the `_targets/` data store using `tar_read()` or `tar_load()`.
+```{r}
+library(tidyverse)
+library(magrittr)
+library(here)
+library(zoo)
+library(moments)
+source(here::here("R","basic_stat.R"))
+source(here::here("R","inla_helpers.R"))
+source(here::here("R","clean_data.R"))
+source(here::here("R","string_replacements.R"))
+```
 
-```{r, message = FALSE}
-library(biglm)
-tar_read(fit)
+
+```{r}
+tar_load(inla_surv_model)
+summary(inla_surv_model)
 ```
 
 ```{r}
-tar_read(hist)
+tar_load(c(inla_surv_effects, inla_surv_perc))
+plot_inla_fixed_effect(inla_surv_effects, color_var = NULL)
+plot_inla_fixed_effect(inla_surv_perc, color_var = NULL)
 ```
+
+```{r}
+```
+
+
+
+```{r}
+tar_load(c(inla_surv_sp_model, inla_surv_sp_effects))
+plot_inla_fixed_effect(inla_surv_sp_effects, color_var = NULL)
+```
+
+```{r}
+tar_load(c(bm_inla_effects))
+plot_inla_fixed_effect(bm_inla_effects, color_var = response)
+```
+
+```{r}
+tar_load(c(leaf_inla_effects))
+plot_inla_fixed_effect(
+  leaf_inla_effects %>%
+    filter(response != "sla")
+)
+plot_inla_fixed_effect(
+  leaf_inla_effects %>%
+    filter(response != "ldmc")
+)
+```
+
+```{r}
+tar_load(leaf_trait)
+moments_leaf_trait <- leaf_trait %>%
+  pivot_longer(cols = c(ldmc, sla), names_to = "trait", values_to = "values") %>%
+  group_by(ms, com, watering, species, trait) %>%
+  summarise(n = sum(!is.na(values)),
+    variance = var(values, na.rm = TRUE),
+    kurt = moments::kurtosis(values, na.rm = TRUE),
+    sk = skewness(values, na.rm = TRUE)
+  ) %>%
+  filter(n >= 5)
+
+moments_leaf_trait %>%
+  ggplot(aes(x = com, y = n, color = ms, linetype = watering)) +
+  geom_boxplot() +
+  facet_grid(rows = vars(trait), cols = vars(species), scales = "free_y")
+moments_leaf_trait %>%
+  ggplot(aes(x = com, y = variance, color = ms, linetype = watering)) +
+  geom_boxplot() +
+  facet_grid(rows = vars(trait), cols = vars(species), scales = "free_y")
+```
+
+```{r}
+total_variance <- leaf_trait %>%
+  pivot_longer(cols = c(ldmc, sla), names_to = "trait", values_to = "values") %>%
+  group_by(ms, com, watering, trait) %>%
+  summarise(
+    n = n(),
+    total_variance = var(values, na.rm = TRUE),
+    .groups = "drop"
+    )
+tip_ic <- moments_leaf_trait %>%
+  select(-n) %>%
+  group_by(ms, com, watering, trait) %>%
+  summarise(sum_ip = mean(variance)) %>%
+  left_join(total_variance, by = c("ms", "com", "watering", "trait")) %>%
+  group_by(ms, com, watering, trait) %>%
+  summarise(tip_ic = sum_ip / total_variance, .groups = "drop")
+
+tip_ic %>%
+  ggplot(aes(x = com, y = tip_ic, color = ms, linetype = watering)) +
+  geom_boxplot() +
+  geom_point() +
+  facet_grid(rows = vars(trait), scales = "free_y")
+```
+
+```{r}
+library(cowplot)
+tar_load(c(biomass_t0, surv_data))
+biomass_t0 %>%
+  pivot_longer(c(d, h), names_to = "variable", values_to = "values") %>%
+  ggplot(aes(x = values, y = bm_total, color = species)) +
+  geom_point() +
+  facet_wrap(~variable, scales = "free")
+
+
+surv_data %>%
+  select(duration_m, species, d, h) %>%
+  rbind(biomass_t0 %>% select(duration_m, species, d, h)) %>%
+  pivot_longer(c(d, h), names_to = "variable", values_to = "values") %>%
+  mutate(type = ifelse(duration_m == 0, "laboratory", "field")) %>%
+  ggplot(aes(x = values, color = type)) +
+  geom_density() +
+  facet_wrap(variable ~ species, scales = "free")
+plot_grid(
+  biomass_t0 %>%
+    ggplot(aes(x = dia1)) +
+    geom_density() +
+    facet_grid(cols = vars(species)),
+  surv_data %>%
+    ggplot(aes(x = d)) +
+    geom_density() +
+    facet_grid(cols = vars(species))
+)
+```
+```{r}
+tar_load(surv_data)
+```
+
+
+
+
 
 The `targets` dependency graph helps your readers understand the steps of your pipeline at a high level.
 
