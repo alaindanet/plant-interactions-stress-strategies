@@ -1,5 +1,5 @@
 ---
-title: "Supplementary Figures"
+title: "Supplementary information"
 author: "Alain Danet, Susana Bautista, ..., Fabien Anthelme, Sonia Kéfi"
 date: ""
 output:
@@ -10,7 +10,6 @@ output:
     number_sections: false
   officedown::rdocx_document:
 bibliography: "bibliography.bib"
-csl: "nature.csl"
 link-citations: true
 toc: false
 linestretch: 2.0
@@ -21,6 +20,8 @@ library(rmarkdown)
 library(officedown)
 knitr::opts_chunk$set(echo = FALSE,
                       collapse = TRUE,
+                      message = FALSE,
+                      warnings = FALSE,
                       comment = "#>",
                       fig.path = "graphics/knitr-",
                       fig.retina = 1.618, # Control using dpi
@@ -61,16 +62,10 @@ if (Sys.info()["login"] == "alain") {
 tar_load(biomass_modelling)
 tar_load(biomass_modelling_r2)
 tar_load(biomass_t0)
+tar_load(surv_data_modelling)
 ```
 
-```{r}
-
-biomass_t0$bm_total_pred <- exp(predict(biomass_modelling$log_mod_bm_tot_h))
-biomass_t0 %>%
-  ggplot(aes(x = bm_total, y = bm_total_pred, color = species)) +
-  geom_point() +
-  geom_abline(slope = 1, intercept = 0)
-
+```{r, eval = FALSE}
 biomass_t0 %>%
   ggplot(aes(y = log(bm_total), x = log_d, color = species)) +
   geom_point() +
@@ -81,10 +76,158 @@ biomass_t0 %>%
   geom_smooth(method = "lm")
 ```
 
+```{r}
+bm_pred_cap <- "Predicted vs observed total biomass. The measurement were done
+at the begining of the experiment (See methods). 12 individuals per species."
+```
+
+
+```{r bm-pred, fig.cap = bm_pred_cap}
+biomass_t0$bm_total_pred <- exp(predict(biomass_modelling$log_mod_bm_tot_h))
+biomass_t0 %>%
+  ggplot(aes(x = bm_total, y = bm_total_pred, color = species)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0) +
+  labs(y = "Predicted total biomass", x = "Observed total biomass") +
+  theme_bw() +
+  theme(legend.position = "bottom")
+```
+
+```{r}
+r2_model <- biomass_modelling_r2 %>%
+  filter(model == "log_mod_bm_tot_h") %>%
+  slice(1) %>%
+  pivot_longer(-model, names_to = "var", values_to = "values") %>%
+  select(-model) %>%
+  deframe() %>%
+  round(., 2)
+```
+
+```{r}
+mod_cap <- paste0("Coefficients of the statistical model predicting total
+  biomass from basal diameter and vegetative height.", " R2 = ", r2_model["R2"],
+  ", Adjusted R2 = ", r2_model["R2_adjusted"], ".")
+```
+
+
+
+```{r}
+broom::tidy(biomass_modelling$log_mod_bm_tot_h) %>%
+  kable(caption = mod_cap, label = "tab:pred_bm")
+```
+
+```{r}
+na_cap <- "Number of missing values by variable during the experiment. The vegetative height
+of the dead saplings was not measured. Then total biomass estimation has than roughly
+the same amount of missing values than vegetative height, far more than basal
+diameter. However considering total biomass or basal diameter gave roughly the
+same results (Fig. SXX)."
+```
+
+
+```{r na-fig, fig.cap = na_cap}
+surv_data_modelling %>%
+  select(duration_m, bm, d, h, survival) %>%
+  pivot_longer(cols = c(bm, d, h, survival), names_to = "variable", values_to = "values") %>%
+  group_by(duration_m, variable) %>%
+  mutate(variable = response_replacement()[variable]) %>%
+  summarise(n_na = sum(is.na(values))) %>%
+  ggplot(aes(x = duration_m + 6, y = n_na)) +
+  geom_line() +
+  facet_grid(cols = vars(variable)) +
+  labs(
+    x = "Number of month since the beginning of the experiment",
+    y = "Number of NAs") +
+  theme_bw()
+```
+
+
+```{r}
+obs_fit_cap <- "Observed versus fitted values from the statistical models at the
+community level for (a) survival, (b) total biomass, (c) LDMC and (d) SLA."
+```
+
+
+```{r obs-fit, fig.cap = obs_fit_cap}
+#tar_load(c(p_obs_fit_surv, p_obs_fit_leaf, p_obs_fit))
+tar_read(p_obs_fit_tot)
+```
+
+```{r}
+obs_fit_sp_cap <- "Observed versus fitted values from the statistical models at the
+species level for (a) survival, (b) total biomass, (c) LDMC and (d) SLA."
+```
+
+```{r obs-fit-sp, fig.cap =obs_fit_sp_cap}
+#tar_load(c(p_obs_fit_surv_sp, p_obs_fit_sp_leaf, p_obs_fit_sp))
+tar_read(p_obs_fit_sp_tot)
+```
+
+
+## Results
+
+```{r}
+library(INLA)
+ti <- map_dbl(leaf_inla$mod[[1]]$marginals.fitted.values,
+            ~var(inla.rmarginal(1000, .x)))
+gaussian_inla_var_fitted
+rbind(leaf_inla) %>%
+      mutate(
+        var_pred = map(mod, function(y) {
+          map_dbl(y$marginals.fitted.values,
+            ~var(inla.rmarginal(1000, .x))
+          )
+        }
+          )
+      ) %>%
+    select(-mod)
+```
+
 
 ```{r}
 tar_load(c(inla_surv_sp_effects, inla_surv_sp_odd))
+```
 
+```{r, results = "hide"}
+surv_species <- plot_inla_fixed_effect(
+  inla_surv_sp_odd %>%
+    filter(str_detect(term, "dorycnium|pistachia")),
+  color_var = NULL,
+  intercept = 1
+  ) +
+  labs(x = "Odd-ratio (exp(beta))") +
+  theme(
+    axis.title.y = element_blank(),
+    axis.text.y.right = element_blank(),
+    axis.ticks.y.right = element_blank()
+    ) +
+  scale_x_break(c(15, 70))
+surv_base <- plot_inla_fixed_effect(inla_surv_sp_odd %>%
+    filter(!str_detect(term, "dorycnium|pistachia")),
+  color_var = NULL,
+  intercept = 1) +
+  labs(x = "Odd-ratio (exp(beta))") +
+  theme(
+    axis.title.y = element_blank(),
+    axis.text.y.right = element_blank(),
+    axis.ticks.y.right = element_blank()
+    ) +
+  scale_x_break(c(15, 31))
+```
+
+```{r}
+surv_sp_effects_cap <- "Odd-ratio for the statistical models at
+the species level for survival probability. (a) Effects for Anthyllis citisoides (i.e. the reference
+  species factor) and (b) effect modification across Dorycnium pentaphyllum and
+Pistacia lentiscus."
+```
+
+```{r surv-sp-effect, fig.cap = surv_sp_effects_cap}
+plot_grid(print(surv_base), print(surv_species), labels = "auto")
+```
+
+
+```{r}
 s_t <- get_effect_ci(effect = inla_surv_sp_odd, term = "duration_m", ci_lvl =
   "0.95", p = FALSE, r = 2)
 
@@ -120,54 +263,6 @@ s_wcp <- get_effect_ci(effect = inla_surv_sp_odd, term = "comPoly:wateringWatere
 s_wcma <- get_effect_ci(effect = inla_surv_sp_odd, term = "comPoly:msPatch:wateringWatered", ci_lvl = "0.95")
 s_wcmd <- get_effect_ci(effect = inla_surv_sp_odd, term = "comPoly:msPatch:wateringWatered:speciesdorycnium", ci_lvl = "0.80")
 s_wcmp <- get_effect_ci(effect = inla_surv_sp_odd, term = "comPoly:msPatch:wateringWatered:speciespistachia", ci_lvl = "0.80")
-unique(inla_surv_perc$term)
-```
-
-```{r}
-plot_inla_fixed_effect(inla_surv_odd, color_var = NULL, intercept = 1) +
-  labs(x = "Change in survival likelihood (%)") +
-  theme(axis.title.y = element_blank())
-```
-
-```{r}
-tar_load(c(inla_surv_effects, inla_surv_odd))
-
-s_t <- get_effect_ci(effect = inla_surv_odd, term = "duration_m", ci_lvl =
-  "0.95", p = FALSE, r = 2)
-
-s_dor <- get_effect_ci(effect = inla_surv_odd, term = "speciesdorycnium",
-  ci_lvl = "0.95")
-s_pis <- get_effect_ci(effect = inla_surv_odd, term =
-  "speciespistachia", ci_lvl = "0.95")
-
-s_ca <- get_effect_ci(effect = inla_surv_odd, term = "comPoly", ci_lvl = "0.95", p = FALSE, r = 2)
-s_cd <- get_effect_ci(effect = inla_surv_odd, term = "comPoly:speciesdorycnium", ci_lvl = "0.95", p = FALSE, r = 2)
-s_cp <- get_effect_ci(effect = inla_surv_odd, term = "comPoly:speciespistachia", ci_lvl = "0.95", r = 0)
-
-s_ma <- get_effect_ci(effect = inla_surv_odd, term = "msPatch", ci_lvl = "0.80")
-s_md <- get_effect_ci(effect = inla_surv_odd, term = "msPatch:speciesdorycnium", ci_lvl = "0.80")
-s_mp <- get_effect_ci(effect = inla_surv_odd, term = "msPatch:speciespistachia", ci_lvl = "0.80")
-
-s_cma <- get_effect_ci(effect = inla_surv_odd, term = "comPoly:msPatch", ci_lvl = "0.90")
-s_cmd <- get_effect_ci(effect = inla_surv_odd, term = "comPoly:msPatch:speciesdorycnium", ci_lvl = "0.80")
-s_cmp <- get_effect_ci(effect = inla_surv_odd, term = "comPoly:msPatch:speciespistachia", ci_lvl = "0.80")
-
-s_wa <- get_effect_ci(effect = inla_surv_odd, term = "wateringWatered", ci_lvl = "0.95")
-s_wd <- get_effect_ci(effect = inla_surv_odd, term = "wateringWatered:speciesdorycnium", ci_lvl = "0.80")
-s_wp <- get_effect_ci(effect = inla_surv_odd, term = "wateringWatered:speciespistachia", ci_lvl = "0.95")
-
-s_wma <- get_effect_ci(effect = inla_surv_odd, term = "msPatch:wateringWatered", ci_lvl = "0.80")
-s_wmd <- get_effect_ci(effect = inla_surv_odd, term = "msPatch:wateringWatered:speciesdorycnium", ci_lvl = "0.80")
-s_wmp <- get_effect_ci(effect = inla_surv_odd, term = "msPatch:wateringWatered:speciespistachia", ci_lvl = "0.80")
-
-s_wca <- get_effect_ci(effect = inla_surv_odd, term = "comPoly:wateringWatered", ci_lvl = "0.95")
-s_wcd <- get_effect_ci(effect = inla_surv_odd, term = "comPoly:wateringWatered:speciesdorycnium", ci_lvl = "0.95")
-s_wcp <- get_effect_ci(effect = inla_surv_odd, term = "comPoly:wateringWatered:speciespistachia", ci_lvl = "0.95")
-
-s_wcma <- get_effect_ci(effect = inla_surv_odd, term = "comPoly:msPatch:wateringWatered", ci_lvl = "0.95")
-s_wcmd <- get_effect_ci(effect = inla_surv_odd, term = "comPoly:msPatch:wateringWatered:speciesdorycnium", ci_lvl = "0.80")
-s_wcmp <- get_effect_ci(effect = inla_surv_odd, term = "comPoly:msPatch:wateringWatered:speciespistachia", ci_lvl = "0.80")
-unique(inla_surv_perc$term)
 ```
 
 ---
@@ -202,13 +297,84 @@ unique(inla_surv_perc$term)
 ---
 
 ```{r}
-plot_inla_fixed_effect(bm_inla_scaled_effects,
+bm_d_effect <- "Coefficients of the statistical models at the community level
+comparing the effects for total biomass, basal diameter, and vegetative height
+(the last two being used to predict total biomass, see methods). The
+coefficients for total biomass and basal diameter are highly similar."
+
+```
+
+
+```{r fig.cap=bm_d_effect}
+tar_load(bm_inla_scaled_effects)
+ti <- bm_inla_scaled_effects %>%
+  filter(response %in% c("d", "bm", "h")) %>%
+  mutate(response = response_replacement()[response])
+plot_inla_fixed_effect(ti,
   color_var = response, intercept = 0) +
-  labs(x = "Change in survival likelihood (%)") +
-  theme(axis.title.y = element_blank())
+  labs(x = "Standardized coefficients", color = "Variable") +
+  theme(
+    axis.title.y = element_blank(),
+    legend.position = "bottom"
+  )
 ```
 
 ```{r}
+tar_load(c(bm_inla_sp_scaled_effects, leaf_inla_sp_scaled_effects))
+bm_leaf_sp_scaled_effects <- rbind(
+  bm_inla_sp_scaled_effects,
+  leaf_inla_sp_scaled_effects
+) %>%
+  filter(response %in% c("bm", "ldmc", "sla")) %>%
+  mutate(response = response_replacement()[response])
+
+effect_species <- plot_inla_fixed_effect(
+  bm_leaf_sp_scaled_effects %>%
+    filter(str_detect(term, "dorycnium|pistachia")), #, response %in% c("d", "h")
+  color_var = response) +
+  labs(x = "Standardized coefficients", color = "Response") +
+  theme(
+    axis.title.y = element_blank(),
+    legend.position = "bottom"
+  )
+
+effect_base <- plot_inla_fixed_effect(bm_leaf_sp_scaled_effects %>%
+    filter(!str_detect(term, "dorycnium|pistachia")), #, response %in% c("d", "h")
+  color_var = response) +
+  labs(x = "Standardized coefficients", color = "Response") +
+  theme(
+    axis.title.y = element_blank(),
+    legend.position = "bottom"
+  )
+```
+
+```{r}
+bm_sp_effects_cap <- "Standardized coefficients for the statistical models at
+the species level. (a) Effects for Anthyllis citisoides (i.e. the reference
+  species factor) and (b) effect modification across Dorycnium pentaphyllum and
+Pistacia lentiscus. Effects of time are not present in leaf trait model as they
+appeared only once."
+```
+
+
+```{r bm-sp-effects, fig.cap = bm_sp_effects_cap}
+leg_effect <- get_legend(effect_base)
+plot_grid(
+  plot_grid(
+    effect_base + theme(legend.position = "none"),
+    effect_species + theme(legend.position = "none"),
+    labels = "auto",
+    ncol = 2
+    ),
+  leg_effect,
+  nrow = 2,
+  rel_heights = c(1, .05)
+  )
+```
+
+
+```{r}
+tar_load(c(leaf_trait, leaf_inla_sp_scaled_effects))
 ldmc_scaled_effects <- leaf_inla_sp_scaled_effects %>%
   filter(response == "ldmc")
 l_t <- get_effect_ci(effect = ldmc_scaled_effects, term = "duration_m", ci_lvl =
@@ -239,27 +405,13 @@ l_wcma <- get_effect_ci(effect = ldmc_scaled_effects, term = "comPoly:msPatch:wa
 l_wcmd <- get_effect_ci(effect = ldmc_scaled_effects, term = "comPoly:msPatch:wateringWatered:speciesdorycnium", ci_lvl = "0.80")
 l_wcmp <- get_effect_ci(effect = ldmc_scaled_effects, term = "comPoly:msPatch:wateringWatered:speciespistachia", ci_lvl = "0.80")
 ```
+
 Leaf traits were found to vary across treatments, traits, and species.
 *Pistachia lentiscus* and *Dorycnium pentaphyllum* had overall and higher LDMC
 and lower SLA than *Anthyllis citisoides* (strong evidence). We did not find
 evidence for an overall effect of community diversity for leat trait in any species ().
 
 ```{r, eval = FALSE}
-tar_load(c(leaf_trait, leaf_inla_sp_scaled_effects))
-plot_inla_fixed_effect(leaf_inla_sp_scaled_effects)
-
-leaf_species <- plot_inla_fixed_effect(
-  leaf_inla_sp_scaled_effects %>%
-    filter(str_detect(term, "dorycnium|pistachia")), #, response %in% c("d", "h")
-  color_var = response) +
-  labs(x = "Change in survival likelihood (%)")
-leaf_base <- plot_inla_fixed_effect(leaf_inla_sp_scaled_effects %>%
-    filter(!str_detect(term, "dorycnium|pistachia")), #, response %in% c("d", "h")
-  color_var = response) +
-  labs(x = "Change in survival likelihood (%)")
-
-plot_grid(leaf_base, leaf_species)
-
 leaf_trait %>%
   group_by(ms, com, watering, species, plot) %>%
   summarise(ldmc = mean(ldmc)) %>%
@@ -268,54 +420,9 @@ leaf_trait %>%
   #geom_line(data = inla_surv_sp_pred, aes(y = mean, linetype = com)) +
   facet_grid(rows = vars(watering)) +
   theme_bw()
-
-
-```
-
-```{r}
-tar_load(bm_inla_sp_scaled_effects)
-
-bm_species <- plot_inla_fixed_effect(
-  bm_inla_sp_scaled_effects %>%
-    filter(str_detect(term, "dorycnium|pistachia")), #, response %in% c("d", "h")
-  color_var = response) +
-  labs(x = "Change in survival likelihood (%)")
-bm_base <- plot_inla_fixed_effect(bm_inla_sp_scaled_effects %>%
-    filter(!str_detect(term, "dorycnium|pistachia")), #, response %in% c("d", "h")
-  color_var = response) +
-  labs(x = "Change in survival likelihood (%)")
-
-plot_grid(bm_base, bm_species)
 ```
 
 ```{r, eval=FALSE}
-tar_load(inla_surv_sp_perc)
-surv_species <- plot_inla_fixed_effect(
-  inla_surv_sp_perc %>%
-    filter(str_detect(term, "dorycnium|pistachia")),
-  color_var = NULL) +
-  labs(x = "Change in survival likelihood (%)") +
-  theme(
-    axis.title.y = element_blank(),
-    axis.text.y.right = element_blank(),
-    axis.ticks.y.right = element_blank()
-    ) +
-  scale_x_break(c(1500, 8000))
-surv_base <- plot_inla_fixed_effect(inla_surv_sp_perc %>%
-    filter(!str_detect(term, "dorycnium|pistachia")),
-  color_var = NULL) +
-  labs(x = "Change in survival likelihood (%)") +
-  theme(
-    axis.title.y = element_blank(),
-    axis.text.y.right = element_blank(),
-    axis.ticks.y.right = element_blank()
-    ) +
-  scale_x_break(c(1500, 3000))
-
-plot_grid(print(surv_base), print(surv_species))
-```
-
-```{r, eval=TRUE}
 tar_load(c(surv_data, surv_data_modelling, inla_surv_pred))
 tar_load(inla_surv_sp_pred)
 tar_load(surv_raw_data)
@@ -369,16 +476,10 @@ surv_data_modelling %>%
 ```
 
 ```{r}
-int_tot %>%
-  select(response, duration_m, com, watering, species, response, inta) %>%
-  pivot_wider(names_from = "response", values_from = "inta") %>%
-  ggplot(aes(y = survival, x = duration_m, color = com, shape = watering)) +
-  geom_line() +
-  facet_grid(cols = vars(species)) +
-  theme_bw()
+tar_load(c(pp_int, pp_int_global))
 ```
 
-```{r, eval = FALSE}
+```{r, eval = TRUE}
 # Supplementary to show that interaction does not change through time
 pp_int %>%
   filter(response %in% c("bm", "d", "survival", "h")) %>%

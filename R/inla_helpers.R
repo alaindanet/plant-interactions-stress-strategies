@@ -135,39 +135,6 @@ r2_mvp <- function(
 
 }
 
-get_global_effect <- function (
-  effect = inla_no_drivers_effects,
-  resp = NULL,
-  ci_lvl = "level:0.95"
-  ) {
-
-  out <- effect %>%
-    filter(
-      ci_level == ci_lvl,
-      term == "log1_year_nb",
-      response == resp
-    )
-
-  out[, c("low", "high", "mean")] %>%
-    pivot_longer(everything()) %>%
-    deframe()
-}
-
-compute_trends_meaningful_units <- function (
-  x = NULL, resp = NULL, time = 10) {
-
-  if (resp %in% c("log_rich_std", "log_bm_std")) {
-    return(log_beta_to_perc_rate(x) * time)
-
-  } else if (resp %in% c("ct_ff", "w_trph_lvl_avg", "log_rich_std", "piel_nind",
-      "piel_bm", "prop_pisc_node", "prop_pisc_rich")) {
-    return(x * time)
-  } else {
-    stop("undefined resp")
-  }
-
-}
-
 get_std_inla_from_rand <- function (
   inla_rand_tab = NULL
   ) {
@@ -211,24 +178,6 @@ log_beta_to_perc_rate <- function (x) {
   (exp(x) - 1) * 100
 }
 
-get_global_effect <- function (
-  effect = glob_tps_trends_decade_no_drivers,
-  resp = NULL,
-  ci_lvl = "level:0.95"
-  ) {
-
-  out <- effect %>%
-    filter(
-      ci_level == ci_lvl,
-      term == "nb_year",
-      response == resp
-    )
-
-  out[, c("low", "high", "mean")] %>%
-    pivot_longer(everything()) %>%
-    deframe()
-}
-
 plot_credible_interval <- function (dataset) {
 
   # Borrowed from
@@ -257,41 +206,6 @@ plot_credible_interval <- function (dataset) {
     geom_hline(yintercept = 0, linetype = "dashed") +
     coord_flip()
 
-}
-
-plot_obs_fitted_inla <- function(
-  mod_inla = NULL,
-  dataset = NULL,
-  resp = NULL,
-  pred_nrows = NULL,
-  return_df = FALSE
-  ) {
-
-  fitted_values <- mod_inla$summary.fitted.values[["mean"]]
-
-  if (!is.null(pred_nrows)) {
-    row_selection <- length(fitted_values) - pred_nrows
-    fitted_values <-
-      fitted_values[1:row_selection]
-  }
-
-  obs_fit <- tibble(
-    response = resp,
-    siteid = dataset[["siteid"]],
-    year = dataset[["year"]],
-    fit = fitted_values,
-    obs = dataset[[resp]]
-  )
-
-  if (return_df) {
-    return(obs_fit)
-  }
-
-  obs_fit %>%
-    ggplot(aes(x = fit, y = obs)) +
-    geom_point(alpha = .5, size = 2) +
-    geom_abline(intercept = 0, slope = 1, color = "red") +
-    labs(x = "Fitted values", y = "Observed values")
 }
 
 plot_posterior_gaussian_sd <- function(inla_mod = NULL) {
@@ -525,4 +439,37 @@ get_pred_data <- function(x = surv_data_modelling,
     expand.grid()
   pred_surv_data[colnames(x)[!colnames(x) %in% predictor]] <- NA
   pred_surv_data
+}
+
+plot_obs_fitted_inla <- function(
+  mod_inla = NULL,
+  dataset = NULL,
+  resp = NULL,
+  pred_nrows = NULL,
+  return_df = FALSE
+  ) {
+
+  fitted_values <- mod_inla$summary.fitted.values[["mean"]]
+
+  if (!is.null(pred_nrows)) {
+    row_selection <- length(fitted_values) - pred_nrows
+    fitted_values <-
+      fitted_values[1:row_selection]
+  }
+
+  obs_fit <- tibble(
+    response = resp,
+    fit = fitted_values,
+    obs = dataset[[resp]]
+  )
+
+  if (return_df) {
+    return(obs_fit)
+  }
+
+  obs_fit %>%
+    ggplot(aes(x = fit, y = obs)) +
+    geom_point(alpha = .5, size = 2) +
+    geom_abline(intercept = 0, slope = 1, color = "red") +
+    labs(x = "Fitted values", y = "Observed values")
 }

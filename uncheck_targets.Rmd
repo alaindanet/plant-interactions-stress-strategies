@@ -51,7 +51,7 @@ library(magrittr)
 library(here)
 library(zoo)
 library(ecocom)
-tar_option_set(packages = c("tidyverse", "here", "magrittr", "lubridate", "INLA", "zoo", "ecocom"))
+tar_option_set(packages = c("tidyverse", "here", "magrittr", "lubridate", "INLA", "zoo", "ecocom", "cowplot"))
 source(here::here("R","inla_helpers.R"))
 source(here::here("R","clean_data.R"))
 source(here::here("R","string_replacements.R"))
@@ -149,6 +149,10 @@ list(
         IDtpli = seq_len(nrow(leaf_trait))
       )
   ),
+  tar_target(pred_leaf_data,
+    get_pred_data(x = leaf_trait_modelling,
+      predictor = c("com", "ms", "watering", "species"))
+  ),
   tar_target(leaf_trait_modelling_scaled,
     leaf_trait_modelling %>%
       mutate(across(c("ldmc", "sla"), ~scale(.x, center = TRUE, scale = TRUE)[,1]))
@@ -162,7 +166,7 @@ list(
       # Good model
       log_mod_bm_tot_h = lm(log(bm_total) ~ log_d + log_h + species, biomass_t0),
       mod_bm_tot_h = lm(bm_total ~ (d+h)*species, biomass_t0),
-      log_mod_bm_tot_h = lm(log(bm_total) ~ (log_d+log_h)*species, biomass_t0),
+      log_mod_bm_tot_h_sp = lm(log(bm_total) ~ (log_d+log_h)*species, biomass_t0),
       mod_bm_tot = lm(bm_total ~ (d)*species, biomass_t0),
       mod_bm_tot_simple = lm(bm_total ~ (d) + species, biomass_t0),
       log_mod_bm_tot = lm(log(bm_total) ~ (log_d)*species, biomass_t0),
@@ -200,6 +204,8 @@ inla(
       Z = as(model.matrix(~ 0 + ter:plot:label, data = surv_data_modelling), "Matrix")),
     data = rbind(surv_data_modelling, pred_surv_data),
     family = "binomial",
+    control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE,
+              return.marginals=TRUE, return.marginals.predictor=TRUE),
     control.predictor = list(compute = TRUE, link = 1)
 )
 ```
@@ -215,6 +221,8 @@ inla(
       Z = as(model.matrix(~ 0 + ter:plot:label, data = surv_data_modelling), "Matrix")),
     data = rbind(surv_data_modelling, pred_surv_data),
     family = "binomial",
+    control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE,
+              return.marginals=TRUE, return.marginals.predictor=TRUE),
     control.predictor = list(compute = TRUE, link = 1)
 )
 ```
@@ -384,10 +392,6 @@ rbind(bm_inla_pred, inla_surv_pred %>% mutate(response = "survival")) %>%
 
 ## Model for leaf trait
 
-```{r}
-tar_load(leaf_trait_modelling)
-```
-
 ```{targets model-leaf-trait, eval = TRUE}
 list(
   tar_target(leaf_trait_var, c("ldmc", "sla")),
@@ -403,10 +407,19 @@ list(
               return.marginals=TRUE, return.marginals.predictor=TRUE),
             control.predictor = list(link = 1, compute = T),
             verbose = F,
-            data = leaf_trait_modelling,
+            data = rbind(leaf_trait_modelling, pred_leaf_data),
             )))),
     pattern = map(leaf_trait_var)
     ),
+  tar_target(leaf_inla_pred,
+    leaf_inla %>%
+      mutate(pred = map(mod,
+          ~.x$summary.fitted.values[(nrow(leaf_trait_modelling) + 1):nrow(.x$summary.fitted.values),] %>%
+        cbind(pred_leaf_data[, c("ms", "com", "watering", "species")]) %>%
+        as_tibble())) %>%
+    select(-mod) %>%
+    unnest(cols = c(pred))
+  ),
   tar_target(leaf_inla_scaled,
     tibble(
       response = leaf_trait_var,
@@ -424,6 +437,33 @@ list(
     pattern = map(leaf_trait_var)
     ),
   tar_target(leaf_inla_effects_scaled, format_inla_model_list(x = leaf_inla_scaled)),
+  tar_target(leaf_inla_sp,
+    tibble(
+      response = leaf_trait_var,
+      mod = list(try(inla(
+            formula = formula_inla(
+              response = leaf_trait_var,
+              time = FALSE,
+              species = TRUE,
+              dataset_name = "leaf_trait_modelling"),
+            control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE,
+              return.marginals=TRUE, return.marginals.predictor=TRUE),
+            control.predictor = list(link = 1, compute = T),
+            verbose = F,
+            data = rbind(leaf_trait_modelling, pred_leaf_data),
+            )))),
+    pattern = map(leaf_trait_var)
+    ),
+  tar_target(leaf_inla_sp_pred,
+    leaf_inla_sp %>%
+      mutate(pred = map(mod,
+          ~.x$summary.fitted.values[(nrow(leaf_trait_modelling) + 1):nrow(.x$summary.fitted.values),] %>%
+        cbind(pred_leaf_data[, c("ms", "com", "watering", "species")]) %>%
+        as_tibble())) %>%
+    select(-mod) %>%
+    unnest(cols = c(pred))
+  ),
+  tar_target(leaf_inla_sp_effect, format_inla_model_list(x = leaf_inla_sp)),
   tar_target(leaf_inla_sp_scaled,
     tibble(
       response = leaf_trait_var,
@@ -444,6 +484,251 @@ list(
   tar_target(leaf_inla_sp_scaled_effects, format_inla_model_list(x = leaf_inla_sp_scaled))
 )
 ```
+
+# Supplementary
+
+```{targets obs-fit}
+list(
+  tar_target(p_obs_fit,
+    map2(bm_inla$response, bm_inla$mod,
+      ~ plot_obs_fitted_inla(mod_inla = .y,
+        dataset = mutate(surv_data_modelling, surv = survival),
+        resp = .x,
+        pred_nrows = nrow(pred_surv_data),
+        return_df = FALSE) +
+      geom_rug(alpha = .5) +
+      theme_bw()
+    )
+    ),
+  tar_target(p_obs_fit_surv,
+    plot_obs_fitted_inla(mod_inla = inla_surv_model,
+      dataset = mutate(surv_data_modelling, surv = survival),
+      resp = "surv",
+      pred_nrows = nrow(pred_surv_data),
+      return_df = TRUE) %>%
+    arrange(fit) %>%
+    mutate(id = seq_len(n())) %>%
+    ggplot(aes(x = id, y = obs)) +
+    geom_point() +
+    geom_line(aes(y = fit)) +
+    labs(x = "Observation id", y = "Survival") +
+    theme_bw()
+  ),
+  tar_target(p_obs_fit_leaf,
+    map2(leaf_inla$response, leaf_inla$mod,
+      ~ plot_obs_fitted_inla(mod_inla = .y,
+        dataset = leaf_trait_modelling,
+        resp = .x,
+        pred_nrows = nrow(pred_leaf_data),
+        return_df = FALSE) +
+      geom_rug(alpha = .5) +
+      theme_bw()
+    )
+  ),
+  tar_target(p_obs_fit_sp,
+    map2(bm_inla_sp$response, bm_inla_sp$mod,
+      ~ plot_obs_fitted_inla(mod_inla = .y,
+        dataset = mutate(surv_data_modelling, surv = survival),
+        resp = .x,
+        pred_nrows = nrow(pred_surv_data),
+        return_df = FALSE) +
+      geom_rug(alpha = .5) +
+      theme_bw()
+    )
+    ),
+  tar_target(p_obs_fit_sp_leaf,
+    map2(leaf_inla_sp$response, leaf_inla_sp$mod,
+      ~ plot_obs_fitted_inla(mod_inla = .y,
+        dataset = leaf_trait_modelling,
+        resp = .x,
+        pred_nrows = nrow(pred_leaf_data),
+        return_df = FALSE) +
+      geom_rug(alpha = .5) +
+      theme_bw()
+    )
+    ),
+  tar_target(p_obs_fit_surv_sp,
+    plot_obs_fitted_inla(mod_inla = inla_surv_sp_model,
+      dataset = mutate(surv_data_modelling, surv = survival),
+      resp = "surv",
+      pred_nrows = nrow(pred_surv_data),
+      return_df = TRUE) %>%
+    arrange(fit) %>%
+    mutate(id = seq_len(n())) %>%
+    ggplot(aes(x = id, y = obs)) +
+    geom_point() +
+    geom_line(aes(y = fit)) +
+    labs(x = "Observation id", y = "Survival") +
+    theme_bw()
+  ),
+  tar_target(p_obs_fit_tot, plot_grid(
+    p_obs_fit_surv, p_obs_fit[[1]],
+    p_obs_fit_leaf[[1]], p_obs_fit_leaf[[2]],
+    labels = "auto"
+    )
+  ),
+  tar_target(p_obs_fit_sp_tot, plot_grid(
+    p_obs_fit_surv_sp, p_obs_fit_sp[[1]],
+    p_obs_fit_sp_leaf[[1]], p_obs_fit_sp_leaf[[2]],
+    labels = "auto"
+    )
+  )
+)
+```
+
+```{targets random-effects}
+list(
+  tar_target(inla_surv_random_effect,
+    tibble(
+      level = c("community", "species"),
+      rand = map(list(inla_surv_model, inla_surv_sp_model),
+        ~ get_hpdmarginal_inla(.x, type = "rand")
+      )
+      ) %>%
+    unnest(cols = rand)
+    ),
+  tar_target(bm_inla_rand_effects,
+    rbind(
+      bm_inla %>%
+        mutate(level = "community"),
+      bm_inla_sp %>%
+        mutate(level = "species")
+      ) %>%
+    mutate(rand = map(mod, ~ try(get_hpdmarginal_inla(.x, type = "rand")))) %>%
+    select(-mod) %>%
+    filter(!map_chr(rand, ~class(.x)[1]) == "try-error") %>%
+    unnest(cols = rand)
+  ),
+  tar_target(leaf_inla_rand_effects,
+    rbind(
+      leaf_inla %>%
+        mutate(level = "community"),
+      leaf_inla_sp %>%
+        mutate(level = "species")
+      ) %>%
+    mutate(rand = map(mod, ~ get_hpdmarginal_inla(.x, type = "rand"))) %>%
+    select(-mod) %>%
+    unnest(cols = rand)
+  )
+)
+```
+
+```{targets var-fitted}
+list(
+  tar_target(inla_surv_var_fitted, tibble(
+      level = c("community", "species"),
+      rand = map(list(inla_surv_model, inla_surv_sp_model),
+        function(y) {
+          map_dbl(y$marginals.fitted.values,
+            ~var(inla.rmarginal(1000, .x))
+          )
+        }
+          )
+      )),
+  tar_target(bm_inla_var_fitted,
+    rbind(
+      bm_inla %>%
+        mutate(level = "community"),
+      bm_inla_sp %>%
+        mutate(level = "species")
+      ) %>%
+    mutate(rand = map(mod,
+        function(y) {
+          map_dbl(y$marginals.fitted.values, ~var(inla.rmarginal(1000, .x)))
+        }
+      )) %>%
+    select(-mod)
+  ),
+  tar_target(leaf_inla_var_fitted,
+    rbind(
+      leaf_inla %>%
+        mutate(level = "community"),
+      leaf_inla_sp %>%
+        mutate(level = "species")
+      ) %>%
+    mutate(rand = map(mod,
+        function(y) {
+          map_dbl(y$marginals.fitted.values, ~var(inla.rmarginal(1000, .x)))
+        }
+      )
+    ) %>%
+    select(-mod)
+  )
+  )
+```
+
+```{targets var_fitted, tar_simple = TRUE}
+rbind(leaf_inla_var_fitted, bm_inla_var_fitted,
+  inla_surv_var_fitted %>%
+    mutate(response = "survival"))
+```
+
+
+```{targets var_rand_effect, tar_simple = TRUE}
+rbind(leaf_inla_rand_effects,
+  bm_inla_rand_effects,
+  inla_surv_random_effect %>%
+    mutate(response = "survival")
+  ) %>%
+  group_by(level) %>%
+  nest() %>%
+  mutate(ti = map(data, get_std_inla_from_rand)) %>%
+  select(-data) %>%
+  unnest(cols = ti)
+```
+
+```{targets r2, tar_simple = TRUE}
+var_fitted %>%
+  left_join(var_rand_effect, by = c("response", "level")) %>%
+  filter(!is.na(epsilon)) %>%
+  mutate(
+    r2_mvp_marg = pmap(
+      list(rand, IDtp, IDtpl, epsilon),
+      ~r2_mvp(var_pred = ..1, std_intercept = c(..2, ..3), epsilon = ..4, type = "marginal")
+      ),
+    r2_mvp_cond = pmap(
+      list(rand, IDtp, IDtpl, epsilon),
+      ~r2_mvp(var_pred = ..1, std_intercept = c(..2, ..3), epsilon = ..4, type = "conditional")
+      ),
+    r2_mvp_marg_mean = map_dbl(r2_mvp_marg, mean),
+    r2_mvp_marg_med = map_dbl(r2_mvp_marg, median),
+    r2_mvp_marg_sd = map_dbl(r2_mvp_marg, sd),
+    r2_mvp_cond_mean = map_dbl(r2_mvp_cond, mean),
+    r2_mvp_cond_med = map_dbl(r2_mvp_cond, median),
+    r2_mvp_cond_sd = map_dbl(r2_mvp_cond, sd),
+    lab_r2_marg = paste0("~~~~R^2 == ", round(r2_mvp_marg_med, 2)),
+    lab_r2_cond = paste0("~~~~R^2 == ", round(r2_mvp_cond_med, 2)),
+    r2_mvp_marg95hpd = map(r2_mvp_marg, ~coda::HPDinterval(coda::as.mcmc(.x))),
+    r2_mvp_marg95hpdci = map2_chr(r2_mvp_marg95hpd, r2_mvp_marg_mean,
+      ~paste0(
+        format(round(.y, 2), nsmall = 2),
+        " [",
+        format(round(.x[, "lower"], 2), nsmall = 2),
+        ",",
+        format(round(.x[, "upper"], 2), nsmall = 2),
+        "]")
+      ),
+    r2_mvp_cond95hpd = map(r2_mvp_cond, ~coda::HPDinterval(coda::as.mcmc(.x))),
+    r2_mvp_cond95hpdci = map2_chr(r2_mvp_cond95hpd, r2_mvp_cond_mean,
+      ~paste0(
+        format(round(.y, 2), nsmall = 2),
+        " [",
+        format(round(.x[, "lower"], 2), nsmall = 2),
+        ",",
+        format(round(.x[, "upper"], 2), nsmall = 2),
+        "]")
+      ),
+  )
+```
+
+
+```{r, eval=FALSE}
+tar_load(r2)
+r2 %>%
+  select(response, level, r2_mvp_marg95hpdci, r2_mvp_cond95hpdci)
+```
+
+
 
 
 
@@ -480,10 +765,6 @@ tar_load(c(inla_surv_effects, inla_surv_perc))
 plot_inla_fixed_effect(inla_surv_effects, color_var = NULL)
 plot_inla_fixed_effect(inla_surv_perc, color_var = NULL)
 ```
-
-```{r}
-```
-
 
 
 ```{r}
