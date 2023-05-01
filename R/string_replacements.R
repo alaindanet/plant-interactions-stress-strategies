@@ -51,3 +51,12 @@ species_replacement <- function(type = "short") {
   }
 
 }
+
+rand_term_replacement <- function() {
+  c(
+    epsilon = "Gaussian error",
+    IDtp = "Plot effect",
+    IDtpl = "Site effect"
+  )
+
+}

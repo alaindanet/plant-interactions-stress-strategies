@@ -279,10 +279,12 @@ predictors ($\sum_{j=1}\beta_{j}*T_j$).
 - $a_{p|j}, a_{i|p|j}, \epsilon_{i|p,z,t} \sim \mathcal{N}(0,\,\sigma^{2})$
 - $j$: terrace, $p$: plot, $i$: site, $t$: time $t$
 
-We added random effects on the intercept to capture spatial variations of the
-data. We accounted for random variations at the plot level (nested in the
-terrace level, $a_{p|j}$) and the site level (nested in the terrace and plot
-levels, $a_{i|p|j}$).
+We added random effects on the intercept to capture the variation associated
+with the hierarchical structure of the experimental design. We accounted for
+random variations at the plot level (nested in the terrace level, $a_{p|j}$) and
+the site level (nested in the terrace and plot levels, $a_{i|p|j}$). We removed
+random variations at the plot level for biomass as its effects was too small to
+be correctly estimated.
 
 All models except survival were modelled using a Gaussian response. The
 probability of survival ($p$) was modelled as a Binomial response with a logit
@@ -318,6 +320,37 @@ fitted versus the observed values (TODO). We visually inspected the PIT and
 CPO (respectively Posterior Integral Transform and Conditional Predictive
 Ordinate) distribution to assess both the quality of data representation, and
 the frequency of outliers.
+
+We computed $R^2$ to assess the quality of the fit of the bayesian models. We
+then computed marginal ($R^2_m$) and conditional ($R^2_c$) R-squared,
+respectively associated to the variance explained by fixed effects and the one
+explained by both fixed and random effects[@nakagawa_general_2013]. We only
+included the random effects on the intercept in the $R^2$ computation, i.e. the
+plot effect ($a_{p|j}$) and the site effect ($a_{i|p|j}$), as the inclusion of the
+variance attributed to random slopes is much more complex and was shown to not change
+the results [@nakagawa_general_2013; @lahuis_explained_2014]. We computed the
+variance associated with each predicted value from their posterior distribution,
+following recommendations to take in account the variability associated with
+the priors [@gelman_r-squared_2019]. We then reported the mean marginal and
+conditional $R^2$ associated the 95% credible interval computed using the
+Highest Posterior Density method. We did not compute $R^2$ for survival models
+as they do not contain residuals errors^[[source 1](https://stats.stackexchange.com/a/3562), [source 2](https://stats.stackexchange.com/a/124826)] (as logistic regression predicts a
+probability of survival while the data are binary).
+
+$$
+R^2_m = \dfrac{Var_{fit}}{Var_{fit} + Var_{res}} = \dfrac{\sigma^2(\hat{y_i})}{\sigma^2(\hat{y_i}) + \sigma^2(y_i - \hat{y_i})}
+$$
+
+$$
+R^2_c = \dfrac{Var_{fit} + (a_{p|j})^2 + (a_{i|p|j})^2}{Var_{fit}  + (a_{p|j})^2 + (a_{i|p|j})^2 + Var_{res}}
+$$
+
+$y_i$ and $\hat{y_i}$ being respectively the observations and the predicted
+values, $Var_{fit}$ and $Var_{res}$ being respectively the variance of
+predictive means and the variance of the residuals [@gelman_r-squared_2019].
+$a_{p|j}$ and $a_{i|p|j}$ are respectively the standard deviation on the random
+intercept associated to the plot and the site.
+
 
 ### Interaction strength
 
@@ -485,7 +518,8 @@ ggsave(
 
 ```{r}
 fig_surv_bm <- paste0("Slope of the statical models at the community level (left panel, a & c) and prectictions at the species level (right panel, b & d) for (a & b)
-  survival and (c & d) biomass. Survival coefficients (a) are the exponential of odd-ratios, values below and above 1 display respectively negative and positive effect on survival probability. Left panels: points represent the mean of the posterior distribution of coefficients; Thin, medium and large bars represent the credible interval at 95\\%, 90\\% and 80\\%. Right panels display the predictions of the model at the species level (See methods), points display the data averaged by plot (N = 12).")
+  survival and (c & d) biomass. Survival coefficients (a) are the exponential of odd-ratios, values below and above 1 display respectively negative and positive effect on survival probability. Left panels: points represent the mean of the posterior distribution of coefficients; Thin, medium and large bars represent the credible interval at 95\\%, 90\\% and 80\\%. Right panels display the predictions of the model at the species level (See methods), points display the data averaged by plot (N = 12).") %>%
+str_replace_all("\\s+", " ")
 ```
 
 
@@ -577,7 +611,8 @@ ggsave(
 lt_cap <- paste0("Effects of treatments on Leaf Dry Matter Content (LDMC) and
   Specific Leaf Area (SLA). Slope coefficients are standardized. Points
   represent the mean of the posterior distribution of coefficients; Thin, medium
-  and large bars represent the credible interval at 95\\%, 90\\% and 80\\%.")
+  and large bars represent the credible interval at 95\\%, 90\\% and 80\\%.") %>%
+str_replace_all("\\s+", " ")
 ```
 
 
@@ -746,7 +781,8 @@ ggsave(
 int_cap <- paste0("Net affects of the interaction sapling-shrub at the community
   (a, b) and at the species level (c, d) for survival (a, c) et biomass (b, d).
   Time is not displayed for biomass because net effect was not found to vary
-  across time (Fig. SXX).")
+  across time (Fig. SXX).") %>%
+str_replace_all("\\s+", " ")
 ```
 
 
@@ -811,7 +847,8 @@ among saplings, play an important role in driving the outcome of interactions
 between saplings and *A. herba-alba*.
 
 ```{r}
-idea_cap <- paste0("Including both abiotic stress and among beneficiary competition in the Stress Gradient hypothesis. (a) Both low/high competition among beneficiary species and abiotic stress result in a negative net effect between beneficiary and benefactors (1, 4). Positive net effects are more likely to arise if either competition among beneficiary is decreased by increasing diversity (2) or if abiotic stress is decreased (3). (b) Both the effects of abiotic stress and the level of competition among benefiaries can be map in the original SGH framework (Bertness & Callaway, 1994)")
+idea_cap <- paste0("Including both abiotic stress and among beneficiary competition in the Stress Gradient hypothesis. (a) Both low/high competition among beneficiary species and abiotic stress result in a negative net effect between beneficiary and benefactors (1, 4). Positive net effects are more likely to arise if either competition among beneficiary is decreased by increasing diversity (2) or if abiotic stress is decreased (3). (b) Both the effects of abiotic stress and the level of competition among benefiaries can be map in the original SGH framework (Bertness & Callaway, 1994)") %>%
+str_replace_all("\\s+", " ")
 ```
 
 

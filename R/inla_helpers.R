@@ -406,7 +406,9 @@ formula_inla <- function(
   response = "d",
   species = FALSE,
   time = TRUE,
-  dataset_name = "growth_data") {
+  dataset_name = "growth_data",
+  plot_effect = TRUE
+  ) {
 
   core_pred <- "ter + com * ms * watering"
 
@@ -424,11 +426,16 @@ formula_inla <- function(
     core_pred <- paste0(core_pred, " + species")
   }
 
-  as.formula(paste0(response, ' ~ 1 + ', core_pred,' +
-    f(IDtp, model = "z",
-      Z = as(model.matrix(~ 0 + ter:plot, data = ', dataset_name,'), "Matrix")) +
-    f(IDtpl, model = "z",
-      Z = as(model.matrix(~ 0 + ter:plot:label, data = ', dataset_name,'), "Matrix"))
+  if (plot_effect) {
+    pl <- paste0('f(IDtp, model = "z",
+    Z = as(model.matrix(~ 0 + ter:plot, data = ', dataset_name,'), "Matrix")) +')
+  } else {
+    pl <- ''
+  }
+
+  as.formula(paste0(response, ' ~ 1 + ', core_pred,' + ', pl,
+      'f(IDtpl, model = "z",
+        Z = as(model.matrix(~ 0 + ter:plot:label, data = ', dataset_name,'), "Matrix"))
     '))
 }
 

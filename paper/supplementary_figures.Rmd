@@ -78,7 +78,8 @@ biomass_t0 %>%
 
 ```{r}
 bm_pred_cap <- "Predicted vs observed total biomass. The measurement were done
-at the begining of the experiment (See methods). 12 individuals per species."
+at the begining of the experiment (See methods). 12 individuals per species." %>%
+str_replace_all("\\s+", " ")
 ```
 
 
@@ -106,7 +107,8 @@ r2_model <- biomass_modelling_r2 %>%
 ```{r}
 mod_cap <- paste0("Coefficients of the statistical model predicting total
   biomass from basal diameter and vegetative height.", " R2 = ", r2_model["R2"],
-  ", Adjusted R2 = ", r2_model["R2_adjusted"], ".")
+  ", Adjusted R2 = ", r2_model["R2_adjusted"], ".") %>%
+str_replace_all("\\s+", " ")
 ```
 
 
@@ -121,7 +123,8 @@ na_cap <- "Number of missing values by variable during the experiment. The veget
 of the dead saplings was not measured. Then total biomass estimation has than roughly
 the same amount of missing values than vegetative height, far more than basal
 diameter. However considering total biomass or basal diameter gave roughly the
-same results (Fig. SXX)."
+same results (Fig. SXX)." %>%
+str_replace_all("\\s+", " ")
 ```
 
 
@@ -144,7 +147,8 @@ surv_data_modelling %>%
 
 ```{r}
 obs_fit_cap <- "Observed versus fitted values from the statistical models at the
-community level for (a) survival, (b) total biomass, (c) LDMC and (d) SLA."
+community level for (a) survival, (b) total biomass, (c) LDMC and (d) SLA." %>%
+str_replace_all("\\s+", " ")
 ```
 
 
@@ -155,7 +159,8 @@ tar_read(p_obs_fit_tot)
 
 ```{r}
 obs_fit_sp_cap <- "Observed versus fitted values from the statistical models at the
-species level for (a) survival, (b) total biomass, (c) LDMC and (d) SLA."
+species level for (a) survival, (b) total biomass, (c) LDMC and (d) SLA." %>%
+str_replace_all("\\s+", " ")
 ```
 
 ```{r obs-fit-sp, fig.cap =obs_fit_sp_cap}
@@ -166,21 +171,68 @@ tar_read(p_obs_fit_sp_tot)
 
 ## Results
 
+
 ```{r}
-library(INLA)
-ti <- map_dbl(leaf_inla$mod[[1]]$marginals.fitted.values,
-            ~var(inla.rmarginal(1000, .x)))
-gaussian_inla_var_fitted
-rbind(leaf_inla) %>%
-      mutate(
-        var_pred = map(mod, function(y) {
-          map_dbl(y$marginals.fitted.values,
-            ~var(inla.rmarginal(1000, .x))
-          )
-        }
-          )
-      ) %>%
-    select(-mod)
+tar_load(r2)
+r2_tab <- r2 %>%
+  filter(response %in% c("ldmc", "sla", "bm", "d", "h")) %>%
+  arrange(level, response) %>%
+  select(
+    `Model scale` = level,
+    Variable = response,
+    `R2 marg.` = r2_mvp_marg95hpdci,
+    `R2 cond.` = r2_mvp_cond95hpdci
+    ) %>%
+  mutate(
+    `Model scale` = str_to_title(`Model scale`),
+    Variable = response_replacement()[Variable]
+  )
+
+r2_cap <- "R-Squared for the stastistical models at the community and the
+species level. Marginal R-squared takes in account fixed effects only while
+conditional R-squared accounts for the fixed and random effects. R-Squared were
+not computed for survival because gaussian errors are not defined for logistic
+regression (See methods). [95\\% CI]: Credible Interval computed using
+Highest Posterior Density method." %>%
+str_replace_all("\\s+", " ")
+
+r2_tab %>%
+  kbl(booktabs = T,
+    label = "tab-r2",
+    caption = r2_cap) %>%
+  collapse_rows(columns = c(1, 2), valign = "middle", latex_hline = "major") %>%
+  kable_styling(latex_options = c("hold_position"))
+```
+
+```{r}
+tar_load(rand_tab)
+
+rand_tab_ok <- rand_tab %>%
+  filter(response %in% c("ldmc", "sla", "bm", "d", "h")) %>%
+  arrange(level, response) %>%
+  mutate(
+    level = str_to_title(level),
+    response = response_replacement()[response],
+    term = rand_term_replacement()[term]
+  ) %>%
+  select(
+    `Model scale` = level,
+    Variable = response,
+    `Random effect (s.d.)` = sd_ci
+    )
+
+rand_cap <- "Standard deviations associated to  the stastistical models at the community and the
+species level. Gaussian error represents the general error term of the models.
+Plot effect was not kept for the total biomass model (see methods). [95\\% CI]:
+Credible Interval computed using Highest Posterior Density method." %>%
+str_replace_all("\\s+", " ")
+
+rand_tab_ok %>%
+  kbl(booktabs = T,
+    label = "tab-rand",
+    caption = rand_cap) %>%
+  collapse_rows(columns = c(1, 2), valign = "middle", latex_hline = "major") %>%
+  kable_styling(latex_options = c("hold_position"))
 ```
 
 
@@ -219,12 +271,15 @@ surv_base <- plot_inla_fixed_effect(inla_surv_sp_odd %>%
 surv_sp_effects_cap <- "Odd-ratio for the statistical models at
 the species level for survival probability. (a) Effects for Anthyllis citisoides (i.e. the reference
   species factor) and (b) effect modification across Dorycnium pentaphyllum and
-Pistacia lentiscus."
+Pistacia lentiscus." %>%
+str_replace_all("\\s+", " ")
 ```
 
 ```{r surv-sp-effect, fig.cap = surv_sp_effects_cap}
 plot_grid(print(surv_base), print(surv_species), labels = "auto")
 ```
+
+
 
 
 ```{r}
@@ -353,7 +408,8 @@ bm_sp_effects_cap <- "Standardized coefficients for the statistical models at
 the species level. (a) Effects for Anthyllis citisoides (i.e. the reference
   species factor) and (b) effect modification across Dorycnium pentaphyllum and
 Pistacia lentiscus. Effects of time are not present in leaf trait model as they
-appeared only once."
+appeared only once." %>%
+str_replace_all("\\s+", " ")
 ```
 
 

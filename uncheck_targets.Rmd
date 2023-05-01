@@ -267,7 +267,9 @@ list(
       mod = list(try(inla(
             formula = formula_inla(
               response = biomass_trait,
-              dataset_name = "surv_data_modelling"),
+              dataset_name = "surv_data_modelling",
+              plot_effect = ifelse(biomass_trait == "bm", FALSE, TRUE)
+              ),
             control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE,
               return.marginals=TRUE, return.marginals.predictor=TRUE),
             control.predictor = list(compute = T),
@@ -292,7 +294,8 @@ list(
       mod = list(try(inla(
             formula = formula_inla(
               response = biomass_trait,
-              dataset_name = "surv_data_modelling_scaled"),
+              dataset_name = "surv_data_modelling_scaled",
+              plot_effect = ifelse(biomass_trait == "bm", FALSE, TRUE)),
             control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE,
               return.marginals=TRUE, return.marginals.predictor=TRUE),
             control.predictor = list(compute = T),
@@ -309,7 +312,8 @@ list(
             formula = formula_inla(
               response = biomass_trait,
               species = TRUE,
-              dataset_name = "surv_data_modelling"),
+              dataset_name = "surv_data_modelling",
+              plot_effect = ifelse(biomass_trait == "bm", FALSE, TRUE)),
             control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE,
               return.marginals=TRUE, return.marginals.predictor=TRUE),
             control.predictor = list(compute = T),
@@ -335,7 +339,8 @@ list(
             formula = formula_inla(
               response = biomass_trait,
               species = TRUE,
-              dataset_name = "surv_data_modelling_scaled"),
+              dataset_name = "surv_data_modelling_scaled",
+              plot_effect = ifelse(biomass_trait == "bm", FALSE, TRUE)),
             control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE,
               return.marginals=TRUE, return.marginals.predictor=TRUE),
             control.predictor = list(compute = T),
@@ -677,10 +682,21 @@ rbind(leaf_inla_rand_effects,
   unnest(cols = ti)
 ```
 
+```{r, eval=FALSE}
+tar_load(bm_inla_rand_effects)
+tar_load(bm_inla)
+get_hpdmarginal_inla(bm_inla$mod[[4]], type = "rand")
+
+tar_load(c(var_fitted, var_rand_effect))
+var_fitted %>%
+  left_join(var_rand_effect, by = c("response", "level"))
+```
+
 ```{targets r2, tar_simple = TRUE}
 var_fitted %>%
   left_join(var_rand_effect, by = c("response", "level")) %>%
   filter(!is.na(epsilon)) %>%
+  mutate(IDtp = ifelse(is.na(IDtp), 0, IDtp)) %>%# Because bm has no plot random effects
   mutate(
     r2_mvp_marg = pmap(
       list(rand, IDtp, IDtpl, epsilon),
@@ -721,13 +737,38 @@ var_fitted %>%
   )
 ```
 
-
-```{r, eval=FALSE}
-tar_load(r2)
-r2 %>%
-  select(response, level, r2_mvp_marg95hpdci, r2_mvp_cond95hpdci)
+```{targets rand_tab, tar_simple = TRUE}
+rbind(leaf_inla_rand_effects,
+  bm_inla_rand_effects,
+  inla_surv_random_effect %>%
+    mutate(response = "survival")
+  ) %>%
+group_by(level) %>%
+nest() %>%
+mutate(ti = map(data, function (inla_rand_tab) {
+    x <- inla_rand_tab %>%
+      filter(ci_level == "level:0.95") %>%
+      select(-ci_level) %>%
+      mutate(
+        term = str_remove(term, "Precision for "),
+        term = str_replace(term, "the Gaussian observations", "epsilon")
+      )
+      })) %>%
+select(-data) %>%
+unnest(cols = ti) %>%
+mutate(sd_ci = pmap_chr(list(mean, low, high),
+    function(mean, high, low, ndigits) {
+      paste0(
+        format(mean, digits = ndigits, nsmall = 2),
+        " [",
+        format(low, digits = ndigits, nsmall = 2),
+        ",",
+        format(high, digits = ndigits, nsmall = 2),
+        "]")
+    }, ndigits = 1
+  )
+)
 ```
-
 
 
 
