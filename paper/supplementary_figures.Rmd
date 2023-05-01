@@ -16,6 +16,71 @@ toc: false
 linestretch: 2.0
 ---
 
+```{r setup, include=FALSE}
+library(rmarkdown)
+library(officedown)
+knitr::opts_chunk$set(echo = FALSE,
+                      collapse = TRUE,
+                      comment = "#>",
+                      fig.path = "graphics/knitr-",
+                      fig.retina = 1.618, # Control using dpi
+                      fig.width = 6,  # generated images
+                      fig.pos = "H",  # pdf mode
+                      #fig.align = "center",
+                      dpi = if (knitr::is_latex_output()) 72 else 300,
+                      out.width = "100%",
+                      dev = "png",
+                      dev.args = list(png = list(type = "cairo-png")),
+                      optipng = "-o1 -quiet")
+
+library(here)
+source(here::here("R","basic_stat.R"))
+source(here::here("R","inla_helpers.R"))
+source(here::here("R","clean_data.R"))
+source(here::here("R","string_replacements.R"))
+library(tidyverse)
+library(magrittr)
+library(cowplot)
+library(targets)
+library(kableExtra)
+library(coda)
+library(ggbreak)
+
+if (Sys.info()["login"] == "alain") {
+  file.copy(
+    from = "~/Documents/post-these/references.bib",
+    to = here("paper", "bibliography.bib"),
+    overwrite = TRUE
+  )
+}
+```
+
+# Methods
+
+```{r}
+tar_load(biomass_modelling)
+tar_load(biomass_modelling_r2)
+tar_load(biomass_t0)
+```
+
+```{r}
+
+biomass_t0$bm_total_pred <- exp(predict(biomass_modelling$log_mod_bm_tot_h))
+biomass_t0 %>%
+  ggplot(aes(x = bm_total, y = bm_total_pred, color = species)) +
+  geom_point() +
+  geom_abline(slope = 1, intercept = 0)
+
+biomass_t0 %>%
+  ggplot(aes(y = log(bm_total), x = log_d, color = species)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+biomass_t0 %>%
+  ggplot(aes(y = log(bm_total), x = log_h, color = species)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+```
+
 
 ```{r}
 tar_load(c(inla_surv_sp_effects, inla_surv_sp_odd))
@@ -204,14 +269,7 @@ leaf_trait %>%
   facet_grid(rows = vars(watering)) +
   theme_bw()
 
-surv_data_modelling %>%
-  group_by(duration_m, ms, com, watering, species, plot) %>%
-  summarise(survival = sum(survival) / n()) %>%
-  ggplot(aes(y = survival, x = duration_m + 6, color = ms, shape = com, alpha = .5)) +
-  geom_jitter() +
-  geom_line(data = inla_surv_pred, aes(y = mean, linetype = com)) +
-  facet_grid(cols = vars(species), rows = vars(watering)) +
-  theme_bw()
+
 ```
 
 ```{r}
@@ -278,15 +336,6 @@ surv_data_modelling %>%
   geom_line(data = inla_surv_sp_pred, aes(y = mean, linetype = com)) +
   facet_grid(cols = vars(species), rows = vars(watering)) +
   theme_bw()
-
-surv_data_modelling %>%
-  group_by(duration_m, ms, com, watering, species, plot) %>%
-  summarise(survival = sum(survival) / n()) %>%
-  ggplot(aes(y = survival, x = duration_m + 6, color = ms, shape = com, alpha = .5)) +
-  geom_jitter() +
-  geom_line(data = inla_surv_pred, aes(y = mean, linetype = com)) +
-  facet_grid(cols = vars(species), rows = vars(watering)) +
-  theme_bw()
 ```
 
 ```{r}
@@ -326,6 +375,52 @@ int_tot %>%
   ggplot(aes(y = survival, x = duration_m, color = com, shape = watering)) +
   geom_line() +
   facet_grid(cols = vars(species)) +
+  theme_bw()
+```
+
+```{r, eval = FALSE}
+# Supplementary to show that interaction does not change through time
+pp_int %>%
+  filter(response %in% c("bm", "d", "survival", "h")) %>%
+  ggplot(aes(y = inta, x = duration_m + 6, color = com, linetype = watering, fill = com), alpha = 1) +
+  geom_line() +
+  geom_ribbon(aes(ymin = inta_low, ymax = inta_high), alpha = .5) +
+  facet_grid(cols = vars(species), rows = vars(response), scales = "free_y") +
+  theme_bw()
+```
+
+
+```{r}
+# Supplementary to show species effect at community level
+p_int_global_surv <- pp_int_global %>%
+  filter(response == c("survival")) %>%
+  ggplot(aes(y = inta, x = duration_m + 6, color = com, shape = watering, fill = com), alpha = 1) +
+  geom_line() +
+  geom_point() +
+  geom_hline(yintercept = 0) +
+  geom_ribbon(aes(ymin = inta_low, ymax = inta_high), alpha = .2, color = NA) +
+  facet_grid(cols = vars(species), scales = "free_y") +
+  labs(
+    y = "Net interaction (survival)",
+    x = "Number of month since the beginning of the experiment") +
+  theme_bw()
+
+p_int_global_bm <- pp_int_global %>%
+  filter(duration_m == 5, response == "bm") %>%
+  ggplot(
+    aes(
+      y = inta, ymin = inta_low, ymax = inta_high,
+      x = species, color = com, shape = watering,
+      group = watering,
+      fill = com
+      ),
+    alpha = 1, position = "dodge") +
+  geom_hline(yintercept = 0) +
+  geom_pointrange(position = position_dodge(.5)) +
+  labs(
+    y = "Net interaction (biomass)",
+    shape = "Watering", color = "Diversity"
+    ) +
   theme_bw()
 ```
 

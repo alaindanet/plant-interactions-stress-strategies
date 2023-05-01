@@ -345,7 +345,8 @@ plot_inla_fixed_effect <- function(
   x,
   color_var = response,
   term_to_rm = c("(Intercept)", "ter2", "ter3", "ter4"),
-  intercept = 0
+  intercept = 0,
+  point_size = 3
   ){
   x %>%
   filter(!term %in% term_to_rm) %>%
@@ -373,7 +374,7 @@ plot_inla_fixed_effect <- function(
   theme_bw() +
   geom_point(
     aes(x = mean, y = term, color = {{color_var}}),
-    alpha = 1, size = 5,
+    alpha = 1, size = point_size,
     position = position_dodge(width = .9)
   )
 }

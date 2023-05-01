@@ -1,5 +1,5 @@
 ---
-title: ""
+title: "Species richness and abiotic stress interact to drive plant-plant interactions"
 author: "Alain Danet, Susana Bautista, ..., Fabien Anthelme, Sonia Kéfi"
 date: ""
 output:
@@ -57,15 +57,305 @@ library(ggbreak)
 if (Sys.info()["login"] == "alain") {
   file.copy(
     from = "~/Documents/post-these/references.bib",
-    to = here("paper", "bibliography.bib")
+    to = here("paper", "bibliography.bib"),
+    overwrite = TRUE
   )
 }
 ```
 
+# Abstract
+
+
+
 # Introduction
+
+Understanding the effects of global change on biodiversity is a central question
+in Ecology. Climate change in particular has already tremendous effects on
+ecological communities and its effects are projected to be to more dramatic in
+the years and decades to come. Many places already become drier and experience
+more frequent extreme drought event, driving the failure of recruitment of new
+individuals and excess in mortality. Understanding how climate change effects on
+biodiversity is therefore crucial for biodiversity conservation^[I tried to adapt the angle to the [special issue](https://www.oikosjournal.org/blog/call-papers-role-plant-facilitation-mediating-climate-change-impact-biodiversity)].
+
+Stressors such as resource shortage or extreme temperatures are affecting
+dramatically species performance. In turn, species performance also determine
+species interactions. Plant ecologists have been pioneer are describing this
+phenomena by highlighting the frequency of positive interactions in stressful
+environments [@callaway_positive_1995]. Plants providing positive interactions,
+generally referred to as "benefactors" or "nurses", can have direct positive
+effects on other plants by improving the environmental conditions beneath their
+canopy, e.g. by decreasing the soil erosion, buffering the daily fluctuations in
+temperature, and increasing water retention [@callaway_positive_2007]. Positive
+interactions among plants was reported to increase species richness
+[@gross_positive_2008; @cavieres_facilitative_2014], increase diversity of
+community composition [@kikvidze_effects_2015] and shown to have a tremendous
+role on ecosystem properties such as productivity [@cardinale_species_2002] and
+resilience [@kefi_spatial_2007; @kefi_local_2007; @wright_overlooked_2017].
+Improving our understanding of the effects of stressors in ecological
+communities then necessitates to account for their effects on species
+interactions.
+
+The balance of the net interaction between species varies along a stress
+gradient. The Stress-Gradient-Hypothesis proposed that competitive interactions
+dominates in both begnin and highly stressful environment while facilitation
+dominates at intermediate levels of stress [@bertness_positive_1994]. The
+question of the universality of this pattern has fuelled a lively debate,
+experiment studies reporting contrasting results [@maestre_does_2005;
+@lortie_re-analysis_2006]. It has been recognized that the appearance of positive
+interactions in stressful environments is modulated by the source of stress
+(resource, non resource, or herbivory) and by the strategies of the plants
+involved in the interactions. Previous studies reported that the most
+mal-adapted species are the more facilitated [@liancourt_stress_2005;
+@graff_species_2017].
+
+Interactions among beneficiary plants also alter the net effect nurse-sapling
+[@schob_direct_2013; @michalet_direct_2017]. Indirect interactions can modulate
+coexistence and the species dominance in ecological communities
+[@levine_indirect_1999; @levine_beyond_2017]. Coexistence theory predicts that
+competition among species is decreased when they have lower niche overlap (i.e.
+higher niche differentiation) [@macarthur_limiting_1967;
+@chesson_mechanisms_2000]. In turn, beneficiary communities having a higher
+niche complementarity should maximize the benefits of habitat amelioration.
+In turn, species rich beneficiary communities may exhibit more positive
+interactions than species poor beneficiary communities. As far as we know, this
+hypothesis has not been tested experimentally. The interplay between the
+strength of the competition among beneficiary species and the level of
+environmental stress might be one key to understand the community assembly in
+stressful environment.
+
+We tested how the Stress-Gradient-Hypothesis is modulated by the diversity of
+the beneficiary communities. To do so, we conducted a one year transplant experiment in a
+Mediterranean steppeland in Spain. In a fully factorial design, we transplanted
+sapling communities in open sites or below shrubs, We used three beneficiary
+species which were expected to vary in terms of their tolerance to water stress.
+We manipulated the composition of the sapling communities, building monospecific
+communities for each of three species and diverse communities with the three
+species present but the same number of saplings. We finally manipulated water
+supplementation, to alter the level of abiotic stress experienced by the sapling
+communities. We followed survival, basal diameter and vegetative height, but
+also measured the functional traits.
 
 # Material & Methods
 
+```{r exp, fig.cap = "Experimental design"}
+knitr::include_graphics(here("paper", "graphics", "experimental_design2.pdf"))
+```
+
+## Study area
+
+The experiment was conducted at a field site in the Murcia region, Southeastern
+Spain (37°57’33"N, 1°00’17"W – 172 m a.s.l.). Climate is semiarid Mediterranean
+with a very high interannual variability. Annual rainfall follows a bimodal
+distribution, with two rainy seasons (spring and autumn) and a very dry and warm
+summer. Mean annual rainfall is 297 mm with mean monthly rainfall ranging from
+3 mm in July to 36 mm in October. Mean annual temperature is 18.6 °C with
+monthly averages ranging from 10.6 °C in January to 27.6 °C in August (Murcia
+Meteorological Station, 38°00'7''N - 1°10'15''W- 61 m a.s.l.; period:
+1984-2010). Soils are thin (20-50 cm), silt-loam (32\% sand, 47\% silt, 21\%
+clay), and basic (pH = 8.7), developed over marls. The area is a mosaic of
+moderately steep slopes covered by alpha-grass (\textit{Stipa tenacissima})
+steppes and abandoned agricultural terraces built on the streambeds. The
+terraces in the study site were abandoned in the 80s and 90s and progressively
+colonized by forbs and shrubs. At present, the perennial vegetation is dominated
+by the shrub species \textit{Artemisia herba-alba} and \textit{Anthyllis
+cytisoides}, which can be found either as monospecific patches of one or a few
+individuals or coexisting in multispecies patches. Marginal goat grazing occurs
+in the area. \textit{A. herba-alba} shrubs are not palatable and may exert a
+positive effect on the highly palatable species \textit{A. cytisoides} by
+protecting young individuals from both goat grazing and predation by the
+European rabbit (\textit{Oryctolagus cuniculus}), which is the dominant native
+herbivore in the area [@verwijmeren_drought_2014].
+
+## Experimental design
+
+To test if benefactor-sapling interactions are linked to the capacity of the
+saplings to endure stress, we selected three common shrub species of the
+Mediterranean steppes as beneficiary species, namely \textit{Anthyllis
+cytisoides}, \textit{Dorycnium pentaphyllum} and \textit{Pistacia lentiscus},
+which are commonly found to co-occur [@amat_community_2015]. \textit{A.
+cytisoides} and \textit{D. pentaphyllum} are Fabaceae and \textit{P. lentiscus}
+belongs to the Anacardiaceae family. All those species have characteristics
+which are usually depicted as favorable to endure arid climate. \textit{A.
+cytisoides} is a drought-avoider, dropping its leaves during the summer thereby
+decreasing the transpiring area  [@haase_photosynthetic_2000]. \textit{P.
+lentiscus} is a late successional evergreen shrub which can develop a dense root
+system at the sapling stage within their year of planting
+[@maestre_positive_2003].  It can also increase the water storage in its
+leaves during the bad season [@maestre_mechanisms_2004], the thick cuticle
+of its leaves [@coste_flore_1937] limiting the loss of water by
+evapotranspiration.  \textit{D. pentaphyllum} is a low-growing species known for
+its resistance to water stress [@caravaca_use_2003]. Its leaves are
+composed by segments, decreasing the transpiring surface.
+
+The saplings were grown in the open air in a nursery located at 30 km from the
+study site (Viveros Muzalé S.L., Abanilla, Spain). They were grown in controlled
+wet conditions in 200 ml containers with a mixture of peat and coconut fiber.
+There were about 6 months at the time of transplantation. The benefactor
+species, \textit{A. herba-alba}, is a pioneer shrub and common non-palatable
+species which is pioneer in deserts [@alados_association_2006].
+
+---
+# http://www.viverosmuzale.com/catalogo/info/anthyllis_cytisoides.html
+# http://www.viverosmuzale.com/catalogo/info/dorycnium_pentaphyllum.html
+# http://www.viverosmuzale.com/catalogo/info/pistacea_lentiscus.html
+---
+
+Three variables were manipulated: the community diversity,
+the water supply and the microsite where the sapling communities were set (Fig. \@ref(fig:exp)). The
+sapling species variable had three modalities: \textit{A. cytisoides}, \textit{D.
+pentaphyllum} and \textit{P. lentiscus}. The community diversity variable had two
+modalities: monospecific and multispecies, and the water supply two as well: yes
+or no. Finally, the microsite variable had two modalities: open or patch (i.e.
+beneath the canopy of \textit{A. herba-alba}). Overall, we had 16 treatment
+combinations ($4 \times 2 \times 2$). The treatment combinations were replicated
+20 times and distributed within 3 main terraces comprising respectively 7, 7 and
+6 replicates.
+
+Because of the abundance of grazers in the area (mainly rabbits), all the
+terraces were fenced with $1.80$ meters height wire grid fences and reinforced
+by chicken wire extending from about 60 cm above ground to 20 cm below ground.
+The transplantation took place from 23 October to 4 November 2015, on planting
+holes of approximately $25 \times 25 \times 25$ cm that were dug manually. The
+holes corresponding to the patch treatment were located beneath the canopy of a
+benefactor, about 20 cm apart from the main stem of the plant, and oriented
+north to maximize the shading effect. One week before the beginning of the
+plantation, the area received about 40 mm of natural rainfall, which provided
+excellent initial moisture conditions for the introduced saplings. The holes
+were randomly attributed to the different treatments. We planted three plants
+per hole, following a triangular arrangement in which the plants were equally
+distant from each other (around 10 cm). The containers, in which the plants came
+from the green house,  contained each several individuals. To exclude the
+mortality due to the transplant shock in the further analysis, we only kept the
+holes in which at least one individual from the original container was alive in
+January.  We removed the supernumerary individuals by cutting their stems at the
+basis. The watering treatment was applied in January, March, April, May, June,
+July, August and October 2016 by putting 1.5 L of water by hole.
+
+We recorded the survival, basal diameter and vegetative height from January to
+October 2016 (10 months) as well as the Photosynthetic Active Radiation (PAR),
+temperature, soil moisture. We further measured Specific Leaf Area (SLA) and the Leaf
+Dry Matter Content (LDMC) in March (4 months after the plantation) following
+recommendations [@perez-harguindeguy_new_2013]. We randomly sampled XX
+individuals by treatment for which we collected XX leaves (TO ADD). Leaves were
+stored in a falcon tube with a humid tissue to limit dessication, all the falcon
+being stored in a thermal isolated box. At the laboratory, we rehydrated the
+fresh leaves in distilled water, weighted them and scan them. Leaves have been
+then dried during 48h at XX Celcius degrees, and weighted again.
+
+Prior to the experiment, we collected twelve individuals of each species for
+which we measured total biomass. Following allometric relationship, we estimated
+the relationship between total biomass, basal diameter and vegetative height
+with a species effect. We found (Fig. SXX)
+
+\begin{equation}
+    B = \beta_0 \times \beta_1\exp{d} \times \beta_2\exp{h} \times \sum{\beta_{2 + j}*S_j}\\
+    \log B = \beta_0 + \beta_1 \log d + \beta_2 \log h + \sum{\beta_{2 + j}*S_j}
+    (\#eq:bm)
+\end{equation}
+
+
+## Data analysis
+
+### Statistical model
+
+We modelled the response variable using hierarchical Bayesian models. We included as predictors the
+diversity, watering and patch treatments ($\sum_{k=1}\beta_k X_k$), as well as
+the interactions among them (double interactions:
+$\sum_{k=1, k \neq l}\beta_{kl} X_k X_l$, and triple interactions:
+$\sum_{k=1, k \neq l, l \neq k}\beta_{klm} X_k X_l X_m$). We added time, i.e.
+number of month since the start of the experiment ($\beta_0Time_t$),
+species identity ($\sum_{j=1}\beta_{j}S_j$) and the terrace as control
+predictors ($\sum_{j=1}\beta_{j}*T_j$).
+
+\begin{equation}
+     Y_{i|p,z,t} = \alpha + \beta_0Time_t + \sum_{s}\beta_{s}S_s + \sum_{j}\beta_{j}*T_j + \\
+     \sum_{k=1}\beta_k X_k + \sum_{k=1, k \neq l}\beta_{kl} X_k X_l +
+     \sum_{k=1, k \neq l, l \neq k}\beta_{klm} X_k X_l X_m + \\
+     \epsilon_{i|p,z,t}
+    (\#eq:gen)
+\end{equation}
+
+- $\alpha = \alpha_0 + a_{p|j} + a_{i|p|j}$
+- $a_{p|j}, a_{i|p|j}, \epsilon_{i|p,z,t} \sim \mathcal{N}(0,\,\sigma^{2})$
+- $j$: terrace, $p$: plot, $i$: site, $t$: time $t$
+
+We added random effects on the intercept to capture spatial variations of the
+data. We accounted for random variations at the plot level (nested in the
+terrace level, $a_{p|j}$) and the site level (nested in the terrace and plot
+levels, $a_{i|p|j}$).
+
+All models except survival were modelled using a Gaussian response. The
+probability of survival ($p$) was modelled as a Binomial response with a logit
+link (i.e. $logit(p) = \log \dfrac{p}{1-p}$). We further added a quadratic
+effect of time to model biomass as biomass was found to decrease after summer.
+We used a version of the model at the species level, i.e. accounting for the
+different effects of the treatments across species. To do so, we added an
+interaction between each predictor ($X_k$) and species identity $S_s$, as well
+as their interactions. This model at the species level allowed us to further
+explore how each species reacted to the treatment combination, but is complex
+because it includes fourth way interactions ($\sum_{k=1, k \neq l, l \neq k,
+s}\beta_{klm} X_k X_l X_m S_s$).
+
+The models were evaluated in a Bayesian framework using Integrated Nested
+Laplacian Approximation [@rue_approximate_2009; @rue_bayesian_2017] (INLA). We
+computed the credible intervals at 80%, 90% and 95% using the Highest Posterior
+Density method[@hyndman_computing_1996], which can respectively be interpreted
+as weak, moderate and strong evidence of an effect when the interval does not
+include 0 [@van_klink_meta-analysis_2020; @mastrandrea_guidance_2010]. The
+statistical models were implemented using the `INLA` R
+package [@rue_approximate_2009], with defaults uninformative priors. The prior
+distribution of fixed coefficients followed a flat zero centred normal
+distribution ($\mathcal{N}(\mu,\, \sigma^2) = \mathcal{N}(0,\, 1000)$). The
+prior distribution of the random effects and the gaussian error
+($\epsilon_{it}$, eq. \@ref(eq:gen)) followed a log gamma distribution with
+shape and inverse scale parameters ($\mathcal{G}(s, \, \tau) = \mathcal{G}(1, \,
+5.10^-5)$). We then back-transformed the estimated coefficients to to the
+standard deviations attributed to the random effects and the gaussian error
+($\sigma = 1 / \sqrt{\tau}$).
+
+We checked the overall quality of the model fit to the data by plotting the
+fitted versus the observed values (TODO). We visually inspected the PIT and
+CPO (respectively Posterior Integral Transform and Conditional Predictive
+Ordinate) distribution to assess both the quality of data representation, and
+the frequency of outliers.
+
+### Interaction strength
+
+The net effect of the benefactor-beneficiary interactions was estimated with the
+Neighbor-effect Intensity index
+[NInt\textsubscript{A}, @diaz-sierra_new_2016]. This index satisfies
+several mathematical properties which are important such as (i) standardization
+which allows comparisons between different species, (ii) symmetry which ensures
+that the same quantity removed or added will have the same effect on the index,
+(iii) boundedness and (iv) the possibility of computing an estimation error. All
+those properties are shared by the NInt\textsubscript{A} and are also shared by
+another commonly used index, the RII [@armas_measuring_2004]. The
+NInt\textsubscript{A} and the RII only differ from each other by their type of
+symmetry, respectively additive and commutative. The additive symmetry makes
+that, for example, an increase or decrease in performance of ten (i.e., +10 or
+-10) will be translated in the same amount of variation by the
+NInt\textsubscript{A} index whereas in the case of a commutative symmetry in
+RII, it is the multiplicative effect of performance which will be translated in
+the same amount of variation (for example a performance multiplied by 10 and
+divided by 10), resulting in a underestimation of the positive effects
+[@diaz-sierra_new_2016]. The NInt\textsubscript{A} is computed as follows:
+
+\begin{equation}
+    NInt_A = 2 \frac{ \Delta P }{P_{-N} + |\Delta P|}
+    (\#eq:int)
+\end{equation}
+
+with $P$ being the performance of the target species, in open sites ($P_{-N}$)
+and the difference between the performance in patches and in open sites $\Delta
+P$.
+
+The performance of the species were extracted from the prediction of the models.
+We used the mean predicted values and their credible interval at 95% to compute the net
+effects of sapling-benefactor interaction. The predicted probability of survival
+and the predicted biomass were respectively used to compute the net effect of
+interaction for survival and biomass respectively. We further computed the net
+effect using the model at the community level and at the species level, the
+latter was used to explore the variation of the net effect across species.
 
 # Results
 
@@ -84,36 +374,126 @@ s_wc <- get_effect_ci(effect = inla_surv_odd, term = "comPoly:wateringWatered", 
 s_wcm <- get_effect_ci(effect = inla_surv_odd, term = "comPoly:msPatch:wateringWatered", ci_lvl = "0.95")
 s_dor <- get_effect_ci(effect = inla_surv_odd, term = "speciesdorycnium", ci_lvl = "0.95")
 s_pis <- get_effect_ci(effect = inla_surv_odd, term = "speciespistachia", ci_lvl = "0.95")
-unique(inla_surv_odd$term)
 ```
 
 ```{r}
-plot_inla_fixed_effect(inla_surv_odd, color_var = NULL, intercept = 1) +
+p_surv <- plot_inla_fixed_effect(inla_surv_odd, color_var = NULL, intercept = 1) +
   labs(x = "Odd-ratios (exp(beta))") +
   theme(axis.title.y = element_blank())
 ```
 
-Being in a patch (i.e. under an adult plant of *Artemisia herba-alba*) did not
-change the odds of sapling survival (Odd-Ratio: `r s_m`) in monoculture, but we found a
-positive effect of patch location in diverse communities (OR = `r s_cm`).
-However, the diversity of the sapling communities did not affect the odds of
-survival (OR = `r s_c`) overall. Watering treatment was associated with higher
-odds of survival (strong evidence, OR = `r s_w`), and hastened in
-diverse communities (moderate evidence, OR = `r s_wc`). We did not find evidence
-that the effect of the watering treatment on odds change in patch (OR = `r s_wm`), we
-found strong evidence that the watering treatment decreased the positive effect
-of sapling community diversity under *A. herba-alba* on survival likelihood (OR
-= `r s_wcm`). We finally found that survival odds varied across species,
-*Pistachia lentiscus* and *Dorycnium pentaphyllum* having lower survival overall
-(OR = `r s_pis`, `r s_dor` respectively). We further found that treatments
-affects differently the species (See Fig. SXX).
-
 ```{r}
-plot_inla_fixed_effect(bm_inla_effects %>% filter(response == "bm"),
+tar_load(c(surv_data_modelling, inla_surv_pred, inla_surv_sp_pred))
+p_pred_surv <- surv_data_modelling %>%
+  group_by(duration_m, ms, com, watering, species, plot) %>%
+  summarise(survival = sum(survival) / n()) %>%
+  ggplot(aes(y = survival, x = duration_m + 6, color = com, shape = watering)) +
+  geom_jitter(alpha = .2) +
+  geom_line(data = inla_surv_sp_pred, aes(y = mean)) +
+  geom_point(data = inla_surv_sp_pred, aes(y = mean)) +
+  facet_grid(cols = vars(species), rows = vars(ms)) +
+  labs(
+    x = "Number of month since the start of the experiment",
+    y = "Probability of survival",
+    color = "Diversity",
+    shape = "Watering") +
+  theme_bw() +
+  theme(legend.position = "bottom")
+p_pred_effect_surv <- plot_grid(p_surv, p_pred_surv, rel_widths = c(.4, 1))
+ggsave(
+  filename = "p_pred_effect_surv.pdf",
+  plot = p_pred_effect_surv,
+  path = here("paper", "graphics"),
+  scale = 2.4,
+  width = 90,
+  height = 90 * .6,
+  units = "mm",
+  dpi = "print"
+)
+```
+
+Being in a patch (i.e. under an adult plant of *Artemisia herba-alba*) did not
+change the odds of sapling survival (Odd-Ratio: `r s_m`, Fig. \@ref(fig:sbm)a)
+in monoculture, but we found a positive effect of patch location in diverse
+communities (OR = `r s_cm`, Fig. \@ref(fig:sbm)a). However, the diversity of the sapling communities
+did not affect the odds of survival (OR = `r s_c`) overall. Watering treatment
+was associated with higher odds of survival (strong evidence, OR = `r s_w`), and
+hastened in diverse communities (moderate evidence, OR = `r s_wc`). We did not
+find evidence that the effect of the watering treatment on odds change in patch
+(OR = `r s_wm`), we found strong evidence that the watering treatment decreased
+the positive effect of sapling community diversity under *A. herba-alba* on
+survival likelihood (OR = `r s_wcm`). We finally found that survival odds varied
+across species, *Pistachia lentiscus* and *Dorycnium pentaphyllum* having lower
+survival overall (OR = `r s_pis`, `r s_dor` respectively). We further found that
+treatments affects differently the species (See Fig. \@ref(fig:sbm)b).
+
+```{r, fig.cap = "Biomass"}
+tar_load(c(bm_inla_pred, bm_inla_sp_pred))
+p_bm <- plot_inla_fixed_effect(bm_inla_effects %>% filter(response == "bm"),
   color_var = NULL, intercept = 0) +
   labs(x = "Slope Coefficients") +
   theme(axis.title.y = element_blank())
+p_pred_bm <- surv_data_modelling %>%
+  group_by(duration_m, ms, com, watering, species, plot) %>%
+  summarise(bm = mean(bm, na.rm = TRUE)) %>%
+  ggplot(aes(y = bm, x = duration_m + 6, color = com, shape = watering)) +
+  geom_jitter(alpha = .2) +
+  geom_line(data = bm_inla_sp_pred %>% filter(response == "bm"), aes(y = mean)) +
+  geom_point(data = bm_inla_sp_pred %>% filter(response == "bm"), aes(y = mean)) +
+  facet_grid(cols = vars(species), rows = vars(ms)) +
+  labs(
+    x = "Number of month since the start of the experiment",
+    y = "Biomass",
+    color = "Site",
+    shape = "Watering") +
+  theme_bw() +
+  theme(legend.position = "bottom")
+p_pred_effect_bm <- plot_grid(p_bm, p_pred_bm, rel_widths = c(.4, 1))
+ggsave(
+  filename = "p_pred_effect_bm.pdf",
+  plot = p_pred_effect_bm,
+  path = here("paper", "graphics"),
+  scale = 2.4,
+  width = 90,
+  height = 90 * .6,
+  units = "mm",
+  dpi = "print"
+)
 ```
+
+```{r}
+leg_pred <- get_legend(p_pred_surv)
+p_pred_effect <- plot_grid(
+  plot_grid(p_surv, p_pred_surv + theme(legend.position = "none"),
+    rel_widths = c(.5, 1), labels = c("a", "b")),
+  plot_grid(p_bm, p_pred_bm + theme(legend.position = "none"),
+    rel_widths = c(.5, 1), labels = c("c", "d")),
+  leg_pred,
+  rel_heights = c(1, 1, .1),
+  ncol = 1)
+ggsave(
+  filename = "p_pred_effect.pdf",
+  plot = p_pred_effect,
+  path = here("paper", "graphics"),
+  scale = 2.4,
+  width = 90,
+  height = 90 ,
+  units = "mm",
+  dpi = "print"
+)
+```
+
+```{r}
+fig_surv_bm <- paste0("Slope of the statical models at the community level (left panel, a & c) and prectictions at the species level (right panel, b & d) for (a & b)
+  survival and (c & d) biomass. Survival coefficients (a) are the exponential of odd-ratios, values below and above 1 display respectively negative and positive effect on survival probability. Left panels: points represent the mean of the posterior distribution of coefficients; Thin, medium and large bars represent the credible interval at 95\\%, 90\\% and 80\\%. Right panels display the predictions of the model at the species level (See methods), points display the data averaged by plot (N = 12).")
+```
+
+
+```{r sbm, fig.cap=fig_surv_bm}
+knitr::include_graphics(here("paper", "graphics", "p_pred_effect.pdf"))
+```
+
+
 
 ```{r}
 bm_effects <- bm_inla_effects %>% filter(response == "bm")
@@ -131,16 +511,18 @@ b_pis <- get_effect_ci(effect = bm_effects, term = "speciespistachia", ci_lvl = 
 ```
 
 Using estimated biomass from basal diameter and vegetative height, we found
-a continuous increase in biomass until June (Standardized coefficient: $\beta$'=
-`r b_t`) and that biomass decreaded from June to November (second order effect
-of time, $\beta$'=`r b_t2`). We did not find evidence that being in patch
-changed the sapling biomass ($\beta$'=`r b_m`), and this effect was not modulated by
-community diversity ($\beta$' = `r b_cm`). We further found weak evidence that
+a continuous increase in biomass until June (slope coefficient: $\beta$=
+`r b_t`, Fig. \@ref(fig:sbm)c) and that biomass decreaded from June to November (second order effect
+of time, $\beta$=`r b_t2`). We did not find evidence that being in patch
+changed the sapling biomass ($\beta$=`r b_m`), and this effect was not modulated by
+community diversity ($\beta$ = `r b_cm`). We further found weak evidence that
 watering decreased the joint effect of patch and diversity on sapling biomass
-`r b_wcm`. We found strong evidence that the biomass of saplings was lower in
-diverse communities ($\beta$' = `r b_c`), but it was counteracted by watering
-(medium evidence, $\beta$' = `r b_wc`). Watering was found to have a positive
-effect on sapling biomass (weak evidence, $\beta$' = `r b_w`).
+($\beta$ = `r b_wcm`). We found strong evidence that the biomass of saplings was lower in
+diverse communities ($\beta$ = `r b_c`), but it was counteracted by watering
+(medium evidence, $\beta$ = `r b_wc`). Watering was found to have a positive
+effect on sapling biomass (weak evidence, $\beta$ = `r b_w`). As for survival,
+we found variations of the effects of the treatment across species (Fig.
+\@ref(fig:sbm)d).
 
 ```{r}
 tar_load(leaf_inla_effects_scaled)
@@ -172,19 +554,45 @@ l_dor <- get_effect_ci(effect = ldmc_effects, term = "speciesdorycnium", ci_lvl 
 l_pis <- get_effect_ci(effect = ldmc_effects, term = "speciespistachia", ci_lvl = "0.95")
 ```
 
+```{r, fig.cap = "Leaf traits"}
+p_effect_trait <- plot_inla_fixed_effect(leaf_inla_effects_scaled) +
+  labs(x = "Standardizing coefficients (beta)", color = "Trait") +
+  theme(
+    legend.position = "bottom",
+    axis.title.y = element_blank()
+  )
+ggsave(
+  filename = "p_effect_trait.pdf",
+  plot = p_effect_trait,
+  path = here("paper", "graphics"),
+  scale = 1.8,
+  width = 90,
+  height = 90,
+  units = "mm",
+  dpi = "print"
+)
+```
+
 ```{r}
-plot_inla_fixed_effect(ldmc_effects, color_var = NULL)
-plot_inla_fixed_effect(leaf_inla_effects_scaled)
+lt_cap <- paste0("Effects of treatments on Leaf Dry Matter Content (LDMC) and
+  Specific Leaf Area (SLA). Slope coefficients are standardized. Points
+  represent the mean of the posterior distribution of coefficients; Thin, medium
+  and large bars represent the credible interval at 95\\%, 90\\% and 80\\%.")
+```
+
+
+```{r lt, fig.cap=lt_cap}
+knitr::include_graphics(here("paper", "graphics", "p_effect_trait.pdf"))
 ```
 
 Leaf traits was found to vary across patch and watering treament. We found
 moderate evidence that saplings Leaf Dry Matter Content decreased and that
-Specific Leaf Area increased in patch ($\beta$' = `r l_m` and `r a_m`
-respectively), meaning that saplings develop a more "resource exploitive"
+Specific Leaf Area increased in patch (Standardized coefficients: $\beta$' = `r l_m` and `r a_m`
+respectively, Fig. \@ref(fig:lt)), meaning that saplings develop a more "resource exploitive"
 strategy (or a "resource conservative" strategy) in patches. We further found
 strong evidence that LDMC was lower in watered treatment ($\beta$' = `r l_w`)
-not SLA ($\beta$' = `r a_w`). Overall, we did not find evidence that community
-diversity affected leaf traits.
+but not SLA ($\beta$' = `r a_w`). Overall, we did not find evidence that
+community diversity affected leaf traits.
 
 ## Plant-plant interactions
 
@@ -200,7 +608,7 @@ communities non-watered, we found positive interactions both in terms survival
 and biomass, but strongly negative interactions in watered sites.
 
 Beyond those general effects at the community level, we found strong disparities
-using a model at the species level. In single species communities no watered, we
+using the model at the species level. In single species communities no watered, we
 found that neutral and negative competitive interactions dominated for *A.
 citisoides* and *D. pentaphyllum*, but positive interactions for *P. lenticus*
 in terms of survival, for all species displayed negative interactions in terms
@@ -221,14 +629,45 @@ survival but negative in terms of biomass.
 
 ```{r}
 tar_load(pp_int_global)
-p_int_global <- pp_int_global %>%
-  filter(duration_m == 5, response %in% c("survival", "bm")) %>%
-  ggplot(aes(y = inta, ymin = inta_low, ymax = inta_high,
-      x = species, color = com, shape = watering)) +
-  geom_pointrange(position = position_dodge(.5)) +
+p_int_global_surv <- pp_int_global %>%
+  filter(response == c("survival"), species == "anthyllis") %>%
+  ggplot(aes(y = inta, x = duration_m + 6, color = com, shape = watering, fill = com), alpha = 1) +
+  geom_line() +
+  geom_point() +
   geom_hline(yintercept = 0) +
-  facet_grid(cols = vars(response)) +
+  geom_ribbon(aes(ymin = inta_low, ymax = inta_high), alpha = .2, color = NA) +
+  labs(
+    y = "Net interaction (survival)",
+    x = "Number of month since the beginning of the experiment") +
   theme_bw()
+
+p_int_global_bm <- pp_int_global %>%
+  filter(duration_m == 5,response == "bm", species == "anthyllis") %>%
+  ggplot(
+    aes(
+      y = inta, ymin = inta_low, ymax = inta_high,
+      x = com,
+      color = com, shape = watering,
+      group = watering,
+      fill = com
+      ),
+    alpha = 1, position = "dodge") +
+  geom_hline(yintercept = 0) +
+  geom_pointrange(position = position_dodge(.5)) +
+  labs(
+    y = "Net interaction (biomass)",
+    x = "Diversity",
+    shape = "Watering", color = "Diversity"
+    ) +
+  theme_bw()
+
+p_int_global <- plot_grid(
+  p_int_global_surv + theme(legend.position = "none"),
+  p_int_global_bm + theme(legend.position = "none"),
+  ncol = 2,
+  rel_widths = c(.6, .4),
+  labels = c("a", "b")
+)
 ```
 
 
@@ -237,15 +676,19 @@ tar_load(pp_int)
 int_surv <- pp_int %>%
   filter(response %in% c("survival"))
 p_int_surv <- int_surv  %>%
-  ggplot(aes(y = inta, x = duration_m + 6, color = com, linetype = watering, fill = com), alpha = 1) +
+  ggplot(aes(y = inta, x = duration_m + 6, color = com, shape = watering, fill = com), alpha = 1) +
   geom_line() +
+  geom_point() +
   geom_hline(yintercept = 0) +
-  geom_ribbon(aes(ymin = inta_low, ymax = inta_high), alpha = .5) +
+  geom_ribbon(aes(ymin = inta_low, ymax = inta_high), alpha = .2, color = NA) +
   facet_grid(cols = vars(species), scales = "free_y") +
+  labs(
+    y = "Net interaction (survival)",
+    x = "Number of month since the beginning of the experiment") +
   theme_bw()
 
 p_int_bm <- pp_int %>%
-  filter(response == "bm") %>%
+  filter(duration_m == 5, response == "bm") %>%
   ggplot(
     aes(
       y = inta, ymin = inta_low, ymax = inta_high,
@@ -256,51 +699,61 @@ p_int_bm <- pp_int %>%
     alpha = 1, position = "dodge") +
   geom_hline(yintercept = 0) +
   geom_pointrange(position = position_dodge(.5)) +
-  theme_bw()
+  labs(
+    y = "Net interaction (biomass)",
+    shape = "Watering", color = "Diversity"
+    ) +
+  theme_bw() +
+  theme(
+    axis.title.x = element_blank(),
+    legend.position = "bottom"
+  )
+leg_int <- get_legend(p_int_bm)
 
 p_int_sp <- plot_grid(
-  p_int_surv,
-  p_int_bm
+  p_int_surv + theme(legend.position = "none"),
+  p_int_bm + theme(legend.position = "none"),
+  rel_widths = c(.6, .4),
+  labels = c("c", "d")
+)
+```
+
+```{r }
+p_int <- plot_grid(
+  p_int_global + theme(legend.position = "none"),
+  p_int_sp,
+  nrow = 2
+)
+p_int_ok <- plot_grid(
+  p_int,
+  leg_int,
+  rel_heights = c(1, .1),
+  nrow = 2
+)
+ggsave(
+  filename = "p_int_ok.pdf",
+  plot = p_int_ok,
+  path = here("paper", "graphics"),
+  scale = 2.4,
+  width = 90,
+  height = 90 * .6,
+  units = "mm",
+  dpi = "print"
 )
 ```
 
 ```{r}
-plot_grid(p_int_global, p_int_sp, nrow = 2)
+int_cap <- paste0("Net affects of the interaction sapling-shrub at the community
+  (a, b) and at the species level (c, d) for survival (a, c) et biomass (b, d).
+  Time is not displayed for biomass because net effect was not found to vary
+  across time (Fig. SXX).")
 ```
 
 
-
-```{r, eval = FALSE}
-# Supplementary to show that interaction does not change through time
-pp_int %>%
-  filter(response %in% c("bm", "d", "survival", "h")) %>%
-  ggplot(aes(y = inta, x = duration_m + 6, color = com, linetype = watering, fill = com), alpha = 1) +
-  geom_line() +
-  geom_ribbon(aes(ymin = inta_low, ymax = inta_high), alpha = .5) +
-  facet_grid(cols = vars(species), rows = vars(response), scales = "free_y") +
-  theme_bw()
+```{r int, fig.cap=int_cap}
+knitr::include_graphics(here("paper", "graphics", "p_int_ok.pdf"))
 ```
 
-```{r}
-tar_load(biomass_modelling)
-tar_load(biomass_modelling_r2)
-tar_load(biomass_t0)
-
-biomass_t0$bm_total_pred <- exp(predict(biomass_modelling$log_mod_bm_tot_h))
-biomass_t0 %>%
-  ggplot(aes(x = bm_total, y = bm_total_pred, color = species)) +
-  geom_point() +
-  geom_abline(slope = 1, intercept = 0)
-
-biomass_t0 %>%
-  ggplot(aes(y = log(bm_total), x = log_d, color = species)) +
-  geom_point() +
-  geom_smooth(method = "lm")
-biomass_t0 %>%
-  ggplot(aes(y = log(bm_total), x = log_h, color = species)) +
-  geom_point() +
-  geom_smooth(method = "lm")
-```
 
 # Discussion
 
@@ -324,68 +777,110 @@ We found that higher diversity of sapling species enhances facilitation at the
 community scale. More specifically, only *Pistachia lenticus* displayed a
 relatively weak facilitation in single species treatment in term of survival.
 This results is accordance with previous studies showing that communities
-located under nurse plants tend to have higher species richness (REF). This
-result can be explain by the possible decrease in niche overlap among saplings
-in diverse communities [ref], which in turn decrease competition for resource
-exploitation and may increase the benefits of facilitation [ref].
+located under nurse plants tend to have higher species richness
+[@cavieres_facilitative_2014]. This result can be explain by the possible
+increase in niche complementary (i.e. decrease in niche overlap) among saplings
+in diverse communities, which in turn decrease competition for resource
+exploitation[@cardinale_species_2002] and increase the
+benefits of facilitation [Could it be tested with @loreau_partitioning_2001 ?].
 
-Watering is found to modulate strongly the outcome of the interactions among
+Watering was found to modulate strongly the outcome of the interactions among
 saplings and *Artemisia herba-alba*. In monospecific communities, watering
 switched the sign of the interactions from negative to relatively weakly
-positive for survival. A reason might be that the added water was hold
-longer under the canopy of *A. herba-alba*. Possible mechanisms include
-lower evapotranspiration under the canopy due to the shading.
-Watering was found to increase the overall survival of sapling and we found weak
-evidence that watering enhances further the survival of sapling in *A.
-herba-alba* patches, which lend toward the hypothesis of higher watering benefit
-under *A. herba-alba*.
+positive for survival. A reason might be that the added water was hold longer
+under the canopy of *A. herba-alba*. Possible mechanisms include lower
+evapotranspiration under the canopy due to the shading
+[@callaway_positive_2007]. Watering was found to increase the overall survival
+of sapling and we found weak evidence that watering enhances further the
+survival of sapling in *A. herba-alba* patches, which lend toward the hypothesis
+of higher watering benefits under *A. herba-alba*. This result seems in
+contraction with the Stress Gradient Hypothesis which predicts that improving
+local conditions should result in a switch from facilitation to competition
+[@bertness_positive_1994]. However, watering was found to drive competition in
+diversity-rich sapling communities, i.e. an opposite effect from monospecific
+communities. More specifically, we found that watering treatment had more
+positive effects on survival and biomass in diverse communities while watering
+was decreasing the positive effect of being in a patch and in diverse
+communities. Hence, watering seems to make that diverse sapling communities
+experiment more competition than facilitation from *A. herba-alba*. This result
+is in line with the Stress-Gradient-Hypothesis that propose that positive
+interactions should predominate in more benign environment
+[@bertness_positive_1994]. Interestingly, it was not the case in single species
+communities which suggests that biotic stress, here intraspecific interactions
+among saplings, play an important role in driving the outcome of interactions
+between saplings and *A. herba-alba*.
 
-However, watering was found to drive competition in diversity-rich sapling
-communities, i.e. an opposite effect from monospecific communities. More
-specifically, we found that watering treatment had more positive effects on
-survival and biomass in diverse communities while watering was decreasing the
-positive effect of being in a patch and in diverse communities. Hence, watering
-seems to make that diverse sapling communities experiment more competition than
-facilitation from *A. herba-alba*. This result is in line with the
-Stress-Gradient-Hypothesis that propose that positive interactions should
-predominate in more benign environment [@bertness_stress_1994]. Interestingly,
-it was not the case in single species communities which suggests that biotic
-stress, i.e. intraspecific interactions among saplings, play an important role
-in driving the outcome of interactions between saplings and *A. herba-alba*.
+```{r}
+idea_cap <- paste0("Including both abiotic stress and among beneficiary competition in the Stress Gradient hypothesis. (a) Both low/high competition among beneficiary species and abiotic stress result in a negative net effect between beneficiary and benefactors (1, 4). Positive net effects are more likely to arise if either competition among beneficiary is decreased by increasing diversity (2) or if abiotic stress is decreased (3). (b) Both the effects of abiotic stress and the level of competition among benefiaries can be map in the original SGH framework (Bertness & Callaway, 1994)")
+```
 
-The consideration of both abiotic stress and among sapling competition might
-then be the key to understand observed outcome sapling-shrub interactions.
+
+```{r idea, fig.cap=idea_cap}
+knitr::include_graphics(here("paper", "competition_stress_sgh.pdf"))
+```
+
+
+The consideration of both abiotic stress and competition among saplings might
+then be the key to understand observed outcome sapling-shrub interactions (Fig.
+\@ref(fig:idea)).
 Previous studies showed that biotic stressors such as grazing can lead to the
-pattern of SGH alike abiotic stressors[@smit; @graff; @mart]. Further conceptual
-development highlighted that multiple stressors can drive plant-plant interactions,
-such as resource (e.g. water) or non resource (e.g. temperature, wind) and
-biotic stressors (e.g. grazing) [@]. However, a missing link is the
-consideration of competition between the plants that benefit from the nurse
-plant, which can be considered as another type of biotic stress. We then propose a
-framework including both interactions among the beneficiary plants and the level
-of abiotic stress (Fig. XXa). Competition between sapling community and adult
-shrub should dominate when both abiotic stress and competition among saplings
-is strong are high or low. Then, facilitation between sapling community and
-adult shrub are expect to arise when either by decreasing abiotic stress (e.g.
-by watering in our experiment, Fig. XXa from 4 to 3) or by decreasing
-competition inside the beneficiary community (e.g. by increasing diversity in
-our experiment, Fig. XXa from 4 to 2). We can then map both abiotic stress and
-competition among saplings on a single gradient dimension to explain how
-the joint effects of watering and community diversity can affect the outcome of
-sapling-shrub interactions in the original framework of the SGH [@bertness;
-@maestre]. As understory communities were reported to be composed of numerous
-species [ref], the consideration of the competition inside understory
-communities might help us to understand the mechanisms driving the assembly of
-understory communities in natural communities [].
+pattern of SGH alike abiotic stressors[@smit_inclusion_2009;
+@graff_testing_2011; @verwijmeren_interspecific_2013;
+@verwijmeren_drought_2014]. Further conceptual development highlighted that
+multiple stressors can drive plant-plant interactions, such as resource (e.g.
+water) or non resource (e.g. temperature, wind) and biotic stressors (e.g.
+grazing) [@maestre_refining_2009; @graff_species_2017]. However, a missing link
+is the consideration of competition between the plants that benefit from the
+nurse plant, which can be considered as another type of biotic stress. We then
+propose a framework including both interactions among the beneficiary plants and
+the level of abiotic stress (Fig. \@ref(fig:idea)a). Competition between sapling
+community and adult shrub should dominate when both abiotic stress and
+competition among saplings is strong are high or low. Then, facilitation between
+sapling community and adult shrub are expect to arise when either by decreasing
+abiotic stress (e.g. by watering in our experiment, Fig. \@ref(fig:idea)a from 4
+to 3) or by decreasing competition inside the beneficiary community (e.g. by
+increasing diversity in our experiment, Fig. \@ref(fig:idea)a from 4 to 2). We
+can then map both abiotic stress and competition among saplings on a single
+gradient dimension to explain how the joint effects of watering and community
+diversity can affect the outcome of sapling-shrub interactions in the original
+framework of the SGH (Fig. \@ref(fig:idea)b) [@bertness_positive_1994;
+@maestre_refining_2009]. As understory communities were reported to be composed
+of numerous species [@cavieres_facilitative_2014], the consideration of the
+competition inside understory communities might help us to understand the
+mechanisms driving the assembly of understory communities in natural
+communities.
 
-We further found species variations in their response to the
-treatments. (Give some example).
-However, we did not find evidence of a relationship between stress-tolerance
-of the species and the outcome of sapling-shrub interactions [@graff;
-@liancourt]. According to this hypothesis, *P. lenticus*, *D. pentaphyllum* and
-*A. citisoides*, that had lower to the highest survival in the open sites,
-should have respectively experiment the highest from the lower facilitation in
-single species treatment. In turn,
+We further found species variations in their response to the treatments. (Give
+some example). However, we did not find evidence of a relationship between
+stress-tolerance of the species and the outcome of sapling-shrub interactions
+[@graff_species_2017; @liancourt_stress_2005]. According to this hypothesis, *P.
+lenticus*, *D. pentaphyllum* and *A. citisoides*, that had lower to the highest
+survival in the open sites, should have respectively experiment the highest from
+the lower facilitation in single species treatment. In turn, we found that *P.
+lenticus*, *D. pentaphyllum* and *A. citisoides* respectively had a balance of
+interaction respectively positive, negative and neutral with *A. herba-alba* in
+single species treament. Hence, this hypothesis hold by considering *P.
+lenticus* and *A. anthyllus*, the two species at the extrem of the
+Competitive/Stress-tolerance spectrum, but not if we consider *D. pentaphyllum*.
+It might be explained by the intraspecific competition among *D. pentaphyllum*
+but also that the phytoxicity of *A. herba-alba*. *A. herba-alba* was reported
+to produce strong anti-germination coumpounds but was not reported affect
+negatively sapling growth [@arroyo_phytotoxic_2018].
+
+In line with previous studies, we found that watering and patch leaded to
+similar changes in functional traits, driving higher SLA and lower LDMC. More
+specifically, we found that LDMC decreased in watered sites and in patch sites.
+This indicates that watered and plants located under *A. herba-alba* devolped a
+less resource-conservative strategy and a more resource acquisition strategy.
+However, we found an increase in SLA in the patch treatment but not in the
+watering treatment. Light limitation and water deficit might explain this
+pattern[@liu_does_2016]. Previous studies showed that light reduction results
+in higher SLA, which is a compensation for the limited amount of radiation
+received and a common adaptation for understory plants[@liu_does_2016].
+Another hypothesis is that the decrease in SLA overall under *A. herba-alba* is
+not happening in watering treatment because of the water deficit in open sites
+which in turn might promote to the maintenance of the same leaf area despite the
+increase of water input.
 
 
 # Conclusion & perspectives
