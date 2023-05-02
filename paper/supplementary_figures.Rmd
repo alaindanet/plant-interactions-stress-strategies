@@ -119,6 +119,28 @@ broom::tidy(biomass_modelling$log_mod_bm_tot_h) %>%
 ```
 
 ```{r}
+leaf_nb_cap <- paste0("Number of leaf trait samples by treatment combination.") %>%
+str_replace_all("\\s+", " ")
+```
+
+
+```{r leaf-nb, fig.cap = leaf_nb_data}
+tar_load(leaf_trait)
+leaf_trait %>%
+  pivot_longer(c(ldmc, sla), names_to = "trait", values_to = "values") %>%
+  group_by(com, ms, watering, trait) %>%
+  summarise(N = sum(!is.na(values))) %>%
+  pivot_wider(names_from = "trait", values_from = "N") %>%
+  rename(Diversity = com, Site = ms, Watering = watering) %>%
+  kbl(booktabs = T,
+    label = "tab-leaf-nb",
+    caption = leaf_nb_cap) %>%
+  add_header_above(c(" " = 3, "Number of data" = 2)) %>%
+  collapse_rows(columns = c(1, 2), valign = "middle", latex_hline = "major") %>%
+  kable_styling(latex_options = c("hold_position"))
+```
+
+```{r}
 na_cap <- "Number of missing values by variable during the experiment. The vegetative height
 of the dead saplings was not measured. Then total biomass estimation has than roughly
 the same amount of missing values than vegetative height, far more than basal

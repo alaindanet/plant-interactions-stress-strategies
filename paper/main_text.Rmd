@@ -3,12 +3,14 @@ title: "Species richness and abiotic stress interact to drive plant-plant intera
 author: "Alain Danet, Susana Bautista, ..., Fabien Anthelme, Sonia Kéfi"
 date: ""
 output:
+  officedown::rdocx_document:
+    base_format: "bookdown::word_document2"
+    number_sections: false
   bookdown::pdf_document2:
     latex_engine: xelatex
     keep_tex: true
     spacing: double
     number_sections: false
-  officedown::rdocx_document:
 bibliography: "bibliography.bib"
 #csl: "nature.csl"
 link-citations: true
@@ -28,6 +30,8 @@ library(rmarkdown)
 library(officedown)
 knitr::opts_chunk$set(echo = FALSE,
                       collapse = TRUE,
+                      message = FALSE,
+                      warning = FALSE,
                       comment = "#>",
                       fig.path = "graphics/knitr-",
                       fig.retina = 1.618, # Control using dpi
@@ -63,11 +67,11 @@ if (Sys.info()["login"] == "alain") {
 }
 ```
 
-# Abstract
+# Abstract {-}
 
 
 
-# Introduction
+# Introduction {-}
 
 Understanding the effects of global change on biodiversity is a central question
 in Ecology. Climate change in particular has already tremendous effects on
@@ -75,84 +79,86 @@ ecological communities and its effects are projected to be to more dramatic in
 the years and decades to come. Many places already become drier and experience
 more frequent extreme drought event, driving the failure of recruitment of new
 individuals and excess in mortality. Understanding how climate change effects on
-biodiversity is therefore crucial for biodiversity conservation^[I tried to adapt the angle to the [special issue](https://www.oikosjournal.org/blog/call-papers-role-plant-facilitation-mediating-climate-change-impact-biodiversity)].
+biodiversity is therefore crucial for biodiversity conservation^[I tried to adapt to the angle of the [special issue](https://www.oikosjournal.org/blog/call-papers-role-plant-facilitation-mediating-climate-change-impact-biodiversity)].
 
 Stressors such as resource shortage or extreme temperatures are affecting
-dramatically species performance. In turn, species performance also determine
-species interactions. Plant ecologists have been pioneer are describing this
-phenomena by highlighting the frequency of positive interactions in stressful
-environments [@callaway_positive_1995]. Plants providing positive interactions,
-generally referred to as "benefactors" or "nurses", can have direct positive
-effects on other plants by improving the environmental conditions beneath their
-canopy, e.g. by decreasing the soil erosion, buffering the daily fluctuations in
+dramatically species physiology and metabolism. In turn, species physiology and
+metabolism also determine species interactions. Such example includes the
+balance between competition and facilitation among plants along a stress
+gradient [@bertness_positive_1994]. The Stress-Gradient-Hypothesis proposed that
+competitive interactions dominates in both begnin and highly stressful
+environment while facilitation dominates at intermediate levels of stress
+[@bertness_positive_1994]. Plants providing positive interactions, generally
+referred to as "benefactors" or "nurses", can have direct positive effects on
+other plants by improving the environmental conditions beneath their canopy,
+e.g. by decreasing the soil erosion, buffering the daily fluctuations in
 temperature, and increasing water retention [@callaway_positive_2007]. Positive
 interactions among plants was reported to increase species richness
 [@gross_positive_2008; @cavieres_facilitative_2014], increase diversity of
 community composition [@kikvidze_effects_2015] and shown to have a tremendous
-role on ecosystem properties such as productivity [@cardinale_species_2002] and
-resilience [@kefi_spatial_2007; @kefi_local_2007; @wright_overlooked_2017].
+role on ecosystem properties such as productivity [@cardinale_species_2002;
+@wright_overlooked_2017] and resilience [@kefi_spatial_2007; @kefi_local_2007].
 Improving our understanding of the effects of stressors in ecological
 communities then necessitates to account for their effects on species
 interactions.
 
-The balance of the net interaction between species varies along a stress
-gradient. The Stress-Gradient-Hypothesis proposed that competitive interactions
-dominates in both begnin and highly stressful environment while facilitation
-dominates at intermediate levels of stress [@bertness_positive_1994]. The
-question of the universality of this pattern has fuelled a lively debate,
-experiment studies reporting contrasting results [@maestre_does_2005;
-@lortie_re-analysis_2006]. It has been recognized that the appearance of positive
-interactions in stressful environments is modulated by the source of stress
-(resource, non resource, or herbivory) and by the strategies of the plants
-involved in the interactions. Previous studies reported that the most
-mal-adapted species are the more facilitated [@liancourt_stress_2005;
-@graff_species_2017].
+The question of the universality has been questionned, experiment studies
+reporting contrasting results [@maestre_does_2005; @lortie_re-analysis_2006].
+Previous studies reported that the appearance of positive interactions in
+stressful environments is modulated by the source of stress (resource, non
+resource, or herbivory) [@maestre_refining_2009; @smit_inclusion_2009] and by
+the strategies of the plants involved in the interactions. Previous studies
+reported that the most mal-adapted species are the more facilitated
+[@liancourt_stress_2005; @graff_species_2017]. Indirect interactions among
+beneficiary plants can also alter the net effect of the interactions between
+nurse and sapling [@schob_direct_2013; @michalet_direct_2017], they can
+modulate species coexistence and the species dominance [@levine_indirect_1999;
+@levine_beyond_2017]. Taking in account both the strategy of the species in
+interaction and the interactions among beneficiary species is therefore a step
+forward a better understanding of the balance between competition and
+facilitation in ecological communities.
 
-Interactions among beneficiary plants also alter the net effect nurse-sapling
-[@schob_direct_2013; @michalet_direct_2017]. Indirect interactions can modulate
-coexistence and the species dominance in ecological communities
-[@levine_indirect_1999; @levine_beyond_2017]. Coexistence theory predicts that
-competition among species is decreased when they have lower niche overlap (i.e.
-higher niche differentiation) [@macarthur_limiting_1967;
-@chesson_mechanisms_2000]. In turn, beneficiary communities having a higher
-niche complementarity should maximize the benefits of habitat amelioration.
-In turn, species rich beneficiary communities may exhibit more positive
-interactions than species poor beneficiary communities. As far as we know, this
-hypothesis has not been tested experimentally. The interplay between the
-strength of the competition among beneficiary species and the level of
-environmental stress might be one key to understand the community assembly in
-stressful environment.
+Coexistence theory predicts that competition among species is decreased when
+they have lower niche overlap (i.e. higher niche differentiation)
+[@macarthur_limiting_1967; @chesson_mechanisms_2000]. In turn, beneficiary
+communities having a higher niche complementarity should maximize the benefits
+of habitat amelioration provided by a nurse plants. In turn, species rich
+beneficiary communities may exhibit more positive interactions than species poor
+beneficiary communities. As far as we know, this hypothesis has not been tested
+experimentally. The interplay between the strength of the competition among
+beneficiary species and the level of environmental stress might be one key to
+understand the community assembly in stressful environment.
 
 We tested how the Stress-Gradient-Hypothesis is modulated by the diversity of
-the beneficiary communities. To do so, we conducted a one year transplant experiment in a
-Mediterranean steppeland in Spain. In a fully factorial design, we transplanted
-sapling communities in open sites or below shrubs, We used three beneficiary
-species which were expected to vary in terms of their tolerance to water stress.
-We manipulated the composition of the sapling communities, building monospecific
-communities for each of three species and diverse communities with the three
-species present but the same number of saplings. We finally manipulated water
+the beneficiary communities. To do so, we conducted a one year sapling transplant
+experiment in a Mediterranean steppeland in Spain. In a fully factorial design,
+we transplanted sapling communities in open sites or below shrubs, We used three
+beneficiary species which were expected to vary in terms of their tolerance to
+water stress. We manipulated the composition of the sapling communities,
+planting monospecific communities for each of three species and diverse
+communities with the three species present. We finally manipulated water
 supplementation, to alter the level of abiotic stress experienced by the sapling
 communities. We followed survival, basal diameter and vegetative height, but
 also measured the functional traits.
 
-# Material & Methods
+# Material & Methods {-}
 
 ```{r exp, fig.cap = "Experimental design"}
 knitr::include_graphics(here("paper", "graphics", "experimental_design2.pdf"))
 ```
 
-## Study area
+## Study area {-}
 
 The experiment was conducted at a field site in the Murcia region, Southeastern
-Spain (37°57’33"N, 1°00’17"W – 172 m a.s.l.). Climate is semiarid Mediterranean
-with a very high interannual variability. Annual rainfall follows a bimodal
-distribution, with two rainy seasons (spring and autumn) and a very dry and warm
-summer. Mean annual rainfall is 297 mm with mean monthly rainfall ranging from
-3 mm in July to 36 mm in October. Mean annual temperature is 18.6 °C with
-monthly averages ranging from 10.6 °C in January to 27.6 °C in August (Murcia
-Meteorological Station, 38°00'7''N - 1°10'15''W- 61 m a.s.l.; period:
-1984-2010). Soils are thin (20-50 cm), silt-loam (32\% sand, 47\% silt, 21\%
-clay), and basic (pH = 8.7), developed over marls. The area is a mosaic of
+Spain (37°57’33"N, 1°00’17"W – 172 m a.s.l., Fig. \@ref(fig:exp)b). Climate is
+semiarid Mediterranean with a very high interannual variability. Annual rainfall
+follows a bimodal distribution, with two rainy seasons (spring and autumn) and a
+very dry and warm summer. Mean annual rainfall is 297 mm with mean monthly
+rainfall ranging from 3 mm in July to 36 mm in October. Mean annual temperature
+is 18.6 °C with monthly averages ranging from 10.6 °C in January to 27.6 °C in
+August (Murcia Meteorological Station, 38°00'7''N - 1°10'15''W- 61 m a.s.l.;
+period: 1984-2010). Soils are thin (20-50 cm), silt-loam (32\% sand, 47\% silt,
+21\% clay), and basic (pH = 8.7), developed over marls. The area is a mosaic of
 moderately steep slopes covered by alpha-grass (\textit{Stipa tenacissima})
 steppes and abandoned agricultural terraces built on the streambeds. The
 terraces in the study site were abandoned in the 80s and 90s and progressively
@@ -166,7 +172,7 @@ protecting young individuals from both goat grazing and predation by the
 European rabbit (\textit{Oryctolagus cuniculus}), which is the dominant native
 herbivore in the area [@verwijmeren_drought_2014].
 
-## Experimental design
+## Experimental design {-}
 
 To test if benefactor-sapling interactions are linked to the capacity of the
 saplings to endure stress, we selected three common shrub species of the
@@ -177,13 +183,13 @@ cytisoides} and \textit{D. pentaphyllum} are Fabaceae and \textit{P. lentiscus}
 belongs to the Anacardiaceae family. All those species have characteristics
 which are usually depicted as favorable to endure arid climate. \textit{A.
 cytisoides} is a drought-avoider, dropping its leaves during the summer thereby
-decreasing the transpiring area  [@haase_photosynthetic_2000]. \textit{P.
+decreasing the transpiring area [@haase_photosynthetic_2000]. \textit{P.
 lentiscus} is a late successional evergreen shrub which can develop a dense root
 system at the sapling stage within their year of planting
-[@maestre_positive_2003].  It can also increase the water storage in its
+[@maestre_positive_2003]. It can also increase the water storage in its
 leaves during the bad season [@maestre_mechanisms_2004], the thick cuticle
 of its leaves [@coste_flore_1937] limiting the loss of water by
-evapotranspiration.  \textit{D. pentaphyllum} is a low-growing species known for
+evapotranspiration. \textit{D. pentaphyllum} is a low-growing species known for
 its resistance to water stress [@caravaca_use_2003]. Its leaves are
 composed by segments, decreasing the transpiring surface.
 
@@ -201,15 +207,15 @@ species which is pioneer in deserts [@alados_association_2006].
 ---
 
 Three variables were manipulated: the community diversity,
-the water supply and the microsite where the sapling communities were set (Fig. \@ref(fig:exp)). The
+the water supply and the microsite where the sapling communities were set (Fig. \@ref(fig:exp)b). The
 sapling species variable had three modalities: \textit{A. cytisoides}, \textit{D.
 pentaphyllum} and \textit{P. lentiscus}. The community diversity variable had two
 modalities: monospecific and multispecies, and the water supply two as well: yes
 or no. Finally, the microsite variable had two modalities: open or patch (i.e.
 beneath the canopy of \textit{A. herba-alba}). Overall, we had 16 treatment
 combinations ($4 \times 2 \times 2$). The treatment combinations were replicated
-20 times and distributed within 3 main terraces comprising respectively 7, 7 and
-6 replicates.
+20 times and distributed within 3 main terraces (Fig. \@ref(fig:exp)c)
+comprising respectively 7, 7 and 6 replicates.
 
 Because of the abundance of grazers in the area (mainly rabbits), all the
 terraces were fenced with $1.80$ meters height wire grid fences and reinforced
@@ -232,31 +238,57 @@ basis. The watering treatment was applied in January, March, April, May, June,
 July, August and October 2016 by putting 1.5 L of water by hole.
 
 We recorded the survival, basal diameter and vegetative height from January to
-October 2016 (10 months) as well as the Photosynthetic Active Radiation (PAR),
-temperature, soil moisture. We further measured Specific Leaf Area (SLA) and the Leaf
-Dry Matter Content (LDMC) in March (4 months after the plantation) following
-recommendations [@perez-harguindeguy_new_2013]. We randomly sampled XX
-individuals by treatment for which we collected XX leaves (TO ADD). Leaves were
+October 2016 (10 months). We further measured Leaf Dry Matter Content (LDMC) and
+Specific Leaf Area (SLA) in March 2016 (4 months after the plantation)
+following recommendations [@perez-harguindeguy_new_2013]. We collected only
+leaves in good shape, mature and the most exposed to the sunbeam. Furthermore,
+we tried to collect only on the individuals which had sufficient leaves to not
+suffer of the sampling (subjective point of view). We collected 3 leaves by *P.
+lentiscus*, 5 leaves by *A. citisoides* and 10 leaves by *D. pentaphyllum* by
+respect to the weight of species leaves.  Leaves from each individuals were
 stored in a falcon tube with a humid tissue to limit dessication, all the falcon
-being stored in a thermal isolated box. At the laboratory, we rehydrated the
-fresh leaves in distilled water, weighted them and scan them. Leaves have been
-then dried during 48h at XX Celcius degrees, and weighted again.
+being stored in a thermal isolated box. At the laboratory, we first rehydrated
+them with deionized water during several minutes. Following this, we weighted
+the leaves and scanned them, and finally dried them at least 48h at 72 celcius
+degrees. We then measured their dry weight to compute LDMC and SLA. We randomly
+selected sites to be sampled, we finally reach from 7 to 36 samples for SLA,
+from 13 to 75 for LDMC by treatment combination (Table SXX).
+
+---
+# see
+# /home/alain/Documents/thesis/alicante/thesis_chap2_alicante/inst/examples/experiment.rmd
+---
+
+```{r}
+tar_load(biomass_modelling_r2)
+r2bm <- setNames(round(unlist(biomass_modelling_r2[1,][c(2, 3)]), 2), c("R2", "adj"))
+```
+
 
 Prior to the experiment, we collected twelve individuals of each species for
-which we measured total biomass. Following allometric relationship, we estimated
-the relationship between total biomass, basal diameter and vegetative height
-with a species effect. We found (Fig. SXX)
+which we measured total biomass. There was several individuals in each container and
+their number were variable. We selected the biggest stem to do our
+measurements. We measured the height of the stem, we took two perpendicular measurements
+of basal diameter. We then separated the stem, the leaves and the roots and
+dried then at 65°C during 3 days to obtain the biomass. Following allometric
+relationship, we estimated the relationship between total biomass, basal
+diameter and vegetative height with a species effect. The R2 of the model were
+quite high (R2 = `r r2bm["R2"]`, adjusted R2 = `r r2bm["adj"]`). We further
+found good relationship between predicted and observed values (Fig. SXX).
+
 
 \begin{equation}
-    B = \beta_0 \times \beta_1\exp{d} \times \beta_2\exp{h} \times \sum{\beta_{2 + j}*S_j}\\
-    \log B = \beta_0 + \beta_1 \log d + \beta_2 \log h + \sum{\beta_{2 + j}*S_j}
-    (\#eq:bm)
+  \begin{gather}
+    B = \beta_0 \times \beta_1\exp{d} \times \beta_2\exp{h} \times \sum{\beta_{2 + j}S_j}\\
+    \log B = \beta_0 + \beta_1 \log d + \beta_2 \log h + \sum{\beta_{2 + j}S_j}
+  \end{gather}
+  (\#eq:bm)
 \end{equation}
 
 
-## Data analysis
+## Data analysis {-}
 
-### Statistical model
+### Statistical model {-}
 
 We modelled the response variable using hierarchical Bayesian models. We included as predictors the
 diversity, watering and patch treatments ($\sum_{k=1}\beta_k X_k$), as well as
@@ -264,15 +296,17 @@ the interactions among them (double interactions:
 $\sum_{k=1, k \neq l}\beta_{kl} X_k X_l$, and triple interactions:
 $\sum_{k=1, k \neq l, l \neq k}\beta_{klm} X_k X_l X_m$). We added time, i.e.
 number of month since the start of the experiment ($\beta_0Time_t$),
-species identity ($\sum_{j=1}\beta_{j}S_j$) and the terrace as control
-predictors ($\sum_{j=1}\beta_{j}*T_j$).
+species identity ($\sum_{s}\beta_{s}S_s$) and the terrace as control
+predictors ($\sum_{j}\beta_{j}T_j$).
 
 \begin{equation}
-     Y_{i|p,z,t} = \alpha + \beta_0Time_t + \sum_{s}\beta_{s}S_s + \sum_{j}\beta_{j}*T_j + \\
-     \sum_{k=1}\beta_k X_k + \sum_{k=1, k \neq l}\beta_{kl} X_k X_l +
-     \sum_{k=1, k \neq l, l \neq k}\beta_{klm} X_k X_l X_m + \\
+  \begin{gather}
+     Y_{i|p,z,t} = \alpha + \beta_0Time_t + \sum_{s}\beta_{s}S_s + \sum_{j}\beta_{j}T_j +\\
+     \sum_{k=1}\beta_k X_k + \sum_{k=1, k \neq l}\beta_{kl} X_k X_l +\\
+     \sum_{k=1, k \neq l, l \neq k}\beta_{klm} X_k X_l X_m +\\
      \epsilon_{i|p,z,t}
-    (\#eq:gen)
+  \end{gather}
+  (\#eq:gen)
 \end{equation}
 
 - $\alpha = \alpha_0 + a_{p|j} + a_{i|p|j}$
@@ -298,6 +332,12 @@ explore how each species reacted to the treatment combination, but is complex
 because it includes fourth way interactions ($\sum_{k=1, k \neq l, l \neq k,
 s}\beta_{klm} X_k X_l X_m S_s$).
 
+Before the analysis, we centered time variable to march (month number 5) in
+order to get estimated coefficients at a relevant values. The diversity of the
+sapling community, species identity, site (open / patch), and watering were
+factorial variables. Their reference values were respectively single species, *A.
+citisoides*, open site, and no watered.
+
 The models were evaluated in a Bayesian framework using Integrated Nested
 Laplacian Approximation [@rue_approximate_2009; @rue_bayesian_2017] (INLA). We
 computed the credible intervals at 80%, 90% and 95% using the Highest Posterior
@@ -316,7 +356,7 @@ standard deviations attributed to the random effects and the gaussian error
 ($\sigma = 1 / \sqrt{\tau}$).
 
 We checked the overall quality of the model fit to the data by plotting the
-fitted versus the observed values (TODO). We visually inspected the PIT and
+fitted versus the observed values (Fig. SXX). We visually inspected the PIT and
 CPO (respectively Posterior Integral Transform and Conditional Predictive
 Ordinate) distribution to assess both the quality of data representation, and
 the frequency of outliers.
@@ -334,7 +374,7 @@ following recommendations to take in account the variability associated with
 the priors [@gelman_r-squared_2019]. We then reported the mean marginal and
 conditional $R^2$ associated the 95% credible interval computed using the
 Highest Posterior Density method. We did not compute $R^2$ for survival models
-as they do not contain residuals errors^[[source 1](https://stats.stackexchange.com/a/3562), [source 2](https://stats.stackexchange.com/a/124826)] (as logistic regression predicts a
+as they do not contain residuals errors^[I did not know! [source 1](https://stats.stackexchange.com/a/3562), [source 2](https://stats.stackexchange.com/a/124826)] (as logistic regression predicts a
 probability of survival while the data are binary).
 
 $$
@@ -352,7 +392,7 @@ $a_{p|j}$ and $a_{i|p|j}$ are respectively the standard deviation on the random
 intercept associated to the plot and the site.
 
 
-### Interaction strength
+### Interaction strength {-}
 
 The net effect of the benefactor-beneficiary interactions was estimated with the
 Neighbor-effect Intensity index
@@ -390,7 +430,7 @@ interaction for survival and biomass respectively. We further computed the net
 effect using the model at the community level and at the species level, the
 latter was used to explore the variation of the net effect across species.
 
-# Results
+# Results {-}
 
 ```{r load-targets, include=FALSE}
 tar_load(c(inla_surv_odd, bm_inla_scaled_effects, bm_inla_effects))
@@ -456,9 +496,11 @@ find evidence that the effect of the watering treatment on odds change in patch
 (OR = `r s_wm`), we found strong evidence that the watering treatment decreased
 the positive effect of sapling community diversity under *A. herba-alba* on
 survival likelihood (OR = `r s_wcm`). We finally found that survival odds varied
-across species, *Pistachia lentiscus* and *Dorycnium pentaphyllum* having lower
+across species, *Pistacia lentiscus* and *Dorycnium pentaphyllum* having lower
 survival overall (OR = `r s_pis`, `r s_dor` respectively). We further found that
-treatments affects differently the species (See Fig. \@ref(fig:sbm)b).
+treatments affects differently the species (Fig. \@ref(fig:sbm)b, See Fig. SXX
+for the effects). For example, *P. lentiscus* had the highest increase in
+survival in the watering treatment [Probably add more examples].
 
 ```{r, fig.cap = "Biomass"}
 tar_load(c(bm_inla_pred, bm_inla_sp_pred))
@@ -517,8 +559,8 @@ ggsave(
 ```
 
 ```{r}
-fig_surv_bm <- paste0("Slope of the statical models at the community level (left panel, a & c) and prectictions at the species level (right panel, b & d) for (a & b)
-  survival and (c & d) biomass. Survival coefficients (a) are the exponential of odd-ratios, values below and above 1 display respectively negative and positive effect on survival probability. Left panels: points represent the mean of the posterior distribution of coefficients; Thin, medium and large bars represent the credible interval at 95\\%, 90\\% and 80\\%. Right panels display the predictions of the model at the species level (See methods), points display the data averaged by plot (N = 12).") %>%
+fig_surv_bm <- paste0("Slope of the statical models at the community level (left panel, a \\& c) and prectictions at the species level (right panel, b \\& d) for (a \\& b)
+  survival and (c \\& d) biomass. Survival coefficients (a) are the exponential of odd-ratios, values below and above 1 display respectively negative and positive effect on survival probability. Left panels: points represent the mean of the posterior distribution of coefficients; Thin, medium and large bars represent the credible interval at 95\\%, 90\\% and 80\\%. Right panels display the predictions of the model at the species level (See methods), points display the data averaged by plot (N = 12).") %>%
 str_replace_all("\\s+", " ")
 ```
 
@@ -631,24 +673,26 @@ community diversity affected leaf traits.
 
 ## Plant-plant interactions
 
-Using the predictions of the model, we found that the outcome of  interactions
+Using the predictions of the model, we found that the outcome of interactions
 between saplings and *Artemisia herba-alba* were driven by interactive effects
-between the diversity of sapling communities and the watering trement (The
-effects are consistent through time, see Fig. SXX).
+between the diversity of sapling communities and the watering treatment (Fig.
+\@ref(fig:int)).
 We found that competitive interactions dominated in single species communities
-non watered for both survival and biomass. In watered sites, the single species
-communities were found to have positive or less have negative
-interactions in terms of survival and biomass respectively. In diverse
-communities non-watered, we found positive interactions both in terms survival
-and biomass, but strongly negative interactions in watered sites.
+non watered for both survival and biomass (Fig.
+\@ref(fig:int)a, b). In watered sites, the single species
+communities were found to have positive interactions for survival and negative
+for biomass. In diverse communities non-watered, we found positive interactions
+both in terms survival and biomass, but strongly negative interactions in
+watered sites.
 
 Beyond those general effects at the community level, we found strong disparities
-using the model at the species level. In single species communities no watered, we
+using the model at the species level (Fig.
+\@ref(fig:int)c, d). In single species communities no watered, we
 found that neutral and negative competitive interactions dominated for *A.
 citisoides* and *D. pentaphyllum*, but positive interactions for *P. lenticus*
 in terms of survival, for all species displayed negative interactions in terms
-of biomass. We found strong discrepanties among species in the watered sites,
-*A. citisoides* was the most facilited followed by *D. pentaphyllum* and
+of biomass. We found strong discrepancies among species in the watered sites,
+*A. citisoides* was the most facilitated followed by *D. pentaphyllum* and
 competition for *P. lenticus* in term of survival, we found the opposite gradient
 in term of biomass, *P. lenticus* being the most facilitated and  *A.
 citisoides* displaying the strongest competitive effects. In diverse
@@ -791,13 +835,13 @@ knitr::include_graphics(here("paper", "graphics", "p_int_ok.pdf"))
 ```
 
 
-# Discussion
+# Discussion {-}
 
 Our study aimed to scale plant-plant interactions among saplings and adult plant
 at the community level. To do so, we planted sapling communities of three
 individuals in open sites or below the canopy of an adult individual of *A.
 herba-alba*. We manipulated the diversity and the input of water to the sapling
-communities. Using a hierarchical bayesian model accounting for variation
+communities. Using a hierarchical Bayesian model accounting for variation
 at the plot and site level, we found that diverse communities had
 higher survival and biomass in terms of survival and biomass, an evidence of
 strong facilitative effects. We further found that watering downplayed the
@@ -807,10 +851,10 @@ response to watering and diversity in terms of survival and biomass,
 suggesting an interplay between stress-tolerance and competitive abilities
 of sapling species.
 
-## Diversity, patch and watering
+## Diversity, patch and watering {-}
 
 We found that higher diversity of sapling species enhances facilitation at the
-community scale. More specifically, only *Pistachia lenticus* displayed a
+community scale. More specifically, only *Pistacia lenticus* displayed a
 relatively weak facilitation in single species treatment in term of survival.
 This results is accordance with previous studies showing that communities
 located under nurse plants tend to have higher species richness
@@ -847,8 +891,15 @@ among saplings, play an important role in driving the outcome of interactions
 between saplings and *A. herba-alba*.
 
 ```{r}
-idea_cap <- paste0("Including both abiotic stress and among beneficiary competition in the Stress Gradient hypothesis. (a) Both low/high competition among beneficiary species and abiotic stress result in a negative net effect between beneficiary and benefactors (1, 4). Positive net effects are more likely to arise if either competition among beneficiary is decreased by increasing diversity (2) or if abiotic stress is decreased (3). (b) Both the effects of abiotic stress and the level of competition among benefiaries can be map in the original SGH framework (Bertness & Callaway, 1994)") %>%
-str_replace_all("\\s+", " ")
+idea_cap <- paste0("Including both abiotic stress and among beneficiary
+  competition in the Stress Gradient hypothesis. (a) Both low/high competition
+  among beneficiary species and abiotic stress result in a negative net effect
+  between beneficiary and benefactors (1, 4). Positive net effects are more
+  likely to arise if either competition among beneficiary is decreased by
+  increasing diversity (2) or if abiotic stress is decreased (3). (b) Both the
+  effects of abiotic stress and the level of competition among benefiaries can
+  be map in the original SGH framework (Bertness \\& Callaway, 1994)") %>%
+  str_replace_all("\\s+", " ")
 ```
 
 
