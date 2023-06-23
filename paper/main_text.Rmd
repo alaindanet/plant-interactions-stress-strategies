@@ -1,5 +1,5 @@
 ---
-title: "Species richness and abiotic stress interact to drive plant-plant interactions"
+title: "Community diversity and abiotic stress interact to drive plant-plant interactions"
 author: "Alain Danet, Susana Bautista, ..., Fabien Anthelme, Sonia Kéfi"
 date: ""
 output:
@@ -69,6 +69,7 @@ if (Sys.info()["login"] == "alain") {
 
 # Abstract {-}
 
+[TO DO]
 
 
 # Introduction {-}
@@ -144,7 +145,7 @@ also measured the functional traits.
 # Material & Methods {-}
 
 ```{r exp, fig.cap = "Experimental design"}
-knitr::include_graphics(here("paper", "graphics", "experimental_design2.pdf"))
+knitr::include_graphics(here("paper", "graphics", "experimental_design2.png"))
 ```
 
 ## Study area {-}
@@ -263,7 +264,6 @@ from 13 to 75 for LDMC by treatment combination (Table SXX).
 tar_load(biomass_modelling_r2)
 r2bm <- setNames(round(unlist(biomass_modelling_r2[1,][c(2, 3)]), 2), c("R2", "adj"))
 ```
-
 
 Prior to the experiment, we collected twelve individuals of each species for
 which we measured total biomass. There was several individuals in each container and
@@ -483,6 +483,16 @@ ggsave(
   units = "mm",
   dpi = "print"
 )
+ggsave(
+  filename = "p_pred_effect_surv.png",
+  plot = p_pred_effect_surv,
+  path = here("paper", "graphics"),
+  scale = 2.4,
+  width = 90,
+  height = 90 * .6,
+  units = "mm",
+  dpi = "print"
+)
 ```
 
 Being in a patch (i.e. under an adult plant of *Artemisia herba-alba*) did not
@@ -498,9 +508,9 @@ the positive effect of sapling community diversity under *A. herba-alba* on
 survival likelihood (OR = `r s_wcm`). We finally found that survival odds varied
 across species, *Pistacia lentiscus* and *Dorycnium pentaphyllum* having lower
 survival overall (OR = `r s_pis`, `r s_dor` respectively). We further found that
-treatments affects differently the species (Fig. \@ref(fig:sbm)b, See Fig. SXX
-for the effects). For example, *P. lentiscus* had the highest increase in
-survival in the watering treatment [Probably add more examples].
+treatments affects differently the species (Fig. \@ref(fig:sbm)b, see effects in
+Fig. SXX). For example, *P. lentiscus* had the highest increase in survival in
+the watering treatment [Probably add more examples].
 
 ```{r, fig.cap = "Biomass"}
 tar_load(c(bm_inla_pred, bm_inla_sp_pred))
@@ -556,6 +566,16 @@ ggsave(
   units = "mm",
   dpi = "print"
 )
+ggsave(
+  filename = "p_pred_effect.png",
+  plot = p_pred_effect,
+  path = here("paper", "graphics"),
+  scale = 2.4,
+  width = 90,
+  height = 90 ,
+  units = "mm",
+  dpi = "print"
+)
 ```
 
 ```{r}
@@ -566,7 +586,7 @@ str_replace_all("\\s+", " ")
 
 
 ```{r sbm, fig.cap=fig_surv_bm}
-knitr::include_graphics(here("paper", "graphics", "p_pred_effect.pdf"))
+knitr::include_graphics(here("paper", "graphics", "p_pred_effect.png"))
 ```
 
 
@@ -631,12 +651,16 @@ l_pis <- get_effect_ci(effect = ldmc_effects, term = "speciespistachia", ci_lvl 
 ```
 
 ```{r, fig.cap = "Leaf traits"}
+tar_load(c(leaf_inla_sp_pred, leaf_trait_modelling))
+
 p_effect_trait <- plot_inla_fixed_effect(leaf_inla_effects_scaled) +
-  labs(x = "Standardizing coefficients (beta)", color = "Trait") +
+  labs(x = "Standardizing coefficients", color = "Trait") +
+  viridis::scale_color_viridis(discrete = T) +
   theme(
     legend.position = "bottom",
     axis.title.y = element_blank()
   )
+
 ggsave(
   filename = "p_effect_trait.pdf",
   plot = p_effect_trait,
@@ -650,26 +674,83 @@ ggsave(
 ```
 
 ```{r}
-lt_cap <- paste0("Effects of treatments on Leaf Dry Matter Content (LDMC) and
-  Specific Leaf Area (SLA). Slope coefficients are standardized. Points
+p_pred_leaf <- leaf_trait_modelling %>%
+  pivot_longer(c(ldmc, sla), names_to = "trait", values_to = "values") %>%
+  group_by(ms, com, watering, trait, species, plot) %>%
+  summarise(n = sum(!is.na(values)), values = mean(values, na.rm = TRUE)) %>%
+  filter(n >= 3) %>%
+  ggplot(aes(y = values, x = ms, color = com, shape = watering)) +
+  geom_jitter(alpha = .2) +
+  geom_point(data = leaf_inla_sp_pred %>% rename(trait = response), aes(y = mean), size = 2) +
+  facet_grid(cols = vars(species), rows = vars(trait), scales = "free_y") +
+  labs(
+    x = "Site",
+    y = "Leaf trait values",
+    color = "Diversity",
+    shape = "Watering") +
+  theme_bw() +
+  theme(legend.position = "bottom")
+ggsave(
+  filename = "p_pred_leaf.pdf",
+  plot = p_pred_leaf,
+  path = here("paper", "graphics"),
+  scale = 1.8,
+  width = 90,
+  height = 90 * .7,
+  units = "mm",
+  dpi = "print"
+)
+```
+
+```{r}
+p_leaf <- plot_grid(p_effect_trait, p_pred_leaf, ncol = 2, rel_widths = c(.4, 1), labels = "auto")
+ggsave(
+  filename = "p_leaf.pdf",
+  plot = p_leaf,
+  path = here("paper", "graphics"),
+  scale = 2.4,
+  width = 90,
+  height = 90 * .55,
+  units = "mm",
+  dpi = "print"
+)
+ggsave(
+  filename = "p_leaf.png",
+  plot = p_leaf,
+  path = here("paper", "graphics"),
+  scale = 2.4,
+  width = 90,
+  height = 90 * .55,
+  units = "mm",
+  dpi = "print"
+)
+```
+
+
+
+```{r}
+lt_cap <- paste0("Slope of the statical models at the community level (a) and
+  prectictions at the species level (b) for Leaf Dry Matter Content (LDMC) and
+  Specific Leaf Area (SLA). (a) Slope coefficients are standardized. Points
   represent the mean of the posterior distribution of coefficients; Thin, medium
-  and large bars represent the credible interval at 95\\%, 90\\% and 80\\%.") %>%
+  and large bars represent the credible interval at 95\\%, 90\\% and 80\\%. (b) predictions of the model at the species level (See methods), background points display the data averaged by plot (N = 12).") %>%
 str_replace_all("\\s+", " ")
 ```
 
 
 ```{r lt, fig.cap=lt_cap}
-knitr::include_graphics(here("paper", "graphics", "p_effect_trait.pdf"))
+knitr::include_graphics(here("paper", "graphics", "p_leaf.png"))
 ```
 
 Leaf traits was found to vary across patch and watering treament. We found
 moderate evidence that saplings Leaf Dry Matter Content decreased and that
 Specific Leaf Area increased in patch (Standardized coefficients: $\beta$' = `r l_m` and `r a_m`
-respectively, Fig. \@ref(fig:lt)), meaning that saplings develop a more "resource exploitive"
+respectively, Fig. \@ref(fig:lt)a), meaning that saplings develop a more "resource exploitive"
 strategy (or a "resource conservative" strategy) in patches. We further found
 strong evidence that LDMC was lower in watered treatment ($\beta$' = `r l_w`)
 but not SLA ($\beta$' = `r a_w`). Overall, we did not find evidence that
-community diversity affected leaf traits.
+community diversity affected leaf traits. We further found variations across
+species (Fig. \@ref(fig:lt)b) [TO COMPLETE].
 
 ## Plant-plant interactions
 
@@ -819,6 +900,16 @@ ggsave(
   units = "mm",
   dpi = "print"
 )
+ggsave(
+  filename = "p_int_ok.png",
+  plot = p_int_ok,
+  path = here("paper", "graphics"),
+  scale = 2.4,
+  width = 90,
+  height = 90 * .6,
+  units = "mm",
+  dpi = "print"
+)
 ```
 
 ```{r}
@@ -831,7 +922,7 @@ str_replace_all("\\s+", " ")
 
 
 ```{r int, fig.cap=int_cap}
-knitr::include_graphics(here("paper", "graphics", "p_int_ok.pdf"))
+knitr::include_graphics(here("paper", "graphics", "p_int_ok.png"))
 ```
 
 
@@ -851,18 +942,14 @@ response to watering and diversity in terms of survival and biomass,
 suggesting an interplay between stress-tolerance and competitive abilities
 of sapling species.
 
-## Diversity, patch and watering {-}
-
 We found that higher diversity of sapling species enhances facilitation at the
 community scale. More specifically, only *Pistacia lenticus* displayed a
 relatively weak facilitation in single species treatment in term of survival.
-This results is accordance with previous studies showing that communities
-located under nurse plants tend to have higher species richness
-[@cavieres_facilitative_2014]. This result can be explain by the possible
-increase in niche complementary (i.e. decrease in niche overlap) among saplings
-in diverse communities, which in turn decrease competition for resource
-exploitation[@cardinale_species_2002] and increase the
-benefits of facilitation [Could it be tested with @loreau_partitioning_2001 ?].
+This result can be explain by the possible increase in niche complementary
+[Could it be tested with @loreau_partitioning_2001 ?] (i.e. decrease in niche
+overlap) among saplings in diverse communities, which in turn decrease
+competition for resource exploitation[@cardinale_species_2002] and increase the
+benefits of facilitation. [May be something about coexistence theory]
 
 Watering was found to modulate strongly the outcome of the interactions among
 saplings and *Artemisia herba-alba*. In monospecific communities, watering
@@ -904,9 +991,8 @@ idea_cap <- paste0("Including both abiotic stress and among beneficiary
 
 
 ```{r idea, fig.cap=idea_cap}
-knitr::include_graphics(here("paper", "competition_stress_sgh.pdf"))
+knitr::include_graphics(here("paper", "graphics", "competition_stress_sgh.png"))
 ```
-
 
 The consideration of both abiotic stress and competition among saplings might
 then be the key to understand observed outcome sapling-shrub interactions (Fig.
@@ -952,7 +1038,7 @@ lenticus* and *A. anthyllus*, the two species at the extrem of the
 Competitive/Stress-tolerance spectrum, but not if we consider *D. pentaphyllum*.
 It might be explained by the intraspecific competition among *D. pentaphyllum*
 but also that the phytoxicity of *A. herba-alba*. *A. herba-alba* was reported
-to produce strong anti-germination coumpounds but was not reported affect
+to produce strong anti-germination compounds but was not reported affect
 negatively sapling growth [@arroyo_phytotoxic_2018].
 
 In line with previous studies, we found that watering and patch leaded to
@@ -962,16 +1048,27 @@ This indicates that watered and plants located under *A. herba-alba* devolped a
 less resource-conservative strategy and a more resource acquisition strategy.
 However, we found an increase in SLA in the patch treatment but not in the
 watering treatment. Light limitation and water deficit might explain this
-pattern[@liu_does_2016]. Previous studies showed that light reduction results
+pattern [@liu_does_2016]. Previous studies showed that light reduction results
 in higher SLA, which is a compensation for the limited amount of radiation
-received and a common adaptation for understory plants[@liu_does_2016].
+received and a common adaptation for understory plants [@liu_does_2016].
 Another hypothesis is that the decrease in SLA overall under *A. herba-alba* is
 not happening in watering treatment because of the water deficit in open sites
 which in turn might promote to the maintenance of the same leaf area despite the
-increase of water input.
-
+increase of water input. LDMC and SLA average values did not vary according to
+the diversity of the communities. However, theory predicts that diversity should
+affect more trait overlap than average values [@macarthur_limiting_1967] [Did
+not have time to run the null models to test it as in @danet_indirect_2018].
 
 # Conclusion & perspectives
 
+Our study reports that nurse-beneficiary net interaction are modulated by a
+strong interaction between the level of abiotic stress and the diversity of the
+beneficiary community. We suggest that optimal facilitative effects are
+achieved when niche complementary among beneficiary species is high, i.e.
+competition among beneficiary is minimal. Further investigations focusing on how
+diversity of beneficiary communities modulate nurse-beneficiary interactions can
+be a path forward a better understanding of the interplay between competition
+and facilitation, and to better connect facilitation theory with the
+Biodiversity-Ecosystem Functioning concept [@wright_overlooked_2017].
 
 # References

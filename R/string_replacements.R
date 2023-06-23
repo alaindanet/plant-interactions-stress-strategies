@@ -1,6 +1,7 @@
 
 term_replacement <- function() {
   c(
+    "(Intercept)" = "Intercept",
     "duration_m" = "Time",
     "comPoly" = "Diversity",
     "msPatch" = "Patch",
@@ -18,6 +19,7 @@ response_replacement <- function() {
     "survival" = "Survival",
     "log_d" = "Basal diameter",
     "h" = "Vegetative height",
+    "log_h" = "Vegetative height",
     "hm" = "Max vegetative height",
     "bm" = "Total biomass",
     "ldmc" = "Leaf Dry Matter Content",

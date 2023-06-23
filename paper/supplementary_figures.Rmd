@@ -21,7 +21,7 @@ library(officedown)
 knitr::opts_chunk$set(echo = FALSE,
                       collapse = TRUE,
                       message = FALSE,
-                      warnings = FALSE,
+                      warning = FALSE,
                       comment = "#>",
                       fig.path = "graphics/knitr-",
                       fig.retina = 1.618, # Control using dpi
@@ -85,13 +85,24 @@ str_replace_all("\\s+", " ")
 
 ```{r bm-pred, fig.cap = bm_pred_cap}
 biomass_t0$bm_total_pred <- exp(predict(biomass_modelling$log_mod_bm_tot_h))
-biomass_t0 %>%
+p_pred_bm <- biomass_t0 %>%
   ggplot(aes(x = bm_total, y = bm_total_pred, color = species)) +
   geom_point() +
   geom_abline(slope = 1, intercept = 0) +
   labs(y = "Predicted total biomass", x = "Observed total biomass") +
   theme_bw() +
   theme(legend.position = "bottom")
+ggsave(
+  filename = "p_pred_bm.pdf",
+  plot = p_pred_bm,
+  path = here("paper", "graphics"),
+  scale = 1.4,
+  width = 90,
+  height = 90 * 1,
+  units = "mm",
+  dpi = "print"
+)
+knitr::include_graphics(here("paper", "graphics", "p_pred_bm.pdf"))
 ```
 
 ```{r}
@@ -115,7 +126,10 @@ str_replace_all("\\s+", " ")
 
 ```{r}
 broom::tidy(biomass_modelling$log_mod_bm_tot_h) %>%
-  kable(caption = mod_cap, label = "tab:pred_bm")
+  mutate(term = c(term_replacement(), response_replacement())[term]) %>%
+  janitor::clean_names() %>%
+  kbl(booktabs = T, caption = mod_cap, label = "pred-bm") %>%
+  kable_styling(latex_options = c("hold_position"))
 ```
 
 ```{r}
@@ -124,7 +138,7 @@ str_replace_all("\\s+", " ")
 ```
 
 
-```{r leaf-nb, fig.cap = leaf_nb_data}
+```{r leaf-nb, fig.cap = leaf_nb_cap}
 tar_load(leaf_trait)
 leaf_trait %>%
   pivot_longer(c(ldmc, sla), names_to = "trait", values_to = "values") %>%
@@ -151,7 +165,7 @@ str_replace_all("\\s+", " ")
 
 
 ```{r na-fig, fig.cap = na_cap}
-surv_data_modelling %>%
+p_na_surv <- surv_data_modelling %>%
   select(duration_m, bm, d, h, survival) %>%
   pivot_longer(cols = c(bm, d, h, survival), names_to = "variable", values_to = "values") %>%
   group_by(duration_m, variable) %>%
@@ -164,6 +178,17 @@ surv_data_modelling %>%
     x = "Number of month since the beginning of the experiment",
     y = "Number of NAs") +
   theme_bw()
+ggsave(
+  filename = "p_na_surv.pdf",
+  plot = p_na_surv,
+  path = here("paper", "graphics"),
+  scale = 2.4,
+  width = 90,
+  height = 90 * .3,
+  units = "mm",
+  dpi = "print"
+)
+knitr::include_graphics(here("paper", "graphics", "p_na_surv.pdf"))
 ```
 
 
@@ -174,9 +199,9 @@ str_replace_all("\\s+", " ")
 ```
 
 
+
 ```{r obs-fit, fig.cap = obs_fit_cap}
-#tar_load(c(p_obs_fit_surv, p_obs_fit_leaf, p_obs_fit))
-tar_read(p_obs_fit_tot)
+knitr::include_graphics(here("paper", "graphics", "p_obs_fit_tot.png"))
 ```
 
 ```{r}
@@ -186,10 +211,9 @@ str_replace_all("\\s+", " ")
 ```
 
 ```{r obs-fit-sp, fig.cap =obs_fit_sp_cap}
-#tar_load(c(p_obs_fit_surv_sp, p_obs_fit_sp_leaf, p_obs_fit_sp))
-tar_read(p_obs_fit_sp_tot)
+knitr::include_graphics(here("paper", "graphics", "p_obs_fit_sp_tot.png"))
 ```
-
+\pagebreak
 
 ## Results
 
@@ -230,6 +254,7 @@ r2_tab %>%
 tar_load(rand_tab)
 
 rand_tab_ok <- rand_tab %>%
+  ungroup() %>%
   filter(response %in% c("ldmc", "sla", "bm", "d", "h")) %>%
   arrange(level, response) %>%
   mutate(
@@ -240,8 +265,11 @@ rand_tab_ok <- rand_tab %>%
   select(
     `Model scale` = level,
     Variable = response,
+    Term = term,
     `Random effect (s.d.)` = sd_ci
-    )
+    ) %>%
+  pivot_wider(names_from = "Term", values_from = "Random effect (s.d.)")
+
 
 rand_cap <- "Standard deviations associated to  the stastistical models at the community and the
 species level. Gaussian error represents the general error term of the models.
@@ -253,16 +281,14 @@ rand_tab_ok %>%
   kbl(booktabs = T,
     label = "tab-rand",
     caption = rand_cap) %>%
+  add_header_above(c(" " = 2, "Random effect (s.d.)" = 3)) %>%
   collapse_rows(columns = c(1, 2), valign = "middle", latex_hline = "major") %>%
   kable_styling(latex_options = c("hold_position"))
 ```
 
 
-```{r}
+```{r, results = "hide", fig.show = "hide"}
 tar_load(c(inla_surv_sp_effects, inla_surv_sp_odd))
-```
-
-```{r, results = "hide"}
 surv_species <- plot_inla_fixed_effect(
   inla_surv_sp_odd %>%
     filter(str_detect(term, "dorycnium|pistachia")),
@@ -287,6 +313,7 @@ surv_base <- plot_inla_fixed_effect(inla_surv_sp_odd %>%
     axis.ticks.y.right = element_blank()
     ) +
   scale_x_break(c(15, 31))
+p_surv_effect_sp <- plot_grid(print(surv_base), print(surv_species), labels = "auto")
 ```
 
 ```{r}
@@ -297,8 +324,22 @@ Pistacia lentiscus." %>%
 str_replace_all("\\s+", " ")
 ```
 
+```{r, results = "hide"}
+ggsave(
+  filename = "p_surv_effect_sp.pdf",
+  plot = p_surv_effect_sp,
+  path = here("paper", "graphics"),
+  scale = 2.4,
+  width = 90,
+  height = 90 * 1.1,
+  units = "mm",
+  dpi = "print"
+)
+```
+
+
 ```{r surv-sp-effect, fig.cap = surv_sp_effects_cap}
-plot_grid(print(surv_base), print(surv_species), labels = "auto")
+knitr::include_graphics(here("paper", "graphics", "p_surv_effect_sp.pdf"))
 ```
 
 
@@ -382,18 +423,29 @@ coefficients for total biomass and basal diameter are highly similar."
 ```
 
 
-```{r fig.cap=bm_d_effect}
+```{r, fig.cap=bm_d_effect}
 tar_load(bm_inla_scaled_effects)
 ti <- bm_inla_scaled_effects %>%
   filter(response %in% c("d", "bm", "h")) %>%
   mutate(response = response_replacement()[response])
-plot_inla_fixed_effect(ti,
+p_bm_d_effect <- plot_inla_fixed_effect(ti,
   color_var = response, intercept = 0) +
   labs(x = "Standardized coefficients", color = "Variable") +
   theme(
     axis.title.y = element_blank(),
     legend.position = "bottom"
   )
+ggsave(
+  filename = "p_bm_d_effect.pdf",
+  plot = p_bm_d_effect,
+  path = here("paper", "graphics"),
+  scale = 2.4,
+  width = 90,
+  height = 90 * 1,
+  units = "mm",
+  dpi = "print"
+)
+knitr::include_graphics(here("paper", "graphics", "p_bm_d_effect.pdf"))
 ```
 
 ```{r}
@@ -437,7 +489,7 @@ str_replace_all("\\s+", " ")
 
 ```{r bm-sp-effects, fig.cap = bm_sp_effects_cap}
 leg_effect <- get_legend(effect_base)
-plot_grid(
+p_leaf_sp_effect <- plot_grid(
   plot_grid(
     effect_base + theme(legend.position = "none"),
     effect_species + theme(legend.position = "none"),
@@ -448,6 +500,17 @@ plot_grid(
   nrow = 2,
   rel_heights = c(1, .05)
   )
+ggsave(
+  filename = "p_leaf_sp_effect.pdf",
+  plot = p_leaf_sp_effect,
+  path = here("paper", "graphics"),
+  scale = 2.4,
+  width = 90,
+  height = 90 * 1.2,
+  units = "mm",
+  dpi = "print"
+)
+knitr::include_graphics(here("paper", "graphics", "p_leaf_sp_effect.pdf"))
 ```
 
 
@@ -484,11 +547,6 @@ l_wcmd <- get_effect_ci(effect = ldmc_scaled_effects, term = "comPoly:msPatch:wa
 l_wcmp <- get_effect_ci(effect = ldmc_scaled_effects, term = "comPoly:msPatch:wateringWatered:speciespistachia", ci_lvl = "0.80")
 ```
 
-Leaf traits were found to vary across treatments, traits, and species.
-*Pistachia lentiscus* and *Dorycnium pentaphyllum* had overall and higher LDMC
-and lower SLA than *Anthyllis citisoides* (strong evidence). We did not find
-evidence for an overall effect of community diversity for leat trait in any species ().
-
 ```{r, eval = FALSE}
 leaf_trait %>%
   group_by(ms, com, watering, species, plot) %>%
@@ -523,7 +581,7 @@ surv_data_modelling %>%
   theme_bw()
 ```
 
-```{r}
+```{r, eval = FALSE}
 tar_load(c(bm_inla_pred, bm_inla_sp_pred))
 surv_data_modelling %>%
   group_by(duration_m, ms, com, watering, species, plot) %>%
@@ -557,19 +615,42 @@ surv_data_modelling %>%
 tar_load(c(pp_int, pp_int_global))
 ```
 
-```{r, eval = TRUE}
-# Supplementary to show that interaction does not change through time
-pp_int %>%
-  filter(response %in% c("bm", "d", "survival", "h")) %>%
-  ggplot(aes(y = inta, x = duration_m + 6, color = com, linetype = watering, fill = com), alpha = 1) +
-  geom_line() +
-  geom_ribbon(aes(ymin = inta_low, ymax = inta_high), alpha = .5) +
-  facet_grid(cols = vars(species), rows = vars(response), scales = "free_y") +
-  theme_bw()
+```{r}
+int_tot_cap <- "Net effects of interaction between A. herba-alba and sapling
+species. Total biomass and basal diameter net effects vary only a little across
+time and their results are really similar"
+
 ```
 
 
-```{r}
+```{r, fig.cap = int_tot_cap}
+# Supplementary to show that interaction does not change through time
+p_pp_int_tot <- pp_int %>%
+  filter(response %in% c("bm", "d", "survival")) %>%
+  mutate(response = response_replacement()[response]) %>%
+  ggplot(aes(y = inta, x = duration_m + 6, color = com, linetype = watering, fill = com), alpha = 1) +
+  geom_line() +
+  geom_ribbon(aes(ymin = inta_low, ymax = inta_high), alpha = .5) +
+  geom_hline(yintercept = 0) +
+  facet_grid(cols = vars(species), rows = vars(response), scales = "free_y") +
+  theme_bw() +
+  labs(y = "Net effect", x = "Number of month since the beginning of the experiment") +
+  theme(legend.position = "bottom")
+ggsave(
+  filename = "p_pp_int_tot.pdf",
+  plot = p_pp_int_tot,
+  path = here("paper", "graphics"),
+  scale = 2.4,
+  width = 90,
+  height = 90 * 1,
+  units = "mm",
+  dpi = "print"
+)
+knitr::include_graphics(here("paper", "graphics", "p_pp_int_tot.pdf"))
+```
+
+
+```{r, eval = FALSE}
 # Supplementary to show species effect at community level
 p_int_global_surv <- pp_int_global %>%
   filter(response == c("survival")) %>%

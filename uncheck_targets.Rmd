@@ -792,6 +792,35 @@ source(here::here("R","string_replacements.R"))
 ```
 
 
+```{r, results = "hide"}
+tar_load(p_obs_fit_tot)
+ggsave(
+  filename = "p_obs_fit_tot.png",
+  plot = p_obs_fit_tot,
+  path = here("paper", "graphics"),
+  scale = 2.4,
+  width = 90,
+  height = 90 * 1,
+  units = "mm",
+  dpi = "print"
+)
+```
+
+```{r, results = "hide"}
+tar_load(p_obs_fit_sp_tot)
+ggsave(
+  filename = "p_obs_fit_sp_tot.png",
+  plot = p_obs_fit_sp_tot,
+  path = here("paper", "graphics"),
+  scale = 2.4,
+  width = 90,
+  height = 90 * 1,
+  units = "mm",
+  dpi = "print"
+)
+```
+
+
 ```{r}
 tar_load(inla_surv_model)
 summary(inla_surv_model)
