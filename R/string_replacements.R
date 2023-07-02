@@ -4,7 +4,7 @@ term_replacement <- function() {
     "(Intercept)" = "Intercept",
     "duration_m" = "Time",
     "comPoly" = "Diversity",
-    "msPatch" = "Patch",
+    "msPatch" = "Nurse",
     "wateringWatered" = "Watering",
     "speciesdorycnium" = "Dorycnium",
     "speciespistachia" = "Pistacia",
@@ -58,7 +58,7 @@ rand_term_replacement <- function() {
   c(
     epsilon = "Gaussian error",
     IDtp = "Plot effect",
-    IDtpl = "Site effect"
+    IDtpl = "Site effect",
+    IDtl = "Site effect"
   )
-
 }

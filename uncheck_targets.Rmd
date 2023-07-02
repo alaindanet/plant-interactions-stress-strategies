@@ -125,9 +125,8 @@ list(
         bm = exp(predict(biomass_modelling$log_mod_bm_tot_h, newdata = surv_data %>% mutate(log_d = log(d), log_h = log(h)))),
         # Center duration in June 2016:
         duration_m = duration_m - 8,
-        IDtp = seq_len(nrow(surv_data)),
-        IDtpl = seq_len(nrow(surv_data)),
-        IDtpli = seq_len(nrow(surv_data))
+        IDtl = seq_len(nrow(surv_data)),
+        IDtli = seq_len(nrow(surv_data))
       )
   ),
   tar_target(pred_surv_data, get_pred_data(x = surv_data_modelling,
@@ -140,9 +139,8 @@ list(
   tar_target(leaf_trait_modelling,
     leaf_trait %>%
       mutate(
-        IDtp = seq_len(nrow(leaf_trait)),
-        IDtpl = seq_len(nrow(leaf_trait)),
-        IDtpli = seq_len(nrow(leaf_trait))
+        IDtl = seq_len(nrow(leaf_trait)),
+        IDtli = seq_len(nrow(leaf_trait))
       )
   ),
   tar_target(pred_leaf_data,
@@ -194,10 +192,10 @@ inla(
     duration_m + com * ms * watering +
     ter +
     species +
-    f(IDtp, model = "z",
-      Z = as(model.matrix(~ 0 + ter:plot, data = surv_data_modelling), "Matrix")) +
-    f(IDtpl, model = "z",
-      Z = as(model.matrix(~ 0 + ter:plot:label, data = surv_data_modelling), "Matrix")),
+    f(IDtl, model = "z",
+      Z = as(model.matrix(~ 0 + ter:label, data = surv_data_modelling), "Matrix")),
+    f(IDtli, model = "z",
+    Z = as(model.matrix(~ 0 + ter:label:ind, data = surv_data_modelling), "Matrix")),
     data = rbind(surv_data_modelling, pred_surv_data),
     family = "binomial",
     control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE,
@@ -211,10 +209,10 @@ inla(
   survival ~ 1 +
     duration_m + com * ms * watering * species +
     ter +
-    f(IDtp, model = "z",
-      Z = as(model.matrix(~ 0 + ter:plot, data = surv_data_modelling), "Matrix")) +
-    f(IDtpl, model = "z",
-      Z = as(model.matrix(~ 0 + ter:plot:label, data = surv_data_modelling), "Matrix")),
+    f(IDtl, model = "z",
+      Z = as(model.matrix(~ 0 + ter:label, data = surv_data_modelling), "Matrix")) +
+    f(IDtli, model = "z",
+    Z = as(model.matrix(~ 0 + ter:label:ind, data = surv_data_modelling), "Matrix")),
     data = rbind(surv_data_modelling, pred_surv_data),
     family = "binomial",
     control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE,
@@ -227,7 +225,7 @@ inla(
 list(
 tar_target(inla_surv_effects, get_hpdmarginal_inla(inla_surv_model, type = "fixed")),
 tar_target(inla_surv_odd, inla_surv_effects %>%
-  mutate(across(c(low, high, mean), ~ exp(.x)))
+  mutate(across(c(low, high, mean), ~ exp(.x) - 1))
 ),
 tar_target(inla_surv_perc, inla_surv_effects %>%
   mutate(across(c(low, high, mean), ~ (exp(.x) - 1) * 100))
@@ -239,7 +237,7 @@ tar_target(inla_surv_pred,
     ),
 tar_target(inla_surv_sp_effects, get_hpdmarginal_inla(inla_surv_sp_model, type = "fixed")),
 tar_target(inla_surv_sp_odd, inla_surv_sp_effects %>%
-  mutate(across(c(low, high, mean), ~ exp(.x)))
+  mutate(across(c(low, high, mean), ~ exp(.x) - 1))
 ),
 tar_target(inla_surv_sp_perc, inla_surv_sp_effects %>%
   mutate(across(c(low, high, mean), ~ (exp(.x) - 1) * 100))
@@ -264,7 +262,7 @@ list(
             formula = formula_inla(
               response = biomass_trait,
               dataset_name = "surv_data_modelling",
-              plot_effect = ifelse(biomass_trait == "bm", FALSE, TRUE)
+              plot_effect = FALSE
               ),
             control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE,
               return.marginals=TRUE, return.marginals.predictor=TRUE),
@@ -291,7 +289,7 @@ list(
             formula = formula_inla(
               response = biomass_trait,
               dataset_name = "surv_data_modelling_scaled",
-              plot_effect = ifelse(biomass_trait == "bm", FALSE, TRUE)),
+              plot_effect = FALSE),
             control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE,
               return.marginals=TRUE, return.marginals.predictor=TRUE),
             control.predictor = list(compute = T),
@@ -309,7 +307,7 @@ list(
               response = biomass_trait,
               species = TRUE,
               dataset_name = "surv_data_modelling",
-              plot_effect = ifelse(biomass_trait == "bm", FALSE, TRUE)),
+              plot_effect = FALSE),
             control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE,
               return.marginals=TRUE, return.marginals.predictor=TRUE),
             control.predictor = list(compute = T),
@@ -336,18 +334,19 @@ list(
               response = biomass_trait,
               species = TRUE,
               dataset_name = "surv_data_modelling_scaled",
-              plot_effect = ifelse(biomass_trait == "bm", FALSE, TRUE)),
+              plot_effect = FALSE),
             control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE,
               return.marginals=TRUE, return.marginals.predictor=TRUE),
             control.predictor = list(compute = T),
             verbose = F,
-            data = surv_data_modelling_scaled,
+            data = surv_data_modelling_scaled
             )))),
     pattern = map(biomass_trait)
     ),
   tar_target(bm_inla_sp_scaled_effects, format_inla_model_list(x = bm_inla_sp_scaled))
 )
 ```
+
 
 ## Compute plant-plant interaction from model prediction
 
@@ -403,6 +402,7 @@ list(
             formula = formula_inla(
               response = leaf_trait_var,
               time = FALSE,
+              plot_effect = FALSE,
               dataset_name = "leaf_trait_modelling"),
             control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE,
               return.marginals=TRUE, return.marginals.predictor=TRUE),
@@ -428,6 +428,7 @@ list(
             formula = formula_inla(
               response = leaf_trait_var,
               time = FALSE,
+              plot_effect = FALSE,
               dataset_name = "leaf_trait_modelling_scaled"),
             control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE,
               return.marginals=TRUE, return.marginals.predictor=TRUE),
@@ -446,6 +447,7 @@ list(
               response = leaf_trait_var,
               time = FALSE,
               species = TRUE,
+              plot_effect = FALSE,
               dataset_name = "leaf_trait_modelling"),
             control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE,
               return.marginals=TRUE, return.marginals.predictor=TRUE),
@@ -473,6 +475,7 @@ list(
               response = leaf_trait_var,
               time = FALSE,
               species = TRUE,
+              plot_effect = FALSE,
               dataset_name = "leaf_trait_modelling_scaled"),
             control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE,
               return.marginals=TRUE, return.marginals.predictor=TRUE),
@@ -485,6 +488,28 @@ list(
   tar_target(leaf_inla_sp_scaled_effects, format_inla_model_list(x = leaf_inla_sp_scaled))
 )
 ```
+
+
+```{r, eval = FALSE}
+p_mechanistic <- plot_grid(
+  p_effect_trait + theme(legend.position = "right"),
+  print(p_div_effects),
+  nrow = 2,
+  rel_heights = c(1, 1),
+  labels = "auto"
+)
+ggsave(
+  filename = "p_mechanistic.png",
+  plot = p_mechanistic,
+  path = here("paper", "graphics"),
+  scale = 1.8,
+  width = 90,
+  height = 90 * 1.2,
+  units = "mm",
+  dpi = "print"
+)
+```
+
 
 # Supplementary
 
@@ -613,6 +638,22 @@ list(
   )
 )
 ```
+```{r, eval = FALSE}
+tar_load(c(leaf_inla, leaf_inla_sp))
+tar_load(c(leaf_inla_rand_effects, leaf_inla_sp_effect))
+leaf_inla_rand_effects %>%
+  filter(response == "ldmc")
+rbind(
+      leaf_inla %>%
+        mutate(level = "community"),
+      leaf_inla_sp %>%
+        mutate(level = "species")
+      ) %>%
+    mutate(rand = map(mod, ~ get_hpdmarginal_inla(.x, type = "rand"))) %>%
+    select(-mod) %>%
+    unnest(cols = rand)
+```
+
 
 ```{targets var-fitted}
 list(
@@ -658,6 +699,212 @@ list(
   )
 ```
 
+```{targets pred-samp}
+list(
+  tar_target(inla_surv_pred_samp,
+    tibble(
+      level = c("community", "species"),
+      samp = map(
+        list(inla_surv_model, inla_surv_sp_model),
+        ~inla_sampling_from_pred(
+        model = .x,
+        pred_data = pred_surv_data,
+        nsamp = 1000)
+      )
+      )),
+  tar_target(bm_inla_pred_samp,
+    rbind(
+      bm_inla %>%
+        mutate(level = "community"),
+      bm_inla_sp %>%
+        mutate(level = "species")
+      ) %>%
+    mutate(samp = map(mod,
+        ~inla_sampling_from_pred(model = .x, pred_data = pred_surv_data, nsamp = 1000)
+      )
+      ) %>%
+    select(-mod)
+  ),
+tar_target(leaf_inla_pred_samp,
+  rbind(
+    leaf_inla %>%
+      mutate(level = "community"),
+    leaf_inla_sp %>%
+      mutate(level = "species")
+    ) %>%
+  mutate(samp = map(mod,
+      ~inla_sampling_from_pred(model = .x, pred_data = pred_surv_data, nsamp = 1000)
+    )
+    ) %>%
+  select(-mod)
+)
+)
+```
+
+```{targets inta-samp}
+list(
+  tar_target(inta_surv_pred,
+    inla_surv_pred_samp %>%
+      mutate(
+        inta = map(samp,
+          function (x) {
+            x %>%
+              pivot_wider(names_from = "ms", values_from = "value") %>%
+              mutate(
+                inta = n_int_a(without = Open, with_nbs = Patch)
+              )
+          })
+        ) %>%
+    select(-samp) %>%
+    unnest(cols = c(inta))
+  ),
+  tar_target(inta_surv_pred_ci,
+    inta_surv_pred %>%
+      group_by(level, duration_m, com, watering, species) %>%
+      summarise(
+        mean = mean(inta),
+        hpd = list(tibble(
+            lower = coda::HPDinterval(coda::as.mcmc(inta), prob = .8)[1],
+            upper = coda::HPDinterval(coda::as.mcmc(inta), prob = .8)[2])),
+        .groups = "drop"
+        ) %>%
+      unnest(cols = c(hpd))
+    ),
+  tar_target(inta_bm_pred,
+    bm_inla_pred_samp %>%
+      filter(response == "bm") %>%
+      mutate(
+        inta = map(samp,
+          function (x) {
+            x %>%
+              pivot_wider(names_from = "ms", values_from = "value") %>%
+              mutate(
+                inta = n_int_a(without = Open, with_nbs = Patch)
+              )
+          })
+        ) %>%
+      select(-samp) %>%
+      unnest(cols = c(inta))
+    ),
+  tar_target(inta_bm_pred_ci,
+    inta_bm_pred %>%
+      group_by(level, duration_m, com, watering, species) %>%
+      summarise(
+        mean = mean(inta),
+        hpd = list(tibble(
+            lower = coda::HPDinterval(coda::as.mcmc(inta), prob = .8)[1],
+            upper = coda::HPDinterval(coda::as.mcmc(inta), prob = .8)[2])),
+        .groups = "drop"
+        ) %>%
+      unnest(cols = c(hpd))
+    )
+)
+```
+
+```{targets plot-nint}
+list(
+  tar_target(p_bm_pp_ci,
+    inta_bm_pred_ci %>%
+      filter(species == "anthyllis", level == "community") %>%
+      ggplot(aes(y = mean, x = duration_m + 5, color = watering, shape = com)) +
+      geom_point(size = 3) +
+      geom_line() +
+      geom_ribbon(aes(ymin = lower, ymax = upper, fill = watering), alpha = .1,
+        color = NA) +
+      labs(
+        y = "Nurse net effect (biomass)",
+        x = "Number of month since the beginning of the experiment") +
+      theme_bw()
+  ),
+  tar_target(p_surv_pp_ci,
+    inta_surv_pred_ci %>%
+      filter(species == "anthyllis", level == "community") %>%
+      mutate(com = recode_factor(com, "Mono" = "Monospecific", "Poly" = "Mixture")) %>%
+      ggplot(aes(y = mean, x = duration_m + 5, color = watering, shape = com)) +
+      geom_point(size = 3) +
+      geom_line() +
+      geom_ribbon(aes(ymin = lower, ymax = upper, fill = watering), alpha = .1,
+        color = NA) +
+      labs(
+        y = "Nurse net effect (survival)",
+        x = "Number of month since the beginning of the experiment",
+        color = "Watering", fill = "Watering", shape = "Diversity"
+        ) +
+      theme_bw()
+    )
+)
+```
+
+```{targets term2rm, tar_simple = TRUE}
+c("(Intercept)", "ter2", "ter3", "ter4", "speciesdorycnium", "speciespistachia")
+```
+
+
+```{targets mod-plot}
+list(
+  tar_target(p_surv,
+    plot_inla_fixed_effect(inla_surv_odd,
+      color_var = NULL,
+      intercept = 0,
+      term_to_rm = term2rm) +
+    labs(x = "Survival odd-ratios (exp(beta) - 1)") +
+    theme(axis.title.y = element_blank())),
+  tar_target(p_bm,
+    plot_inla_fixed_effect(
+      bm_inla_effects %>% filter(response == "bm"),
+      color_var = NULL, intercept = 0, term_to_rm = term2rm) +
+    labs(x = "Slope coefficients for total biomass") +
+    theme(axis.title.y = element_blank())
+  ),
+  tar_target(p_other_surv,
+    plot_inla_fixed_effect(inla_surv_odd,
+      color_var = NULL,
+      intercept = 0,
+      term_to_rm = unique(inla_surv_odd$term)[!unique(inla_surv_odd$term) %in% term2rm]) +
+    labs(x = "Survival odd-ratios (exp(beta) - 1)") +
+    theme(axis.title.y = element_blank())
+  ),
+  tar_target(p_other_bm,
+    plot_inla_fixed_effect(
+      bm_inla_effects %>% filter(response == "bm"),
+      color_var = NULL, intercept = 0,
+      term_to_rm = unique(bm_inla_effects$term)[!unique(bm_inla_effects$term) %in% term2rm]) +
+    labs(x = "Slope coefficients for total biomass") +
+    theme(axis.title.y = element_blank())
+  ),
+  tar_target(p_other_leaf,
+    plot_inla_fixed_effect(leaf_inla_effects_scaled,
+      intercept = 0,
+      term_to_rm = unique(leaf_inla_effects_scaled$term)[!unique(leaf_inla_effects_scaled$term) %in% term2rm]) +
+    labs(x = "Standardized coefficients", color = "Trait") +
+    viridis::scale_color_viridis(discrete = T) +
+    theme(axis.title.y = element_blank())
+  )
+)
+```
+
+
+```{targets fig2, tar_simple = TRUE}
+plot_grid(
+  plot_grid(
+    p_surv,
+    p_bm,
+    labels = c("a", "b")
+    ),
+  plot_grid(
+    p_surv_pp_ci + theme(legend.position = "none"),
+    p_bm_pp_ci + theme(legend.position = "none"),
+    labels = c("c", "d")
+    ),
+  get_legend(p_surv_pp_ci + theme(legend.position = "bottom")),
+  rel_heights = c(1.2, 1.0, .1),
+  nrow = 3
+)
+```
+
+
+
+
 ```{targets var_fitted, tar_simple = TRUE}
 rbind(leaf_inla_var_fitted, bm_inla_var_fitted,
   inla_surv_var_fitted %>%
@@ -692,15 +939,15 @@ var_fitted %>%
 var_fitted %>%
   left_join(var_rand_effect, by = c("response", "level")) %>%
   filter(!is.na(epsilon)) %>%
-  mutate(IDtp = ifelse(is.na(IDtp), 0, IDtp)) %>%# Because bm has no plot random effects
+  #mutate(IDtp = ifelse(is.na(IDtp), 0, IDtp)) %>%# Because bm has no plot random effects
   mutate(
     r2_mvp_marg = pmap(
-      list(rand, IDtp, IDtpl, epsilon),
-      ~r2_mvp(var_pred = ..1, std_intercept = c(..2, ..3), epsilon = ..4, type = "marginal")
+      list(rand, IDtl, epsilon),
+      ~r2_mvp(var_pred = ..1, std_intercept = c(..2), epsilon = ..3, type = "marginal")
       ),
     r2_mvp_cond = pmap(
-      list(rand, IDtp, IDtpl, epsilon),
-      ~r2_mvp(var_pred = ..1, std_intercept = c(..2, ..3), epsilon = ..4, type = "conditional")
+      list(rand, IDtl, epsilon),
+      ~r2_mvp(var_pred = ..1, std_intercept = c(..2), epsilon = ..3, type = "conditional")
       ),
     r2_mvp_marg_mean = map_dbl(r2_mvp_marg, mean),
     r2_mvp_marg_med = map_dbl(r2_mvp_marg, median),
@@ -766,7 +1013,44 @@ mutate(sd_ci = pmap_chr(list(mean, low, high),
 )
 ```
 
-
+```{targets p-pred-surv-sp}
+list(
+tar_target(p_pred_surv,
+  surv_data_modelling %>%
+    group_by(duration_m, ms, com, watering, species, ter) %>%
+    summarise(survival = sum(survival) / n()) %>%
+    ggplot(aes(y = survival, x = duration_m + 5, shape = com, color = watering)) +
+    geom_jitter(alpha = .2) +
+    geom_line(data = inla_surv_pred, aes(y = mean)) +
+    geom_point(data = inla_surv_pred, aes(y = mean)) +
+    facet_grid(cols = vars(species), rows = vars(ms)) +
+    labs(
+      x = "Number of month since the start of the experiment",
+      y = "Probability of survival",
+      color = "Watering",
+      shape = "Diversity") +
+    theme_bw() +
+    theme(legend.position = "bottom")
+  ),
+tar_target(p_pred_sp_surv,
+  surv_data_modelling %>%
+    group_by(duration_m, ms, com, watering, species, ter) %>%
+    summarise(survival = sum(survival) / n()) %>%
+    ggplot(aes(y = survival, x = duration_m + 5, shape = com, color = watering)) +
+    geom_jitter(alpha = .2) +
+    geom_line(data = inla_surv_sp_pred, aes(y = mean)) +
+    geom_point(data = inla_surv_sp_pred, aes(y = mean)) +
+    facet_grid(cols = vars(species), rows = vars(ms)) +
+    labs(
+      x = "Number of month since the start of the experiment",
+      y = "Probability of survival",
+      color = "Watering",
+      shape = "Diversity") +
+    theme_bw() +
+    theme(legend.position = "bottom")
+  )
+)
+```
 
 
 # Pipeline
@@ -785,157 +1069,544 @@ library(magrittr)
 library(here)
 library(zoo)
 library(moments)
+library(cowplot)
 source(here::here("R","basic_stat.R"))
 source(here::here("R","inla_helpers.R"))
 source(here::here("R","clean_data.R"))
 source(here::here("R","string_replacements.R"))
 ```
 
-
-```{r, results = "hide"}
-tar_load(p_obs_fit_tot)
+```{r}
+tar_load(fig2)
 ggsave(
-  filename = "p_obs_fit_tot.png",
-  plot = p_obs_fit_tot,
+  filename = "fig2.pdf",
+  plot = fig2,
   path = here("paper", "graphics"),
   scale = 2.4,
-  width = 90,
-  height = 90 * 1,
+  width = 100,
+  height = 100 * .8,
+  units = "mm",
+  dpi = "print"
+)
+ggsave(
+  filename = "fig2.png",
+  plot = fig2,
+  path = here("paper", "graphics"),
+  scale = 2.4,
+  width = 100,
+  height = 100 * .8,
   units = "mm",
   dpi = "print"
 )
 ```
 
-```{r, results = "hide"}
-tar_load(p_obs_fit_sp_tot)
-ggsave(
-  filename = "p_obs_fit_sp_tot.png",
-  plot = p_obs_fit_sp_tot,
-  path = here("paper", "graphics"),
-  scale = 2.4,
-  width = 90,
-  height = 90 * 1,
-  units = "mm",
-  dpi = "print"
-)
-```
 
+## Complementarity and selection effects
 
-```{r}
-tar_load(inla_surv_model)
-summary(inla_surv_model)
-```
+```{r, eval = FALSE}
+library(ggbreak)
+# Avg Species cell number across time
+tar_load(surv_data_modelling)
+avg_bm_sp_rep <- surv_data_modelling %>%
+  group_by(ter, com, ms, watering, species) %>%
+  summarise(avg = mean(bm, na.rm = TRUE))
 
-```{r}
-tar_load(c(inla_surv_effects, inla_surv_perc))
-plot_inla_fixed_effect(inla_surv_effects, color_var = NULL)
-plot_inla_fixed_effect(inla_surv_perc, color_var = NULL)
-```
+# Monoculture
+mono_rep_sp <- avg_bm_sp_rep %>%
+  filter(com == "Mono") %>%
+  group_by(ter, ms, watering, species) %>%
+  summarise(mono = unique(avg), .groups = "drop")
 
+# Compute metrics for diversity effects
+ti <- avg_bm_sp_rep %>%
+  left_join(mono_rep_sp, by = c("ter", "ms", "watering", "species")) %>%
+  mutate(
+    # RYO;i à YO;i=Mi à observed relative yield of species i in the mixture
+    obs_rel_yield = avg / mono,
+    richness = ifelse(com == "Mono", 1, 3),
+    #RYE;i à expected relative yield of species i in the mixture, which is
+    #simply its proportion seeded or planted
+    exp_rel_yield = 1 / richness,
+    #YE;i à RYE;iMi à expected yield of species i in the mixture
+    exp_yield = exp_rel_yield * mono,
+    #DRYi à RYO;i 2 RYE;i à deviation from expected relative yield of species i
+    #in the mixture
+    dev_exp_yield = obs_rel_yield - exp_rel_yield
+  )
 
-```{r}
-tar_load(c(inla_surv_sp_model, inla_surv_sp_effects))
-plot_inla_fixed_effect(inla_surv_sp_effects, color_var = NULL)
-```
-
-```{r}
-tar_load(c(bm_inla_effects))
-plot_inla_fixed_effect(bm_inla_effects, color_var = response)
-```
-
-```{r}
-tar_load(c(leaf_inla_effects))
-plot_inla_fixed_effect(
-  leaf_inla_effects %>%
-    filter(response != "sla")
-)
-plot_inla_fixed_effect(
-  leaf_inla_effects %>%
-    filter(response != "ldmc")
-)
-```
-
-```{r}
-tar_load(leaf_trait)
-moments_leaf_trait <- leaf_trait %>%
-  pivot_longer(cols = c(ldmc, sla), names_to = "trait", values_to = "values") %>%
-  group_by(ms, com, watering, species, trait) %>%
-  summarise(n = sum(!is.na(values)),
-    variance = var(values, na.rm = TRUE),
-    kurt = moments::kurtosis(values, na.rm = TRUE),
-    sk = skewness(values, na.rm = TRUE)
-  ) %>%
-  filter(n >= 5)
-
-moments_leaf_trait %>%
-  ggplot(aes(x = com, y = n, color = ms, linetype = watering)) +
-  geom_boxplot() +
-  facet_grid(rows = vars(trait), cols = vars(species), scales = "free_y")
-moments_leaf_trait %>%
-  ggplot(aes(x = com, y = variance, color = ms, linetype = watering)) +
-  geom_boxplot() +
-  facet_grid(rows = vars(trait), cols = vars(species), scales = "free_y")
-```
-
-```{r}
-total_variance <- leaf_trait %>%
-  pivot_longer(cols = c(ldmc, sla), names_to = "trait", values_to = "values") %>%
-  group_by(ms, com, watering, trait) %>%
+div_effects <- ti %>%
+  filter(richness != 1) %>%
+  group_by(ter, com, ms, watering) %>%
   summarise(
-    n = n(),
-    total_variance = var(values, na.rm = TRUE),
+    # Total obs yield - expected
+    net = sum(avg) - sum(exp_yield),
+    selection = unique(richness) * cov(dev_exp_yield, mono),
+    complementarity = unique(richness) * mean(dev_exp_yield) * mean(mono),
     .groups = "drop"
-    )
-tip_ic <- moments_leaf_trait %>%
-  select(-n) %>%
-  group_by(ms, com, watering, trait) %>%
-  summarise(sum_ip = mean(variance)) %>%
-  left_join(total_variance, by = c("ms", "com", "watering", "trait")) %>%
-  group_by(ms, com, watering, trait) %>%
-  summarise(tip_ic = sum_ip / total_variance, .groups = "drop")
+  )
 
-tip_ic %>%
-  ggplot(aes(x = com, y = tip_ic, color = ms, linetype = watering)) +
-  geom_boxplot() +
+div_effects_lg <- div_effects %>%
+  pivot_longer(
+    c(net, selection, complementarity),
+    names_to = "metric",
+    values_to = "values"
+    ) %>%
+mutate(
+  metric = str_to_sentence(metric),
+  metric = factor(metric, levels = c("Net", "Complementarity", "Selection")),
+  ms = recode_factor(ms, "Open" = "Open", "Patch" = "Nurse patch")
+)
+
+p_div_effects <- div_effects_lg %>%
+  ggplot(aes(x = ms, y = values, color = watering)) +
   geom_point() +
-  facet_grid(rows = vars(trait), scales = "free_y")
-```
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  facet_grid(cols = vars(metric)) +
+  labs(
+    x = "Microsite",
+    y = "Diversity effect",
+    color = "Watering") +
+  scale_y_break(c(0.2, 1.5), scale = "free") +
+  theme_bw()
 
-```{r}
-library(cowplot)
-tar_load(c(biomass_t0, surv_data))
-biomass_t0 %>%
-  pivot_longer(c(d, h), names_to = "variable", values_to = "values") %>%
-  ggplot(aes(x = values, y = bm_total, color = species)) +
-  geom_point() +
-  facet_wrap(~variable, scales = "free")
+leg <- get_legend(p_div_effects + theme(legend.position = "bottom"))
 
+p_div_effects_ok <- plot_grid(
+  print(p_div_effects + theme(legend.position = "none")),
+  leg,
+  nrow = 2, rel_heights = c(1,.1)
+)
 
-surv_data %>%
-  select(duration_m, species, d, h) %>%
-  rbind(biomass_t0 %>% select(duration_m, species, d, h)) %>%
-  pivot_longer(c(d, h), names_to = "variable", values_to = "values") %>%
-  mutate(type = ifelse(duration_m == 0, "laboratory", "field")) %>%
-  ggplot(aes(x = values, color = type)) +
-  geom_density() +
-  facet_wrap(variable ~ species, scales = "free")
-plot_grid(
-  biomass_t0 %>%
-    ggplot(aes(x = dia1)) +
-    geom_density() +
-    facet_grid(cols = vars(species)),
-  surv_data %>%
-    ggplot(aes(x = d)) +
-    geom_density() +
-    facet_grid(cols = vars(species))
+ggsave(
+  filename = "p_div_effects.png",
+  plot = p_div_effects_ok,
+  path = here("paper", "graphics"),
+  scale = 1.8,
+  width = 90,
+  height = 90 * .6,
+  units = "mm",
+  dpi = "print"
 )
 ```
+
 ```{r}
-tar_load(surv_data)
+term2rm <- c("(Intercept)", "ter2", "ter3", "ter4", "speciesdorycnium", "speciespistachia")
+```
+
+
+```{r}
+tar_load(pp_int_global)
+p_int_global_surv <- pp_int_global %>%
+  filter(response == c("survival"), species == "anthyllis") %>%
+  ggplot(aes(y = inta, x = duration_m + 6, color = watering, shape = com, fill = watering), alpha = 1) +
+  geom_line() +
+  geom_point(size = 3) +
+  geom_hline(yintercept = 0) +
+  geom_ribbon(aes(ymin = inta_low, ymax = inta_high), alpha = .1, color = NA) +
+  labs(
+    y = "Nurse net effect (survival)",
+    x = "Number of month since the beginning of the experiment") +
+  theme_bw()
+
+
+
+p_int_global_bm <- pp_int_global %>%
+  filter(response == c("bm"), species == "anthyllis") %>%
+  mutate(com = recode_factor(com, "Mono" = "Monospecific", "Poly" = "Mixture")) %>%
+  ggplot(aes(y = inta, x = duration_m + 6, color = watering, shape = com, fill = watering), alpha = 1) +
+  geom_line() +
+  geom_point(size = 3) +
+  geom_hline(yintercept = 0) +
+  geom_ribbon(aes(ymin = inta_low, ymax = inta_high), alpha = .1, color = NA) +
+  labs(
+    y = "Nurse net effect (biomass)",
+    x = "Number of month since the beginning of the experiment",
+    color = "Watering", fill = "Watering", shape = "Diversity"
+    ) +
+  theme_bw()
+
+p_int_global <- plot_grid(
+  p_int_global_surv + theme(legend.position = "none"),
+  p_int_global_bm + theme(legend.position = "none"),
+  ncol = 2,
+  rel_widths = c(.6, .4),
+  labels = c("a", "b")
+)
+```
+
+```{r}
+tar_load(inla_surv_odd)
+p_surv <- plot_inla_fixed_effect(inla_surv_odd,
+  color_var = NULL,
+  intercept = 0,
+  term_to_rm = term2rm) +
+  labs(x = "Survival odd-ratios (exp(beta) - 1)") +
+  theme(axis.title.y = element_blank())
 ```
 
 
 
+
+
+```{r}
+tar_load(c(surv_data_modelling, inla_surv_pred, inla_surv_sp_pred))
+p_pred_effect_surv <- plot_grid(p_surv, p_pred_surv, rel_widths = c(.4, 1))
+ggsave(
+  filename = "p_pred_effect_surv.pdf",
+  plot = p_pred_effect_surv,
+  path = here("paper", "graphics"),
+  scale = 2.4,
+  width = 90,
+  height = 90 * .6,
+  units = "mm",
+  dpi = "print"
+)
+ggsave(
+  filename = "p_pred_effect_surv.png",
+  plot = p_pred_effect_surv,
+  path = here("paper", "graphics"),
+  scale = 2.4,
+  width = 90,
+  height = 90 * .6,
+  units = "mm",
+  dpi = "print"
+)
+```
+
+```{r, fig.cap = "Biomass"}
+tar_load(c(bm_inla_pred, bm_inla_sp_pred, bm_inla_effects))
+p_bm <- plot_inla_fixed_effect(
+  bm_inla_effects %>% filter(response == "bm"),
+  color_var = NULL, intercept = 0, term_to_rm = term2rm) +
+  labs(x = "Slope coefficients for total biomass") +
+  theme(axis.title.y = element_blank())
+
+p_pred_bm <- surv_data_modelling %>%
+  group_by(duration_m, ms, com, watering, species, plot) %>%
+  summarise(bm = mean(bm, na.rm = TRUE)) %>%
+  ggplot(aes(y = bm, x = duration_m + 6, color = com, shape = watering)) +
+  geom_jitter(alpha = .2) +
+  geom_line(data = bm_inla_sp_pred %>% filter(response == "bm"), aes(y = mean)) +
+  geom_point(data = bm_inla_sp_pred %>% filter(response == "bm"), aes(y = mean)) +
+  facet_grid(cols = vars(species), rows = vars(ms)) +
+  labs(
+    x = "Number of month since the start of the experiment",
+    y = "Biomass",
+    color = "Site",
+    shape = "Watering") +
+  theme_bw() +
+  theme(legend.position = "bottom")
+p_pred_effect_bm <- plot_grid(p_bm, p_pred_bm, rel_widths = c(.4, 1))
+ggsave(
+  filename = "p_pred_effect_bm.pdf",
+  plot = p_pred_effect_bm,
+  path = here("paper", "graphics"),
+  scale = 2.4,
+  width = 90,
+  height = 90 * .6,
+  units = "mm",
+  dpi = "print"
+)
+```
+
+```{r}
+fig_effect_int <- plot_grid(
+  plot_grid(
+    p_surv,
+    p_bm,
+    labels = c("a", "b")
+    ),
+  plot_grid(
+    p_int_global_surv + theme(legend.position = "none"),
+    p_int_global_bm + theme(legend.position = "none"),
+    labels = c("c", "d")
+    ),
+  get_legend(p_int_global_bm + theme(legend.position = "bottom")),
+  rel_heights = c(1.2, 1.0, .1),
+  nrow = 3
+)
+
+ggsave(
+  filename = "p_surv_bm_int.pdf",
+  plot = fig_effect_int,
+  path = here("paper", "graphics"),
+  scale = 2.4,
+  width = 100,
+  height = 100 * .8,
+  units = "mm",
+  dpi = "print"
+)
+ggsave(
+  filename = "p_surv_bm_int.png",
+  plot = fig_effect_int,
+  path = here("paper", "graphics"),
+  scale = 2.4,
+  width = 100,
+  height = 100 * .8,
+  units = "mm",
+  dpi = "print"
+)
+```
+
+```{r}
+ggsave(
+  filename = "p_bm_int.pdf",
+  plot = plot_grid(p_bm, p_int_global_bm),
+  path = here("paper", "graphics"),
+  scale = 2.4,
+  width = 90,
+  height = 90 * .6,
+  units = "mm",
+  dpi = "print"
+)
+ggsave(
+  filename = "p_bm_int.pdf",
+  plot = plot_grid(p_surv, p_int_global_surv),
+  path = here("paper", "graphics"),
+  scale = 2.4,
+  width = 90,
+  height = 90 * .6,
+  units = "mm",
+  dpi = "print"
+)
+```
+
+```{r}
+ggsave(
+  filename = "p_surv_int.pdf",
+  plot = plot_grid(p_surv, p_int_global_surv),
+  path = here("paper", "graphics"),
+  scale = 2.4,
+  width = 90,
+  height = 90 * .6,
+  units = "mm",
+  dpi = "print"
+)
+ggsave(
+  filename = "p_surv_int.png",
+  plot = plot_grid(p_surv, p_int_global_surv),
+  path = here("paper", "graphics"),
+  scale = 2.4,
+  width = 90,
+  height = 90 * .6,
+  units = "mm",
+  dpi = "print"
+)
+```
+
+```{r}
+leg_pred <- get_legend(p_pred_surv)
+p_pred_effect <- plot_grid(
+  plot_grid(p_surv, p_pred_surv + theme(legend.position = "none"),
+    rel_widths = c(.5, 1), labels = c("a", "b")),
+  plot_grid(p_bm, p_pred_bm + theme(legend.position = "none"),
+    rel_widths = c(.5, 1), labels = c("c", "d")),
+  leg_pred,
+  rel_heights = c(1, 1, .1),
+  ncol = 1)
+ggsave(
+  filename = "p_pred_effect.pdf",
+  plot = p_pred_effect,
+  path = here("paper", "graphics"),
+  scale = 2.4,
+  width = 90,
+  height = 90 ,
+  units = "mm",
+  dpi = "print"
+)
+ggsave(
+  filename = "p_pred_effect.png",
+  plot = p_pred_effect,
+  path = here("paper", "graphics"),
+  scale = 2.4,
+  width = 90,
+  height = 90,
+  units = "mm",
+  dpi = "print"
+)
+```
+
+
+
+```{r}
+tar_load(pp_int)
+int_surv <- pp_int %>%
+  filter(response %in% c("survival"))
+p_int_surv <- int_surv  %>%
+  ggplot(aes(y = inta, x = duration_m + 6, color = com, shape = watering, fill = com), alpha = 1) +
+  geom_line() +
+  geom_point() +
+  geom_hline(yintercept = 0) +
+  geom_ribbon(aes(ymin = inta_low, ymax = inta_high), alpha = .2, color = NA) +
+  facet_grid(cols = vars(species), scales = "free_y") +
+  labs(
+    y = "Net interaction (survival)",
+    x = "Number of month since the beginning of the experiment") +
+  theme_bw()
+
+p_int_bm <- pp_int %>%
+  filter(duration_m == 5, response == "bm") %>%
+  ggplot(
+    aes(
+      y = inta, ymin = inta_low, ymax = inta_high,
+      x = species, color = com, shape = watering,
+      group = watering,
+      fill = com
+      ),
+    alpha = 1, position = "dodge") +
+  geom_hline(yintercept = 0) +
+  geom_pointrange(position = position_dodge(.5)) +
+  labs(
+    y = "Net interaction (biomass)",
+    shape = "Watering", color = "Diversity"
+    ) +
+  theme_bw() +
+  theme(
+    axis.title.x = element_blank(),
+    legend.position = "bottom"
+  )
+leg_int <- get_legend(p_int_bm)
+
+p_int_sp <- plot_grid(
+  p_int_surv + theme(legend.position = "none"),
+  p_int_bm + theme(legend.position = "none"),
+  rel_widths = c(.6, .4),
+  labels = c("c", "d")
+)
+```
+
+```{r }
+p_int <- plot_grid(
+  p_int_global + theme(legend.position = "none"),
+  p_int_sp,
+  nrow = 2
+)
+p_int_ok <- plot_grid(
+  p_int,
+  leg_int,
+  rel_heights = c(1, .1),
+  nrow = 2
+)
+ggsave(
+  filename = "p_int_ok.pdf",
+  plot = p_int_ok,
+  path = here("paper", "graphics"),
+  scale = 2.4,
+  width = 90,
+  height = 90 * .6,
+  units = "mm",
+  dpi = "print"
+)
+ggsave(
+  filename = "p_int_ok.png",
+  plot = p_int_ok,
+  path = here("paper", "graphics"),
+  scale = 2.4,
+  width = 90,
+  height = 90 * .6,
+  units = "mm",
+  dpi = "print"
+)
+```
+
+```{r, fig.cap = "Leaf traits"}
+tar_load(c(leaf_inla_sp_pred, leaf_trait_modelling, leaf_inla_effects_scaled))
+
+p_effect_trait <- plot_inla_fixed_effect(
+  leaf_inla_effects_scaled %>%
+    mutate(response = toupper(response)),
+  term_to_rm = term2rm) +
+  labs(x = "Standardized coefficients", color = "Trait") +
+  viridis::scale_color_viridis(discrete = T) +
+  theme(
+    legend.position = "bottom",
+    axis.title.y = element_blank()
+  )
+
+ggsave(
+  filename = "p_effect_trait.pdf",
+  plot = p_effect_trait,
+  path = here("paper", "graphics"),
+  scale = 1.8,
+  width = 90,
+  height = 90,
+  units = "mm",
+  dpi = "print"
+)
+ggsave(
+  filename = "p_effect_trait.png",
+  plot = p_effect_trait,
+  path = here("paper", "graphics"),
+  scale = 1.8,
+  width = 90,
+  height = 90,
+  units = "mm",
+  dpi = "print"
+)
+```
+
+```{r}
+p_pred_leaf <- leaf_trait_modelling %>%
+  pivot_longer(c(ldmc, sla), names_to = "trait", values_to = "values") %>%
+  mutate(
+    com = recode_factor(com, "Mono" = "Monospecific", "Poly" = "Diverse"),
+    ms = recode_factor(ms, "Open" = "Open", "Patch" = "Nurse patch")
+    ) %>%
+  group_by(ms, com, watering, trait, species, ter) %>%
+  summarise(n = sum(!is.na(values)), values = mean(values, na.rm = TRUE)) %>%
+  filter(n >= 3) %>%
+  ggplot(aes(y = values, x = ms, color = watering, shape = com)) +
+  geom_jitter(alpha = .2) +
+  geom_point(
+    data = leaf_inla_sp_pred %>%
+      rename(trait = response) %>%
+      mutate(
+        com = recode_factor(com, "Mono" = "Monospecific", "Poly" = "Diverse"),
+        ms = recode_factor(ms, "Open" = "Open", "Patch" = "Nurse patch")
+      ), aes(y = mean), size = 2) +
+  facet_grid(cols = vars(species), rows = vars(trait), scales = "free_y") +
+  labs(
+    x = "",
+    y = "Leaf trait values",
+    color = "Watering",
+    shape = "Diversity") +
+  theme_bw() +
+  theme(legend.position = "bottom")
+ggsave(
+  filename = "p_pred_leaf.pdf",
+  plot = p_pred_leaf,
+  path = here("paper", "graphics"),
+  scale = 1.8,
+  width = 90,
+  height = 90 * .6,
+  units = "mm",
+  dpi = "print"
+)
+```
+
+```{r}
+p_leaf <- plot_grid(p_effect_trait, p_pred_leaf, ncol = 2, rel_widths = c(.4, 1), labels = "auto")
+ggsave(
+  filename = "p_leaf.pdf",
+  plot = p_leaf,
+  path = here("paper", "graphics"),
+  scale = 2.4,
+  width = 90,
+  height = 90 * .55,
+  units = "mm",
+  dpi = "print"
+)
+ggsave(
+  filename = "p_leaf.png",
+  plot = p_leaf,
+  path = here("paper", "graphics"),
+  scale = 2.4,
+  width = 90,
+  height = 90 * .55,
+  units = "mm",
+  dpi = "print"
+)
+```
 
 
 The `targets` dependency graph helps your readers understand the steps of your pipeline at a high level.

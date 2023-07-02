@@ -1,0 +1,27 @@
+---
+title: "Species diversity promotes facilitation under stressful conditions"
+author: "Alain Danet, Susana Bautista, Alexandre Génin, Andrew P. Beckerman, Fabien Anthelme, Sonia Kéfi"
+date: ""
+output:
+  bookdown::pdf_document2:
+    latex_engine: xelatex
+    keep_tex: true
+    spacing: double
+    number_sections: false
+bibliography: "bibliography.bib"
+#csl: "nature.csl"
+link-citations: true
+toc: false
+linestretch: 2.0
+header-includes:
+  - \usepackage{lineno}
+  - \linenumbers
+---
+
+
+- Alain Danet: School of Biosciences, ...
+- Susana Bautista:
+- Alexandre Génin:
+- Andrew P. Beckerman: School of Biosciences, ...
+- Fabien Anthelme:
+- Sonia Kéfi:

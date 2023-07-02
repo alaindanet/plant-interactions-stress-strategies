@@ -434,9 +434,12 @@ formula_inla <- function(
   }
 
   as.formula(paste0(response, ' ~ 1 + ', core_pred,' + ', pl,
-      'f(IDtpl, model = "z",
-        Z = as(model.matrix(~ 0 + ter:plot:label, data = ', dataset_name,'), "Matrix"))
+      'f(IDtl, model = "z",
+        Z = as(model.matrix(~ 0 + ter:label, data = ', dataset_name,'), "Matrix"))
     '))
+#+
+      #f(IDtli, model = "z",
+        #Z = as(model.matrix(~ 0 + ter:label:ind, data = ', dataset_name,'), "Matrix"))
 }
 
 get_pred_data <- function(x = surv_data_modelling,
@@ -479,4 +482,27 @@ plot_obs_fitted_inla <- function(
     geom_point(alpha = .5, size = 2) +
     geom_abline(intercept = 0, slope = 1, color = "red") +
     labs(x = "Fitted values", y = "Observed values")
+}
+
+inla_sampling_from_pred <- function(
+  model = NULL,
+  pred_data = pred_surv_data,
+  variable = c("duration_m", "ms", "com", "watering", "species"),
+  nsamp = 1000
+  ) {
+  cbind(
+    pred_data[, variable],
+    tibble(fitted = model$marginals.fitted.values[(length(model$marginals.fitted.values) - nrow(pred_data) + 1):length(model$marginals.fitted.values)])
+    ) %>%
+  as_tibble() %>%
+  mutate(
+    sampling = map(fitted,
+      ~tibble(
+        rep = 1:nsamp,
+        value = inla.rmarginal(nsamp, .x)
+      )
+    )
+    ) %>%
+  select(-fitted) %>%
+  unnest(sampling)
 }
