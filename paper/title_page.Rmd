@@ -18,10 +18,27 @@ header-includes:
   - \linenumbers
 ---
 
+# Author affiliations:
 
-- Alain Danet: School of Biosciences, ...
-- Susana Bautista:
+- Alain Danet:
+  - ISEM, CNRS, Univ. Montpellier, IRD, EPHE, Montpellier, France
+  - Laboratory AMAP, IRD, University of Montpellier, CIRAD, CNRS,
+  INRA, Montpellier, France
+  - Current address: School of Biosciences, Ecology and Evolutionary Biology, University of Sheffield, Western Bank, S10 2TN, Sheffield, UK
+- Susana Bautista: Department of Ecology and IMEM, University of Alicante,
+  Alicante, Spain
 - Alexandre Génin:
-- Andrew P. Beckerman: School of Biosciences, ...
-- Fabien Anthelme:
+  - Estación Costera de Investigaciones Marinas, Las Cruces, Departamento de
+    Ecología, Pontificia Universidad Católica de Chile, Santiago 8331150, Chile
+  - Copernicus Institute of Sustainable Development, Utrecht University, PO Box
+    80115, 3508 TC Utrecht, The Netherlands
+- Andrew P. Beckerman: School of Biosciences, Ecology and Evolutionary Biology, University of Sheffield, Western Bank, S10 2TN, Sheffield, UK
+- Fabien Anthelme: Laboratory AMAP, IRD, University of Montpellier, CIRAD, CNRS,
+  INRA, Montpellier, France
 - Sonia Kéfi:
+  - ISEM, CNRS, Univ. Montpellier, IRD, EPHE, Montpellier, France
+  - Santa Fe Institute, Santa Fe, New Mexico 87501
+
+# Corresponding author
+
+Alain Danet: a.h.danet@Sheffield.ac.uk

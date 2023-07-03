@@ -91,7 +91,7 @@ surv_data_modelling %>%
 
 ```{r}
 bm_pred_cap <- "Predicted vs observed total biomass. The measurement were done
-at the begining of the experiment (See methods). 12 individuals per species." %>%
+at the begining of the experiment (See methods, N = 12 individuals per species)." %>%
 str_replace_all("\\s+", " ")
 ```
 
@@ -119,10 +119,10 @@ knitr::include_graphics(here("paper", "graphics", "p_pred_bm.pdf"))
 ```
 
 ```{r}
-bm_d_effect <- "Coefficients of the statistical models at the community level
-comparing the effects for total biomass, basal diameter, and vegetative height
-(the last two being used to predict total biomass, see methods). The
-coefficients for total biomass and basal diameter are highly similar."
+bm_d_effect <- "Coefficients of the statistical models comparing the effects for
+total biomass, basal diameter, and vegetative height (the last two being used to
+  predict total biomass, see methods). The coefficients for total biomass and
+basal diameter models are highly similar."
 ```
 
 
@@ -152,8 +152,7 @@ knitr::include_graphics(here("paper", "graphics", "p_bm_d_effect.pdf"))
 ```
 
 ```{r}
-obs_fit_cap <- "Observed versus fitted values from the statistical models at the
-community level for (a) survival, (b) total biomass, (c) LDMC and (d) SLA." %>%
+obs_fit_cap <- "Observed versus fitted values from the statistical models for (a) survival, (b) total biomass, (c) LDMC and (d) SLA." %>%
 str_replace_all("\\s+", " ")
 ```
 
@@ -403,6 +402,7 @@ rand_tab_ok <- rand_tab %>%
     response = response_replacement()[response],
     term = rand_term_replacement()[term]
   ) %>%
+  filter(level == "Community") %>%
   select(
     `Model scale` = level,
     Variable = response,
@@ -433,7 +433,8 @@ rand_tab_ok %>%
 tar_load(r2)
 r2_tab <- r2 %>%
   filter(
-    response %in% c("ldmc", "sla", "bm", "d", "h")
+    response %in% c("ldmc", "sla", "bm", "d", "h"),
+    level == "community"
     ) %>%
   arrange(level, response) %>%
   select(
@@ -451,9 +452,7 @@ r2_cap <- "R-Squared for the stastistical models. Marginal R-squared takes in ac
 conditional R-squared accounts for the fixed and random effects. R-Squared were
 not computed for survival because gaussian errors are not defined for logistic
 regression (See methods). [95\\% CI]: Credible Interval computed using
-Highest Posterior Density method. Note that there is few differences between the
-model without (community level) and with (species level) species specific
-effects of treaments." %>% str_replace_all("\\s+", " ")
+Highest Posterior Density method." %>% str_replace_all("\\s+", " ")
 
 r2_tab %>%
   select(-`Model scale`) %>%
