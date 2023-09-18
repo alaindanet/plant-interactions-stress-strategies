@@ -595,7 +595,7 @@ lt_cap <- paste0("Mechanistic effects of the nurse, watering and beneficiary
 knitr::include_graphics(here("paper", "graphics", "fig3.png"))
 ```
 
-### Effect of the nurse on the traits of the beneficiaries
+## Effect of the nurse on the traits of the beneficiaries
 
 We found a similar response of the functional traits of the beneficiary
 communities to the nurses and watering treatments (nurse and water alone in Fig.
@@ -608,7 +608,7 @@ found strong evidence for lower LDMC in watered treatment ($\beta$ = `r l_w`)
 but not SLA ($\beta$ = `r a_w`). We did not find evidence that community
 diversity affected leaf traits (Fig. \@ref(fig:lt)a).
 
-### Effects of the nurse on complementarity and competitive hierarchy
+## Effects of the nurse on complementarity and competitive hierarchy
 
 Partitioning the effects of species richness on the biomass of beneficiary
 communities, we found that the presence of the nurse interacted with water
@@ -649,7 +649,7 @@ we review our results in the wider context of global change research in drylands
 and previous work on facilitation and ecological theory.
 
 
-##  5.1 Species richness and water stress determine nurse effect on survival and biomass of beneficiary communities
+## Species richness and water stress determine nurse effects on survival and biomass of beneficiary communities
 
 We found that nurses had weak and quasi-neutral net effects on the survival and
 biomass of monospecific beneficiary communities, regardless of the level of
@@ -681,7 +681,7 @@ plant [@morcillo_interacting_2022], even resulting, as in our study, in negative
 net effects between the nurse and beneficiary communities.
 
 
-## 5.2 Effects of nurse on functional traits and species richness effects
+## Effects of nurse on functional traits
 
 We found that beneficiary communities followed less resource-conservative
 strategy (or a more resource-exploitative strategy) when being watered or in a
@@ -742,7 +742,7 @@ arise despite harsh environmental conditions [@danet_effects_2018], which might
 be key to maintain the positive effects of biodiversity on ecosystem functioning
 [@jiang_importance_2008].
 
-## Implications for facilitation potential to mitigate climate change effect on biodiversity
+## Facilitation potential to mitigate climate change effects on biodiversity
 
 Our results show that the facilitation provided by nurse plants can improve the
 performance of species diverse beneficiary communities in high water stress
@@ -763,7 +763,7 @@ come to be impacted by climate change and/or targeted by land-use change, then
 we could expect dramatic cascading effects in drylands communities.
 
 
-## Conclusion and perspectives
+# Conclusion and perspectives
 
 Our study suffers from some limits that might impede its generalisability. Here,
 diverse beneficiary communities were only composed of three species, which is a
