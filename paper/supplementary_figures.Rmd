@@ -68,6 +68,7 @@ tar_load(biomass_modelling)
 tar_load(biomass_modelling_r2)
 tar_load(biomass_t0)
 tar_load(surv_data_modelling)
+tar_load(env_plot)
 ```
 
 ```{r, eval = FALSE}
@@ -88,6 +89,21 @@ surv_data_modelling %>%
   geom_density() +
   facet_wrap(variable ~ species, scales = "free")
 ```
+
+```{r}
+env_plot_cap <- "Boxplots displaying environmental value distributions according
+to watering and nurse patch treatments. Temperature in celcius degree, soil
+moisture in percentage, and Photosynthetic Active Radiation (PAR).  See methods
+for details about the measurements and Table S1 for the statistical model for
+the associated effects." %>% str_replace_all("\\s+", " ")
+```
+
+```{r env-plot, fig.cap = env_plot_cap}
+env_plot +
+  theme(legend.position = "bottom")
+```
+
+
 
 ```{r}
 bm_pred_cap <- "Predicted vs observed total biomass. The measurement were done
@@ -301,8 +317,43 @@ str_replace_all("\\s+", " ")
 knitr::include_graphics(here("paper", "graphics", "p_pred_leaf.pdf"))
 ```
 
+```{r}
+net_div_raw_cap <- "Net effect of diversity on biomass and its partition into
+complementary and selection effects (See methods), computed from biomass
+averaged by terrace (N = 3). Points are displaying the raw values." %>%
+str_replace_all("\\s+", " ")
+```
+
+```{r, fig.cap = net_div_raw_cap}
+knitr::include_graphics(here("paper", "graphics", "p_data_div_partition_time.pdf"))
+```
+
+
 
 # Tables
+
+```{r}
+mod_env_cap <- "Coefficients of the statistical models linking environmental
+variables to watering and nurse treatment. PAR: Photosynthetic Active Radiation,
+temperature is in celcius degree, and soil moisture in percentage. Soil moisture
+was measured in the morning, 16 hours after water treatment was applied.
+Temperature was measured between 1pm and 3:30pm." %>%
+str_replace_all("\\s+", " ")
+```
+
+
+```{r}
+tar_load(c(mod_env_r2, mod_env_effect))
+mod_env_effect %>%
+  left_join(
+    mod_env_r2 %>%
+      rename(Response = model, `R2 adj` = `R2_adjusted`)
+  ) %>%
+  kbl(booktabs = T, caption = mod_env_cap, label = "pred-bm") %>%
+  collapse_rows(columns = c(1, 7, 8), valign = "middle", latex_hline = "major") %>%
+  kable_styling(latex_options = c("hold_position"))
+```
+
 
 ```{r}
 r2_model <- biomass_modelling_r2 %>%

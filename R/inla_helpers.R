@@ -442,6 +442,36 @@ formula_inla <- function(
         #Z = as(model.matrix(~ 0 + ter:label:ind, data = ', dataset_name,'), "Matrix"))
 }
 
+formula_inla_env <- function(
+  response = "temperature",
+  time = TRUE,
+  dataset_name = "growth_data",
+  plot_effect = TRUE
+  ) {
+
+  core_pred <- "ter + ms * watering"
+
+  if (time) {
+    if (response %in% c("d", "hm", "h", "bm")) {
+      core_pred <- paste0("duration_m + I(duration_m^2) + ", core_pred)
+    } else {
+      core_pred <- paste0("duration_m + ", core_pred)
+    }
+  }
+
+  if (plot_effect) {
+    pl <- paste0('f(IDtp, model = "z",
+      Z = as(model.matrix(~ 0 + ter:plot, data = ', dataset_name,'), "Matrix")) +')
+  } else {
+    pl <- ''
+  }
+
+  as.formula(paste0(response, ' ~ 1 + ', core_pred,' + ', pl,
+      'f(IDtl, model = "z",
+      Z = as(model.matrix(~ 0 + ter:label, data = ', dataset_name,'), "Matrix"))
+    '))
+}
+
 get_pred_data <- function(x = surv_data_modelling,
   predictor = c("com", "ms", "watering", "species", "duration_m")){
 

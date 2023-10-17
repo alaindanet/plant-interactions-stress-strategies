@@ -23,7 +23,10 @@ response_replacement <- function() {
     "hm" = "Max vegetative height",
     "bm" = "Total biomass",
     "ldmc" = "Leaf Dry Matter Content",
-    "sla" = "Specific Leaf Area"
+    "sla" = "Specific Leaf Area",
+    "temperature" = "Temperature",
+    "soil.moisture" = "Soil moisture",
+    "PAR" = "PAR"
   )
 }
 

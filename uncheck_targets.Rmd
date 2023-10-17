@@ -67,6 +67,43 @@ tar_target(biomass_t0_raw, read_csv2(here::here("data-raw", "biomass_t0.csv")))
 )
 ```
 
+```{targets env_raw_data, tar_simple = TRUE}
+january <- read_csv2("data-raw/data_january_env.csv") %>%
+  mutate(date = "jan", duration_m = 0)
+march <- read_csv2("data-raw/data_mars_env.csv") %>%
+  mutate(date = "mar", duration_m = 3)
+june <- read_csv2("data-raw/data_juin_env.csv") %>%
+  mutate(date = "jun", duration_m = 5)
+november <- read_csv2("data-raw/data_nov_env.csv") %>%
+  mutate(date = "nov", duration_m = 9) # The table are quite different
+
+rbind(
+  january,
+  march %>%
+    select(-soil.moisture.j2, -soil.moisture.j3, -soil.moisture.j4),
+  june %>%
+    select(-soil.moisture.j0) %>%
+    rename(soil.moisture = soil.moisture.j1) %>%
+    mutate(PAR = NA, notes = NA)
+  ) %>%
+mutate(
+  com = ifelse(com %in% c("A", "D", "P"), "Mono", "Poly"),
+  ms = ifelse(ms == "0", "Open", "Patch"),
+  watering = ifelse(water == "0", "No Watered", "Watered")
+  ) %>%
+select(-water) %>%
+mutate(across(
+    c(com, ms, watering, ter, plot, label),
+    as.factor)
+)
+
+# November removed because soil moisture measurement was done months after
+# watering
+#,
+#  november %>%
+#    rename(notes = ...11)
+```
+
 
 
 ```{targets clean-trait-data, eval = TRUE}
@@ -90,6 +127,8 @@ list(
   ))
 )
 ```
+
+
 
 
 ```{targets clean-growth-data, eval = TRUE}
@@ -150,6 +189,21 @@ list(
   tar_target(leaf_trait_modelling_scaled,
     leaf_trait_modelling %>%
       mutate(across(c("ldmc", "sla"), ~scale(.x, center = TRUE, scale = TRUE)[,1]))
+  ),
+  tar_target(env_data_modelling,
+    env_raw_data %>%
+      mutate(
+        IDtl = seq_len(nrow(env_raw_data)),
+        IDtli = seq_len(nrow(env_raw_data))
+      )
+    ),
+  tar_target(env_data_modelling_scaled,
+    env_data_modelling %>%
+      mutate(across(c("temperature", "soil.moisture", "PAR"), ~scale(.x, center = TRUE, scale = TRUE)[,1]))
+    ),
+  tar_target(pred_env_data,
+    get_pred_data(x = env_data_modelling,
+      predictor = c("ms", "watering", "duration_m"))
   )
 )
 ```
@@ -490,6 +544,8 @@ list(
 ```
 
 
+
+
 ```{r, eval = FALSE}
 p_mechanistic <- plot_grid(
   p_effect_trait + theme(legend.position = "right"),
@@ -512,6 +568,114 @@ ggsave(
 
 
 # Supplementary
+
+## Environmental values
+
+
+```{targets env_plot, tar_simple = TRUE}
+env_raw_data %>%
+  pivot_longer(
+    c(soil.moisture, temperature, PAR),
+    names_to = "variable",
+    values_to = "values") %>%
+mutate(
+  variable = response_replacement()[variable]
+  ) %>%
+ggplot(aes(y = values, x = as.factor(duration_m), color = as.factor(watering), linetype = as.factor(ms))) +
+    geom_boxplot() +
+    facet_wrap(~variable, scales = "free_y") +
+    labs(
+      color = "Watering",
+      linetype = "Microsite",
+      y = "Values",
+      x = "Number of month since the beginning of the experiment") +
+    theme_bw()
+```
+
+```{targets simple-env-model}
+list(
+  tar_target(mod_env, list(
+      soil.moisture = lm(soil.moisture ~ duration_m + watering * ms, env_raw_data),
+      temperature = lm(temperature ~ duration_m + watering * ms, env_raw_data),
+      PAR = lm(PAR ~ duration_m + watering * ms, env_raw_data)
+      )),
+  tar_target(mod_env_r2, map_dfr(mod_env,
+  ~performance::r2(.x) %>%.[c("R2", "R2_adjusted")],
+  .id = "model") %>%
+    mutate(
+      model = response_replacement()[model]
+    )
+    ),
+  tar_target(mod_env_effect,
+    map_dfr(mod_env, ~broom::tidy(.x), .id = "model") %>%
+      mutate(
+        model = response_replacement()[model],
+        term = str_replace_all(term, term_replacement()),
+        term = str_replace(term, "\n", " "),
+        p.value = round(p.value, 5)
+        ) %>%
+    janitor::clean_names() %>%
+    rename_with(~str_to_sentence(.x)) %>%
+    rename(
+      `Response` = Model,
+      `Std error` = Std_error,
+      `P-value` = P_value,
+      ))
+)
+```
+
+```{targets model-env, eval = TRUE}
+list(
+  tar_target(env_var, c("temperature", "soil.moisture", "PAR")),
+  tar_target(env_inla,
+    tibble(
+      response = env_var,
+      mod = list(try(inla(
+            formula = formula_inla_env(
+              response = env_var,
+              time = TRUE,
+              plot_effect = FALSE,
+              dataset_name = "env_data_modelling"),
+            control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE,
+              return.marginals=TRUE, return.marginals.predictor=TRUE),
+            control.predictor = list(link = 1, compute = T),
+            verbose = F,
+            data = rbind(env_data_modelling, pred_env_data),
+            )))),
+    pattern = map(env_var)
+    ),
+  tar_target(env_inla_pred,
+    env_inla %>%
+      mutate(pred = map(mod,
+          ~.x$summary.fitted.values[(nrow(env_data_modelling) + 1):nrow(.x$summary.fitted.values),] %>%
+        cbind(pred_env_data[, c("ms", "watering", "duration_m")]) %>%
+        as_tibble())) %>%
+    select(-mod) %>%
+    unnest(cols = c(pred))
+  ),
+  tar_target(env_inla_scaled,
+    tibble(
+      response = env_var,
+      mod = list(try(inla(
+            formula = formula_inla_env(
+              response = env_var,
+              time = TRUE,
+              plot_effect = FALSE,
+              dataset_name = "env_data_modelling_scaled"),
+            control.compute = list(dic = TRUE, waic = TRUE, cpo = TRUE,
+              return.marginals=TRUE, return.marginals.predictor=TRUE),
+            control.predictor = list(link = 1, compute = T),
+            verbose = F,
+            data = env_data_modelling_scaled,
+            )))),
+    pattern = map(env_var)
+    ),
+  tar_target(env_inla_effects_scaled, format_inla_model_list(x = env_inla_scaled)),
+  tar_target(env_inla_effects, format_inla_model_list(x = env_inla))
+  )
+```
+
+## Statistics
 
 ```{targets obs-fit}
 list(
@@ -1064,6 +1228,7 @@ tar_make()
 # Output
 
 ```{r}
+library(targets)
 library(tidyverse)
 library(magrittr)
 library(here)
@@ -1245,11 +1410,8 @@ p_surv <- plot_inla_fixed_effect(inla_surv_odd,
 ```
 
 
-
-
-
 ```{r}
-tar_load(c(surv_data_modelling, inla_surv_pred, inla_surv_sp_pred))
+tar_load(c(surv_data_modelling, inla_surv_pred, inla_surv_sp_pred, p_pred_surv))
 p_pred_effect_surv <- plot_grid(p_surv, p_pred_surv, rel_widths = c(.4, 1))
 ggsave(
   filename = "p_pred_effect_surv.pdf",
@@ -1607,6 +1769,72 @@ ggsave(
   dpi = "print"
 )
 ```
+
+```{r, fig.cap = "Leaf traits"}
+tar_load(c(env_inla_effects_scaled, env_data_modelling_scaled))
+
+p_effect_env <- plot_inla_fixed_effect(
+  env_inla_effects_scaled %>%
+    mutate(response = response_replacement()[response]),
+  term_to_rm = term2rm) +
+  labs(x = "Standardized coefficients", color = "Environmental variable") +
+  viridis::scale_color_viridis(discrete = T) +
+  theme(
+    legend.position = "bottom",
+    axis.title.y = element_blank()
+  )
+
+ggsave(
+  filename = "p_effect_env.pdf",
+  plot = p_effect_env,
+  path = here("paper", "graphics"),
+  scale = 1.8,
+  width = 90,
+  height = 90,
+  units = "mm",
+  dpi = "print"
+)
+ggsave(
+  filename = "p_effect_env.png",
+  plot = p_effect_env,
+  path = here("paper", "graphics"),
+  scale = 1.8,
+  width = 90,
+  height = 90,
+  units = "mm",
+  dpi = "print"
+)
+```
+
+```{r}
+tar_load(c(env_inla_pred, env_data_modelling))
+env_data_modelling %>%
+  pivot_longer(c(soil.moisture, temperature, PAR), names_to = "response",
+    values_to = "values") %>%
+  group_by(response, duration_m, ms, watering, ter) %>%
+  summarise(values = mean(values, na.rm = TRUE)) %>%
+  ggplot(aes(y = values, x = duration_m, color = watering, shape = ms)) +
+  geom_point(alpha = .4) +
+  geom_line(data = env_inla_pred, aes(y = mean)) +
+  geom_point(data = env_inla_pred, aes(y = mean)) +
+  geom_ribbon(data = env_inla_pred, aes(y = mean, ymin = `0.025quant`, ymax = `0.975quant`, fill = watering), alpha = .2, color = NA) +
+  facet_grid(rows = vars(response), scales = "free_y") +
+  labs(
+    x = "Number of month since the start of the experiment",
+    y = "Environmental values",
+    shape = "Microsite",
+    fill = "Watering",
+    color = "Watering") +
+  theme_bw() +
+  theme(legend.position = "bottom")
+```
+
+```{r}
+env_inla_pred %>%
+  filter(duration_m == 5)
+```
+
+
 
 
 The `targets` dependency graph helps your readers understand the steps of your pipeline at a high level.
