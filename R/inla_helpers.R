@@ -273,7 +273,7 @@ plot_inla_fixed_effect <- function(
       ci_level == "level:0.80" ~ 10,
       TRUE ~ width_bar
     ),
-    term = as.factor(term),
+    term = factor(term, term_levels())
     ) %>%
   ggplot(aes(y = term, x = mean, xmin = low, xmax = high, color = {{color_var}})) +
   geom_vline(xintercept = intercept, linetype = "dashed") +

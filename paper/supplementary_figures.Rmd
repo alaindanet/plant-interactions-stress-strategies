@@ -44,6 +44,7 @@ source(here::here("R","basic_stat.R"))
 source(here::here("R","inla_helpers.R"))
 source(here::here("R","clean_data.R"))
 source(here::here("R","string_replacements.R"))
+source(here::here("R","plot.r"))
 library(tidyverse)
 library(magrittr)
 library(cowplot)
@@ -64,33 +65,6 @@ if (Sys.info()["login"] == "alain") {
 # Figures
 
 ```{r}
-tar_load(biomass_modelling)
-tar_load(biomass_modelling_r2)
-tar_load(biomass_t0)
-tar_load(surv_data_modelling)
-tar_load(env_plot)
-```
-
-```{r, eval = FALSE}
-biomass_t0 %>%
-  ggplot(aes(y = log(bm_total), x = log_d, color = species)) +
-  geom_point() +
-  geom_smooth(method = "lm")
-biomass_t0 %>%
-  ggplot(aes(y = log(bm_total), x = log_h, color = species)) +
-  geom_point() +
-  geom_smooth(method = "lm")
-surv_data_modelling %>%
-  select(duration_m, species, d, h) %>%
-  rbind(biomass_t0 %>% select(duration_m, species, d, h)) %>%
-  pivot_longer(c(d, h), names_to = "variable", values_to = "values") %>%
-  mutate(type = ifelse(duration_m == 0, "laboratory", "field")) %>%
-  ggplot(aes(x = values, color = type)) +
-  geom_density() +
-  facet_wrap(variable ~ species, scales = "free")
-```
-
-```{r}
 env_plot_cap <- "Boxplots displaying environmental value distributions according
 to watering and nurse patch treatments. Temperature in celcius degree, soil
 moisture in percentage, and Photosynthetic Active Radiation (PAR).  See methods
@@ -99,8 +73,7 @@ the associated effects." %>% str_replace_all("\\s+", " ")
 ```
 
 ```{r env-plot, fig.cap = env_plot_cap}
-env_plot +
-  theme(legend.position = "bottom")
+knitr::include_graphics(here::here("paper", "graphics", "p_env_raw_data.pdf"))
 ```
 
 
@@ -113,24 +86,6 @@ str_replace_all("\\s+", " ")
 
 
 ```{r bm-pred, fig.cap = bm_pred_cap}
-biomass_t0$bm_total_pred <- exp(predict(biomass_modelling$log_mod_bm_tot_h))
-p_pred_bm <- biomass_t0 %>%
-  ggplot(aes(x = bm_total, y = bm_total_pred, color = species)) +
-  geom_point() +
-  geom_abline(slope = 1, intercept = 0) +
-  labs(y = "Predicted total biomass", x = "Observed total biomass") +
-  theme_bw() +
-  theme(legend.position = "bottom")
-ggsave(
-  filename = "p_pred_bm.pdf",
-  plot = p_pred_bm,
-  path = here("paper", "graphics"),
-  scale = 1.4,
-  width = 90,
-  height = 90 * 1,
-  units = "mm",
-  dpi = "print"
-)
 knitr::include_graphics(here("paper", "graphics", "p_pred_bm.pdf"))
 ```
 
@@ -143,27 +98,6 @@ basal diameter models are highly similar."
 
 
 ```{r, fig.cap=bm_d_effect}
-tar_load(bm_inla_scaled_effects)
-ti <- bm_inla_scaled_effects %>%
-  filter(response %in% c("d", "bm", "h")) %>%
-  mutate(response = response_replacement()[response])
-p_bm_d_effect <- plot_inla_fixed_effect(ti,
-  color_var = response, intercept = 0) +
-  labs(x = "Standardized coefficients", color = "Variable") +
-  theme(
-    axis.title.y = element_blank(),
-    legend.position = "bottom"
-  )
-ggsave(
-  filename = "p_bm_d_effect.pdf",
-  plot = p_bm_d_effect,
-  path = here("paper", "graphics"),
-  scale = 2.4,
-  width = 90,
-  height = 90 * 1,
-  units = "mm",
-  dpi = "print"
-)
 knitr::include_graphics(here("paper", "graphics", "p_bm_d_effect.pdf"))
 ```
 
@@ -194,66 +128,11 @@ averaged by terrace (N = 3 for each treatment)." %>%
 str_replace_all("\\s+", " ")
 ```
 
-```{r}
-tar_load(p_pred_surv)
-tar_load(c(surv_data_modelling, bm_inla_pred))
-p_pred_bm_ok <- surv_data_modelling %>%
-  group_by(duration_m, ms, com, watering, species, ter) %>%
-  summarise(bm = mean(bm, na.rm = TRUE)) %>%
-  ggplot(aes(y = bm, x = duration_m + 5, shape = com, color = watering)) +
-  geom_jitter(alpha = .2) +
-  geom_line(data = bm_inla_pred %>% filter(response == "bm"), aes(y = mean)) +
-  geom_point(data = bm_inla_pred %>% filter(response == "bm"), aes(y = mean)) +
-  facet_grid(cols = vars(species), rows = vars(ms)) +
-  labs(
-    x = "Number of month since the start of the experiment",
-    y = "Biomass of beneficiary",
-    color = "Watering",
-    shape = "Diversity") +
-  theme_bw() +
-  theme(legend.position = "bottom")
-```
-
-```{r}
-p_pred_surv_bm <- plot_grid(
-  p_pred_surv + theme(legend.position = "none"),
-  p_pred_bm_ok,
-  nrow = 2,
-  labels = "auto")
-ggsave(
-  filename = "p_pred_surv_bm.pdf",
-  plot = p_pred_surv_bm,
-  path = here("paper", "graphics"),
-  scale = 2.4,
-  width = 140,
-  height = 140 * 1,
-  units = "mm",
-  dpi = "print"
-)
-```
 
 ```{r, fig.cap = predicted_surv_cap}
 knitr::include_graphics(here("paper", "graphics", "p_pred_surv_bm.pdf"))
 ```
 
-```{r}
-tar_load(c(p_other_surv, p_other_bm, p_other_leaf))
-p_other <- plot_grid(
-  p_other_surv, p_other_bm, p_other_leaf,
-  nrow = 2,
-  labels = "auto",
-  rel_heights = c(.7, 1))
-ggsave(
-  filename = "p_other_effect.pdf",
-  plot = p_other,
-  path = here("paper", "graphics"),
-  scale = 2.4,
-  width = 90,
-  height = 90 * 1,
-  units = "mm",
-  dpi = "print"
-)
-```
 
 ```{r}
 effect_control_var <- "Model coefficients for the control predictors (species
@@ -261,50 +140,10 @@ identity, terrace effect) and intercept for (a) survival, (b) biomass, (c) leaf
 traits."
 ```
 
-
 ```{r, fig.cap = effect_control_var}
 knitr::include_graphics(here("paper", "graphics", "p_other_effect.pdf"))
 ```
 
-```{r}
-tar_load(c(leaf_trait_modelling, leaf_inla_pred))
-p_pred_leaf <- leaf_trait_modelling %>%
-  pivot_longer(c(ldmc, sla), names_to = "trait", values_to = "values") %>%
-  mutate(
-    com = recode_factor(com, "Mono" = "Monospecific", "Poly" = "Diverse"),
-    ms = recode_factor(ms, "Open" = "Open", "Patch" = "Nurse patch")
-    ) %>%
-  group_by(ms, com, watering, trait, species, ter) %>%
-  summarise(n = sum(!is.na(values)), values = mean(values, na.rm = TRUE)) %>%
-  filter(n >= 3) %>%
-  ggplot(aes(y = values, x = ms, color = watering, shape = com)) +
-  geom_jitter(alpha = .2) +
-  geom_point(
-    data = leaf_inla_pred %>%
-      rename(trait = response) %>%
-      mutate(
-        com = recode_factor(com, "Mono" = "Monospecific", "Poly" = "Diverse"),
-        ms = recode_factor(ms, "Open" = "Open", "Patch" = "Nurse patch")
-      ), aes(y = mean), size = 2) +
-  facet_grid(cols = vars(species), rows = vars(trait), scales = "free_y") +
-  labs(
-    x = "",
-    y = "Leaf trait values",
-    color = "Watering",
-    shape = "Diversity") +
-  theme_bw() +
-  theme(legend.position = "bottom")
-ggsave(
-  filename = "p_pred_leaf.pdf",
-  plot = p_pred_leaf,
-  path = here("paper", "graphics"),
-  scale = 1.8,
-  width = 90,
-  height = 90 * .5,
-  units = "mm",
-  dpi = "print"
-)
-```
 
 ```{r}
 predicted_leaf_cap <- "Predictions of the leaf traits of beneficiary
@@ -345,8 +184,12 @@ str_replace_all("\\s+", " ")
 ```{r}
 tar_load(c(mod_env_r2, mod_env_effect))
 mod_env_effect %>%
+  group_by(Response) %>%
+  mutate(across(c(2:4), ~round(., digits = 1))) %>%
+  mutate(across(c(5), ~round(., digits = 3))) %>%
   left_join(
     mod_env_r2 %>%
+      mutate(across(where(is.numeric), ~round(., 2))) %>%
       rename(Response = model, `R2 adj` = `R2_adjusted`)
   ) %>%
   kbl(booktabs = T, caption = mod_env_cap, label = "pred-bm") %>%
@@ -356,6 +199,7 @@ mod_env_effect %>%
 
 
 ```{r}
+tar_load(c(biomass_modelling_r2, biomass_modelling))
 r2_model <- biomass_modelling_r2 %>%
   filter(model == "log_mod_bm_tot_h") %>%
   slice(1) %>%
@@ -376,8 +220,18 @@ str_replace_all("\\s+", " ")
 
 ```{r}
 broom::tidy(biomass_modelling$log_mod_bm_tot_h) %>%
-  mutate(term = c(term_replacement(), response_replacement())[term]) %>%
+  mutate(
+    term = str_replace_all(term, c(term_replacement(), response_replacement())),
+    term = str_replace(term, "log_", "Log "),
+    ) %>%
+  mutate(across(c(2:4), ~round(., digits = 2))) %>%
+  mutate(across(c(5), ~round(., digits = 3))) %>%
   janitor::clean_names() %>%
+  rename(
+    Term = term, Estimate = estimate,
+    `Std error` = std_error, Statistic = statistic,
+    `P-value` = p_value
+  ) %>%
   kbl(booktabs = T, caption = mod_cap, label = "pred-bm") %>%
   kable_styling(latex_options = c("hold_position"))
 ```
@@ -392,53 +246,23 @@ str_replace_all("\\s+", " ")
 tar_load(leaf_trait)
 leaf_trait %>%
   pivot_longer(c(ldmc, sla), names_to = "trait", values_to = "values") %>%
+  mutate(
+    trait = str_to_upper(trait),
+    com = recode_factor(com, !!!com_replacement()),
+    ms = recode_factor(ms, !!!ms_replacement()),
+    species = recode_factor(species, !!!species_replacement()),
+    watering = recode_factor(watering, !!!water_replacement()),
+  ) %>%
   group_by(com, ms, watering, trait) %>%
   summarise(N = sum(!is.na(values))) %>%
   pivot_wider(names_from = "trait", values_from = "N") %>%
-  rename(Diversity = com, Site = ms, Watering = watering) %>%
+  rename(Diversity = com, Microsite = ms, Watering = watering) %>%
   kbl(booktabs = T,
     label = "tab-leaf-nb",
     caption = leaf_nb_cap) %>%
-  add_header_above(c(" " = 3, "Number of data" = 2)) %>%
+  add_header_above(c(" " = 3, "Number of samples" = 2)) %>%
   collapse_rows(columns = c(1, 2), valign = "middle", latex_hline = "major") %>%
   kable_styling(latex_options = c("hold_position"))
-```
-
-```{r}
-na_cap <- "Number of missing values by variable during the experiment. The vegetative height
-of the dead saplings was not measured. Then total biomass estimation has than roughly
-the same amount of missing values than vegetative height, far more than basal
-diameter. However considering total biomass or basal diameter gave roughly the
-same results (Fig. S2)." %>%
-str_replace_all("\\s+", " ")
-```
-
-
-```{r na-fig, fig.cap = na_cap, eval = FALSE}
-p_na_surv <- surv_data_modelling %>%
-  select(duration_m, bm, d, h, survival) %>%
-  pivot_longer(cols = c(bm, d, h, survival), names_to = "variable", values_to = "values") %>%
-  group_by(duration_m, variable) %>%
-  mutate(variable = response_replacement()[variable]) %>%
-  summarise(n_na = sum(is.na(values))) %>%
-  ggplot(aes(x = duration_m + 6, y = n_na)) +
-  geom_line() +
-  facet_grid(cols = vars(variable)) +
-  labs(
-    x = "Number of month since the beginning of the experiment",
-    y = "Number of NAs") +
-  theme_bw()
-ggsave(
-  filename = "p_na_surv.pdf",
-  plot = p_na_surv,
-  path = here("paper", "graphics"),
-  scale = 2.4,
-  width = 90,
-  height = 90 * .3,
-  units = "mm",
-  dpi = "print"
-)
-knitr::include_graphics(here("paper", "graphics", "p_na_surv.pdf"))
 ```
 
 ```{r}
@@ -474,7 +298,7 @@ rand_tab_ok %>%
   kbl(booktabs = T,
     label = "tab-rand",
     caption = rand_cap) %>%
-  add_header_above(c(" " = 1, "Random effect (s.d.)" = 2)) %>%
+  add_header_above(c(" " = 1, "Standard deviation" = 2)) %>%
   collapse_rows(columns = c(1, 2), valign = "middle", latex_hline = "major") %>%
   kable_styling(latex_options = c("hold_position"))
 ```
