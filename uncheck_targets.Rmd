@@ -1538,7 +1538,7 @@ list(
     ggplot(aes(y = mean, x = date, color = watering, shape = ms)) +
     geom_point(size = 3) +
     geom_line() +
-    geom_ribbon(aes(ymin = lower, ymax = upper, fill = watering), alpha = .1,
+    geom_ribbon(aes(ymin = lower, ymax = upper, fill = watering), alpha = .2,
       color = NA) +
     facet_wrap(~metric, scales = "free_y") +
     scale_x_date(date_labels = "%b", breaks = date_nb_month$date) +
@@ -1554,7 +1554,6 @@ list(
   )
 )
 ```
-
 
 
 # Pipeline
@@ -1593,26 +1592,15 @@ p_surv_pp_ci +
 
 ```{r}
 tar_load(c(fig2, p_surv_pp_ci, p_bm_pp_ci))
-ggsave(
-  filename = "fig2.pdf",
+ggsave_multiple(
+  paste0("fig2", c(".png", ".pdf")),
   plot = fig2,
   path = here("paper", "graphics"),
   scale = 2.4,
   width = 80,
   height = 80 * .9,
   units = "mm",
-  dpi = "print"
-)
-ggsave(
-  filename = "fig2.png",
-  plot = fig2,
-  path = here("paper", "graphics"),
-  scale = 3.0,
-  width = 100,
-  height = 100 * .8,
-  units = "mm",
-  dpi = "print"
-)
+  dpi = 400)
 ```
 
 
@@ -1643,21 +1631,47 @@ fig3 <- plot_grid(
 fig3 <- plot_grid(
   p_effect_trait,
   p_partition_pred_bm_sp_ci,
-  rel_widths = c(.35, 1),
+  rel_widths = c(.4, 1),
   nrow = 1,
   labels = "auto"
     )
-ggsave(
-  filename = "fig3.pdf",
+ggsave_multiple(
+  paste0("fig3", c(".png", ".pdf")),
   plot = fig3,
   path = here("paper", "graphics"),
-  scale = 3.0,
+  scale = 2.6,
   width = 80,
-  height = 80 * .4,
+  height = 80 * .45,
   units = "mm",
-  dpi = "print"
-)
+  dpi = 400)
 ```
+
+```{r}
+fig3_alt <- p_effect_trait +
+  theme(legend.justification = c("center", "bottom"))
+ggsave_multiple(
+  paste0("fig3_alt", c(".png", ".pdf")),
+  plot = fig3_alt,
+  path = here("paper", "graphics"),
+  scale = 1.2,
+  width = 80,
+  height = 80 * 1.05,
+  units = "mm",
+  dpi = 400)
+```
+
+```{r}
+ggsave_multiple(
+  paste0("fig4", c(".png", ".pdf")),
+  plot = tar_read(p_partition_pred_bm_sp_ci),
+  path = here("paper", "graphics"),
+  scale = 2.6,
+  width = 80,
+  height = 80 * .40,
+  units = "mm",
+  dpi = 400)
+```
+
 
 
 ```{r}
