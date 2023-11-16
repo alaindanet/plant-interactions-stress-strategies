@@ -346,7 +346,7 @@ total biomass of each individual. We log-transformed total biomass, basal
 diameter and vegetative height prior to modelling. The R² of the model was quite
 high ($R^2$ = `r r2bm["R2"]`, adjusted $R^2$ = `r r2bm["adj"]`), and we found a
 good agreement between predicted and observed values (Fig. S2, see estimated
-coefficients in Table S1). This allometric relationship provided an estimation
+coefficients in Table S2). This allometric relationship provided an estimation
 of total plant biomass based on the non-lethal measurement of plant height and
 stem diameter in the field (considering either only basal diameter or estimated
 total biomass did not alter our conclusions, see Fig. S3). Basal diameter was
@@ -382,7 +382,7 @@ leaves to compute LDMC and SLA. We a priori selected a random subset of
 microsites to be sampled, and then we effectively sampled only the subset that
 met the above conditions to reach a minimal sampling size per treatment
 combination of 7 samples for SLA (max 36) and 13 samples for LDMC (max 75, Table
-S2).
+S3).
 
 ## Data analysis {-}
 
@@ -414,7 +414,7 @@ decrease after summer. We further accounted for pseudoreplication linked to
 repeated measurements of the same beneficiary community across time by
 considering microsite level variation (i.e. hole containing the beneficiary
 communities nested within the terrace level) by specifying a random effect with
-these terms (Table S3).
+these terms (Table S4).
 
 All models were fit using a Bayesian framework. We fit the biomass response
 variable with a gaussian error structure and the survival response variable with
@@ -435,10 +435,10 @@ moderate and strong evidence of an effect when the interval does not include 0
 [@mastrandrea_guidance_2010; @van_klink_meta-analysis_2020].
 
 We checked the overall quality of the model fit to the data visually by plotting
-the fitted versus the observed values (Fig. S4, Table S4). We visually inspected
-the PIT and CPO (respectively Posterior Integral Transform and Conditional
-Predictive Ordinate) distribution to assess both the quality of data
-representation and the frequency of outliers.
+the fitted versus the observed values (Fig. S4) and visually inspected the
+aggrement between predicted and observed differences between treatments (Fig.
+S5, S7, S8). The conditional $R^2$ of the models were of 0.37, 0.09, 0.66 for
+biomass, LDMC, and SLA respectively (Table S5).
 
 ### Estimates of nurse net effects on survival and biomass of beneficiary communities {-}
 
@@ -550,7 +550,8 @@ b_pis <- get_effect_ci(effect = bm_effects, term = "speciespistachia", ci_lvl = 
 
 We found no effect of the presence of the nurse alone on the survival and
 biomass of monospecific beneficiary communities (survival odd-ratio = `r s_m`,
-Fig. \@ref(fig:sbm)a; biomass: $\beta$ = `r b_m`, Fig. \@ref(fig:sbm)b),
+Fig. \@ref(fig:sbm)a; biomass: $\beta$ = `r b_m`, Fig. \@ref(fig:sbm)b; CI:
+Credible Interval),
 resulting in an overall slight negative net effect of the nurse in monospecific
 beneficiary communities (Fig. \@ref(fig:sbm)c, d, red and blue points).
 
@@ -558,11 +559,11 @@ We further found that, in open microsites, the species in diverse beneficiary co
 the same survival (OR = `r s_c`, Fig. \@ref(fig:sbm)a) but lower biomass
 ($\beta$ = `r b_c`, Fig. \@ref(fig:sbm)b) than monospecific communities.
 Watering increased the survival and biomass of beneficiary communities in open
-microsites (survival: OR = `r s_w`, biomass: $\beta$ = `r b_w`), and this effect
+microsites (survival OR = `r s_w`, biomass: $\beta$ = `r b_w`), and this effect
 was enhanced in diverse beneficiary communities (survival: OR = `r s_wc`,
 biomass: $\beta$ = `r b_wc`). The positive watering effect on survival and
 biomass in monospecific beneficiary communities was similar regardless of the
-presence or absence of the nurse (survival: OR = `r s_wm`, biomass: $\beta$ =
+presence or absence of the nurse (survival OR = `r s_wm`; biomass: $\beta$ =
 `r b_wm`), resulting in near-neutral net effects of the nurse on monospecific
 beneficiary communities in watered and non-watered treatments (Fig. \@ref(fig:sbm)c & d, red and
 blue points).
@@ -637,7 +638,7 @@ lt_cap <- paste0("Effects of the nurse, watering and beneficiary community
   Specific Leaf Area (SLA). Points represent the mean of the posterior
   distribution of coefficients; Thin, medium and large bars represent the
   credible interval at 95\\%, 90\\% and 80\\%. The effects of control variables and
-  the predictions of the model are displayed in Fig. S6 and S7c. (b) Species
+  the predictions of the model are displayed in Fig. S6c and S7. (b) Species
   richness effects on biomass of beneficiary communities (Net effects),
   partionned in complementarity and selection effects (see Methods). Estimations
   of species richness effects computed with raw values of biomass are displayed

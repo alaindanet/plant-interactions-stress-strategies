@@ -288,9 +288,8 @@ rand_tab_ok <- rand_tab %>%
 
 
 rand_cap <- "Standard deviations associated to  the stastistical models.
-Gaussian error represents the general error term of the models. Plot effect was
-not kept for the total biomass model (see methods). [95\\% CI]:
-Credible Interval computed using Highest Posterior Density method." %>%
+Gaussian error represents the general error term of the models. [95\\% CI]:
+Credible Intervals computed using Highest Posterior Density method." %>%
 str_replace_all("\\s+", " ")
 
 rand_tab_ok %>%
