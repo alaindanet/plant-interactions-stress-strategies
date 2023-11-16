@@ -3,15 +3,15 @@ title: ""
 author: ""
 date: ""
 output:
-  officedown::rdocx_document:
-    base_format: "bookdown::word_document2"
-    number_sections: false
   bookdown::pdf_document2:
     latex_engine: xelatex
     keep_tex: true
     spacing: double
     number_sections: false
-bibliography: "bibliography.bib"
+  officedown::rdocx_document:
+    base_format: "bookdown::word_document2"
+    number_sections: false
+bibliography: bibliography.bib
 csl: oikos.csl
 link-citations: true
 toc: false
@@ -207,12 +207,17 @@ water stress interact in driving the response of the beneficiary communities?
 # Material & Methods {-}
 
 ```{r}
-exp_design_cap <- "Experimental setting. a) Artemisia herba-alba shrubs (nurse
+exp_design_cap <- "Experimental setting. a) *Artemisia herba-alba* shrubs (nurse
 species) in one of the three terraces. b) 320 planting microsites were
 distributed within three terraces. c) The microsites were located either under a
 nurse plant or in open interpatch areas, occupied by a single species
 beneficiary community or a three species beneficiary communities, and watered
 regularly or not." %>% str_replace_all("\\s+", " ")
+
+it_pattern <- "(\\*(.*)\\*)"
+if (knitr::is_latex_output()){
+ exp_design_cap <- str_replace(exp_design_cap, it_pattern, "\\\\textit{\\2}")
+}
 ```
 
 
@@ -250,7 +255,7 @@ in open microsites. *A. herba-alba* is a pioneer and common non-palatable specie
 in drylands, known for extending its grazing protection toward palatable plants
 [@alados_association_2006; @verwijmeren_drought_2014], and a closely related species
 Artemisia tridendata was previously shown to positively alter microclimate
-[@callaway__1996]. It was reported to be partially phytotoxic, producing
+[@callaway_competition_1996]. It was reported to be partially phytotoxic, producing
 strong anti-germination compounds, which however were not reported to affect
 negatively sapling growth [@arroyo_phytotoxic_2018].
 
@@ -583,9 +588,9 @@ fig_surv_bm <- paste0("Model coefficients of the statistical models on survival
   negative and positive effects on survival probability. The predictions of the
   model and the effects of control variables are displayed in Fig. S5 and S6.
   Nurse net effects on beneficiary communities estimated from model predictions
-  using NInt index (see Methods) on survival probability (c), and biomass (d).
+  using NIntA index (see Methods) on survival probability (c), and biomass (d).
   Nurse net effects below and above 0 represent respectively the prevalence of
-  competitive and facilitative effects. Ribbons delimitate the 80% credible
+  competitive and facilitative effects. Ribbons delimitate the 80\\% credible
   intervals.") %>%
   str_replace_all("\\s+", " ")
 ```
@@ -637,7 +642,7 @@ lt_cap <- paste0("Effects of the nurse, watering and beneficiary community
   partionned in complementarity and selection effects (see Methods). Estimations
   of species richness effects computed with raw values of biomass are displayed
   in Fig. S8. Ribbons
-  delimitate the 80% credible intervals.") %>%
+  delimitate the 80\\% credible intervals.") %>%
   str_replace_all("\\s+", " ")
 
 lt_cap_alt <- paste0("Effects of the nurse, watering and beneficiary community
@@ -695,7 +700,7 @@ div_eff_cap <- paste0("Effects of the nurse, watering and beneficiary community
   beneficiary communities (Net effects), partionned in complementarity and
   selection effects (see Methods). Estimations of species richness effects
   computed with raw values of biomass are displayed in Fig. S8. Ribbons
-  delimitate the 80% credible intervals.") %>%
+  delimitate the 80\\% credible intervals.") %>%
   str_replace_all("\\s+", " ")
 ```
 
