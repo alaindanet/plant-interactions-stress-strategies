@@ -115,39 +115,36 @@ plants [@callaway_positive_2007]. Improving our understanding of how species
 interactions both respond to and shape responses to drought  is critical to
 predict the future of plant communities in a drier world.
 
+Drylands across the planet exhibit limited water availability for plants and
+animals. In drylands, plants referred to as “benefactors” or “nurses'' that
+facilitate other plants (“beneficiaries”) are key drivers of community structure
+and functioning [@anthelme_positive_2007; @michalet_biotic_2006;
+@maestre_structure_2016]. Nurse plants can improve environmental conditions beneath
+their canopy, e.g. by reducing soil erosion, buffering the daily fluctuations in
+temperature, and increasing water retention [@callaway_positive_2007]. Such positive
+effects relative to drought conditions correlate with increased species richness
+[@gross_positive_2008; @cavieres_facilitative_2014], increased diversity in community composition
+[@kikvidze_effects_2015], and underpin large scale ecosystem properties such as
+productivity [@cardinale_species_2002; @wright_overlooked_2017],
+resilience [@kefi_local_2007; @kefi_spatial_2007] and the spatial distribution
+of species in drylands. Nurse plants, by generating these local environmental
+conditions, could thus mitigate the effects of increasing severity and frequency
+of drought events on biodiversity and ecosystem functioning.
 
-The potential for alleviating the detrimental effects of water stress can be
-estimated in  drylands, which already exhibit limited water availability for
-plants and animals. In drylands, plants referred to as “benefactors” or “nurses”
-that facilitate other plants (“beneficiaries”) are key drivers of community
-structure and functioning [@anthelme_positive_2007; @michalet_biotic_2006;
-@maestre_structure_2016]. Nurse plants can improve environmental conditions
-beneath their canopy, e.g. by reducing soil erosion, buffering the daily
-fluctuations in temperature, and increasing water retention
-[@callaway_positive_2007].
-Such facilitative effects correlate with increased species richness
-[@gross_positive_2008; @cavieres_facilitative_2014], increased diversity in
-community composition [@kikvidze_effects_2015], and underpin large scale ecosystem
-properties such as productivity [@cardinale_species_2002;
-@wright_overlooked_2017], resilience and the spatial distribution of species in
-drylands [@kefi_local_2007; @kefi_spatial_2007]. Nurse plants, by improving
-local environmental conditions, could thus mitigate the effects of increasing
-severity and frequency of drought events on biodiversity and ecosystem
-functioning.
 
 However, in order to accurately assess the potential of facilitative effects for
 mitigating climate change, one must evaluate nurse effects in biodiverse
 communities and disentangle the multiple mechanisms by which they operate and
 contexts in which they arise. We propose three key mechanisms to monitor that
-are stemming from trait-based ecology and ecosystem functioning research:
-selection effects (i.e. competitive hierarchy), complementarity effects (i.e.
-niche differentiation and facilitation) and trait profile changes (plasticity).
-There are pieces of evidence for all three of these, which we review below
+arise from trait-based ecology and ecosystem functioning research: selection
+effects (i.e. competitive hierarchy), complementarity effects (i.e. niche
+differentiation and facilitation) and trait profile changes (plasticity). There
+are independent pieces of evidence for all three of these, which we review below
 before introducing our experiment and data that address all three
 simultaneously.
 
-
-Community assembly theory provides key predictions about the outcome of
+Community assembly theory, and specifically the concepts of complementarity and
+selection effects, provides key predictions about the outcome of
 nurse-beneficiary interactions in species-diverse communities. Facilitation can
 be seen as an expansion of the niche of beneficiary species
 [@bruno_inclusion_2003; @koffel_competition_2021], e.g. by making environmental
@@ -160,9 +157,9 @@ that are able to use different aspects of this new resource space, e.g. by
 having contrasted water use strategies, i.e. higher ‘niche complementarity’
 [@cardinale_species_2002; @loreau_partitioning_2001], or in cases where
 beneficiaries directly facilitate each other. Previous research identified that
-facilitation from nurse plants beneficiate the more to species the least drought
-resistant [@liancourt_stress_2005; @graff_species_2017], and
-that nurses can alter competitive hierarchy among beneficiary species
+facilitation from nurse plants benefits more the least drought resistant species
+[@liancourt_stress_2005; @graff_species_2017], and that nurses
+can alter competitive hierarchy among beneficiary species
 [@schob_direct_2013;@michalet_direct_2017], which are coined as “selection
 effects” [@loreau_partitioning_2001]. Previous studies reported that
 species richness increases complementarity but have contrasting effects on
@@ -174,35 +171,36 @@ facilitation) and selection (i.e. competitive hierarchy) in beneficiary
 communities can thus bridge the gap between facilitation and ecosystem
 functioning research [@wright_overlooked_2017].
 
-By modifying local environmental conditions, nurse plants are also expected to
-alter the physiology and resource exploitation strategies of the beneficiary
-plants, which can be assessed using leaf functional traits. In harsh
-environments, previous research identified that beneficiary species located
-beneath and within a nurse display higher variability in leaf trait composition,
-but also less-stressed leaf trait syndromes than beneficiary species located in
-open sites [@schob_foundation_2012; @schob_direct_2013; @schob_trait-based_2017;
-@danet_nurse_2017; @danet_effects_2018]. Accounting for how the
-presence of the nurse and water stress modulate functional traits is therefore a
+
+By modifying local environmental conditions, nurse plants may also  alter the
+physiology and resource exploitation strategies of the beneficiary plants via
+phenotypic plasticity or evolution. The response to variation in environmental
+conditions can be assessed using leaf functional traits. In harsh environments,
+previous research identified that beneficiary species located beneath and within
+a nurse display higher variability in leaf trait composition, but also
+less-stressed leaf trait syndromes than beneficiary species located in open
+sites [@schob_foundation_2012; @schob_direct_2013; @schob_trait-based_2017;
+@danet_nurse_2017; @danet_effects_2018]. Accounting for how the presence of
+the nurse and water stress modulate values of functional traits is therefore a
 valuable way to further understand the mechanisms by which facilitation operates
 on beneficiary plants.
 
 Here we report on an in situ experiment designed to provide evidence that
 facilitative effects provided by nurse species in drylands is stronger for
 diverse than for monospecific beneficiary communities, and that those
-facilitative effects are lower under lower water stress. To gather this evidence
-we performed a fully factorial experiment crossing beneficiary species diversity
-(three species in monoculture and three species communities), presence and
-absence of nurse species (nurse patch vs. open) and presence and absence of
-watering (reduced drought vs drought). This experiment allows us to gather data
-about the relative importance of complementarity, selection effects and trait
-profiles in shaping patterns of facilitation. Specifically, with this design, we
-ask the following 4 questions. 1) How does species richness of beneficiary
+facilitative effects are lower under lower water stress. Our experiment allows
+us to gather data about the relative importance of complementarity, selection
+effects and trait profiles in shaping patterns of facilitation. To gather this
+evidence we performed a fully factorial experiment crossing beneficiary species
+diversity (three species in monoculture and three species communities), presence
+and absence of nurse species (nurse patch vs. open) and presence and absence of
+watering (reduced drought vs drought). Specifically, with this design, we ask
+the following 4 questions. 1) How does species richness of beneficiary
 communities affect nurse net effects on the survival and biomass of those
 beneficiary communities? 2) How do nurse plants alter the functional traits of
 beneficiary communities? 3) How do nurse plants affect complementarity and
 competitive hierarchy in beneficiary communities? 4) How do nurse plants and
 water stress interact in driving the response of the beneficiary communities?
-
 
 # Material & Methods {-}
 
@@ -735,146 +733,149 @@ dominance in beneficiary communities.
 
 # Discussion {-}
 
-One of the key questions about the role of facilitation buffering the impacts of
-drought and climate change in dryland communities is how the species diversity
-of beneficiary communities mediates facilitation and its effects.  We examined
-the role of beneficiary species diversity with a manipulative field experiment
-that allowed us to ask three key questions: 1) How does species richness affect
-nurse net effects on survival and biomass? 2) How do nurse plants alter the
-water stress of beneficiary communities?, and 3) How do nurse plants affect
-complementarity and competitive hierarchy in beneficiary communities? Overall, we
-found that nurse facilitation only occurred in case of species diverse
-beneficiary communities and in the absence of watering. Nurse and watering
-treatments had similar effects on complementarity (gain in biomass in
-diverse beneficiary communities compared to monoculture) and on the traits of
-beneficiaries. However, the nurse treatment differed from watering in its effect
-on competitive hierarchy, as nurse maintained quasi-neutral selection effects. Here
-we review our results in the wider context of global change research in drylands
-and previous work on facilitation and ecological theory.
-
+One of the key questions about the role of facilitation in mitigating the
+impacts of drought and climate change in dryland communities is how the species
+diversity of beneficiary communities mediates facilitation and by which
+mechanisms. We examined the roles of nurse plants and beneficiary communities
+species richness at two levels of drought stress with a manipulative field
+experiment that allowed us to ask four questions: 1) How does species richness
+of beneficiary communities affect nurse net effects on the survival and biomass
+of those beneficiary communities? 2) How do nurse plants alter the functional
+traits of beneficiary communities? 3) How do nurse plants affect complementarity
+and competitive hierarchy in beneficiary communities? 4) How do nurse plants and
+water stress interact in driving the response of the beneficiary communities?
+Overall, we found that nurse facilitation only occurred in case of
+species-diverse beneficiary communities and in the absence of watering. Nurse
+and watering treatments had similar effects on complementarity (gain in biomass
+in diverse beneficiary communities compared to monoculture) and on the traits of
+beneficiaries. However, the nurse treatment differed from the watering one in
+its effect on competitive hierarchy, as nurses facilitated more the most
+maladapted species (i.e. negative selection effects) regardless of the water
+stress. In what follows, we discuss our results based on the wider context of
+global change research in drylands, on previous work on facilitation, and on
+ecological theory.
 
 ## Species richness and water stress determine nurse effects on survival and biomass of beneficiary communities
 
 We found that nurses had weak and quasi-neutral net effects on the survival and
 biomass of monospecific beneficiary communities, regardless of the level of
-water stress. This result could be explained by a
-strong intraspecific competition among the 3 beneficiary individuals in
-monoculture that swamps the positive effects of the presence of the nurse. Those results are in line
-with the meta-analysis reporting that intraspecific competition is several orders
-of magnitude higher than interspecific competition [@adler_competition_2018].
-This is also aligned with coexistence theory that predicts strong competition
-among conspecific plants due to the absence of niche differences
+water stress. This result could be explained by a strong intraspecific
+competition among the three beneficiary individuals in monoculture that swamps
+the positive effects of the presence of the nurse. Those results are in line
+with a recent meta-analysis, reporting that intraspecific competition is several
+orders of magnitude higher than interspecific competition [@adler_competition_2018].
+This is also in agreement with coexistence theory that predicts strong
+competition among conspecific plants due to the absence of niche differences
 [@chesson_general_2000; @kraft_plant_2015], and this effect appeared to
 supersede the effect of nursing, regardless of the water treatment. Our results
-suggest that accounting for competition among beneficiary species is one
+suggest that accounting for competition among beneficiary species is an
 important factor to understand the effects of nursing on beneficiary communities
 [@schob_direct_2013; @michalet_disentangling_2015].
 
 
-In contrast with monospecific beneficiary communities, we found that the nurse
-had strong positive effects on plant survival and biomass in diverse beneficiary
-communities in unwatered conditions. This positive effect of nursing in mixture
-in absence of watering could then be held by the lower competition experienced
-by the beneficiary species in the mixture communities, thereby the facilitation
-provided by the nurse exceeds the competition among beneficiary species. It
-resonates with coexistence theory stating that niche differentiation is key to
-achieve stable coexistence [@chesson_general_2000]. However, the positive effect
-of the nurse in mixture shifted to a negative effect in watered conditions, in
-accordance with the numerous studies showing that nurse-beneficiary net
-interactions shift from positive in stressful environments to negative in more
-benign environments [@bertness_positive_1994; @callaway_positive_2007;
-@graff_species_2017]. This shift toward a negative effect of the nurse could be
-held by two processes: watering improved the performance of beneficiaries in
-open microsites, but nurses were more efficient than beneficiary plants in
-consuming the added water in patch microsites through a more developed rooting
-system [@aguiar_competition_1994; @maestre_positive_2003]. Many dryland species quickly respond to
-water pulses, yet the differences in size and associated capacity for water
-uptake between an adult nurse plant and its neighbour saplings could explain
-that watering primarily benefited the nurse plant [@morcillo_interacting_2022],
-even resulting, as in our study, in negative net effects between the nurse and
+In contrast to monospecific beneficiary communities, we found that nurses had
+strong positive effects on plant survival and biomass in unwatered,
+species-diverse beneficiary communities. This could be explained by the lower
+competition experienced by the beneficiary species in species-diverse
+communities, what makes the facilitation provided by the nurse exceed the
+competition among beneficiary species. This is in line with  coexistence theory
+which states that niche differentiation is key to achieve stable coexistence
+[@chesson_general_2000]. However, we also found that the positive effect of the nurse in
+mixture shifted to a negative effect in watered conditions, in accordance with
+numerous studies showing that nurse-beneficiary net interactions shift from
+positive in stressful environments to negative in more benign environments
+[@bertness_positive_1994; @callaway_positive_2007;
+@graff_species_2017]. This shift
+toward a negative effect of the nurse could be due to two processes: watering
+improved the performance of beneficiaries in open microsites, or nurses were
+more efficient than beneficiary plants in consuming the added water in patch
+microsites through a more developed root system [@aguiar_competition_1994;
+@maestre_positive_2003]. Many dryland species respond quickly to water pulses,
+yet the differences in size and associated capacity for water uptake
+between an adult nurse plant and its neighbour saplings could explain that
+watering primarily benefited the nurse plant [@morcillo_interacting_2022], thus
+resulting, as in our study, in negative net effects between the nurse and
 beneficiary communities.
-
 
 ## Effects of nurse on functional traits
 
 We found that beneficiary communities followed less resource-conservative
-strategy (or a more resource-exploitative strategy) when being watered or in a
-nurse patch than when being not watered or in open sites. More specifically, we
-found that the LDMC of beneficiary communities decreased in watered microsites
-and in nurse patch microsites. At a broader scale, LDMC has been found to
-decrease  with increasing annual rainfall [@borgy_plant_2017]. Our results
-suggest that we can draw a parallel between the effects of being under a nurse
-and the increase in water resources, could be both related to lower water
-deficit. We further found an increase in the Specific Leaf Area of beneficiary
-communities in nurse patch sites, which might indicate as well the development
-of a less resource conservative strategy in nurse patches
-[@galmes_modulation_2005; @zhang_mechanisms_2015]. Another explanation is that
-decrease in LDMC and increase in SLA in nurse patches might be due to the
-shading effect of the nurse. Indeed, light reduction and shading can induce a
-compensation for the limited amount of radiation received and a common
-adaptation for understory plants [@pons_ecophysiological_1977;
-@ackerly_leaf_2002; @liu_does_2016; @yang_effects_2019]. We did not find that
-watering affects the SLA of beneficiary communities in open sites, but led to
-lower LDMC. It suggests that the response of leaf traits to the decrease of
-water stress in open sites did not imply leaf area, maybe because of the higher
-evapotranspiration in open sites, which might in turn promote the maintenance of
-the same specific leaf area (i.e. same SLA) despite less water stress. Overall,
-our results are consistent with previous results showing that decrease in water
-stress results in plant plastic responses toward higher SLA and lower LDMC
-[@galmes_modulation_2005; @zhang_mechanisms_2015; @jung_intraspecific_2014, but
-see @majekova_weak_2021]. However, the direct measurement of plant physiology
-activity would be necessary to conclude more definitively on the link between
-nurse presence, water stress and plant strategy. We did not find an effect of
-the species richness of beneficiary communities on average LDMC and SLA.
-It might be because functional traits are expected to respond to variations in
-species richness in terms of trait variance and overlap [@violle_return_2012;
+strategies (or more resource-exploitative strategies) when watered or in a nurse
+patch than when not watered or in open sites. Specifically, we found that the
+LDMC of beneficiary communities decreased in watered microsites and in nurse
+patch microsites. At biogeographic scales, LDMC has been found to decrease with
+increasing annual rainfall [@borgy_plant_2017]. Our results suggest that we can
+draw a parallel between the effects of being under a nurse and in sites with
+increased water resources, which are both characterised by lower water deficit.
+We further found an increase in the Specific Leaf Area (SLA) of beneficiary
+communities in nurse patches, which might also indicate a less
+resource-conservative strategy in nurse patches [@galmes_modulation_2005;
+@zhang_mechanisms_2015]. Another possible explanation could be that the decrease
+in LDMC and the increase in SLA in nurse patches might be due to the shading
+effect of the
+nurse. Such shading can induce a compensation for the limited amount of
+radiation received and is a common adaptation in understory plants [@pons_ecophysiological_1977;
+@ackerly_leaf_2002; @liu_does_2016; @yang_effects_2019]. We, however, did not
+find that watering affected the SLA of beneficiary communities in open sites,
+but did lead to lower LDMC. This result suggests that the response of leaf
+traits to the decrease in water stress in open sites did not imply changes in
+leaf area, possibly because of the higher evapotranspiration in open sites,
+which might constrain leaf area to small sizes despite lower water stress.
+Overall, our results are consistent with previous results showing that a
+decrease in water stress results in plant plastic responses toward higher SLA
+and lower LDMC [@galmes_modulation_2005; @zhang_mechanisms_2015; @jung_intraspecific_2014, but
+see @majekova_weak_2021]. However, a direct measurement of plant physiological
+activity would be needed to draw a stronger conclusion on the links among nurse
+presence, water stress, and plant strategy. We did not find an effect of species
+richness of beneficiary communities on average LDMC and SLA. This may be because
+functional traits are expected to respond to variations in species richness in
+terms of trait variance and overlap [@violle_return_2012;
 @danet_effects_2018] rather than in average values, which are expected to
 respond to environmental changes as we found in the present study
 [@enquist_scaling_2015; @danet_nurse_2017].
 
 ## Nurse increases complementarity effects in beneficiary communities
 
-Our results also provide insights on how species richness effects were
-partitioned in complementarity and selection effects. We found consistent net
-positive effects of species richness on beneficiary community biomass, driven by
-positive complementarity effects, contrasting with overall low selection
-effects. Overall, diversity net effects associated with selection were very low
-compared to complementarity effects, a result similar to previous findings in
-grasslands [@loreau_partitioning_2001; @fargione_selection_2007]. It indicates
-the positive effects of species richness on biomass are held by complementary
-effects rather than selection, suggesting that the processes linked to niche
-differentiation and facilitation play a more important role than the ones linked
-to competitive dominance. We further found that
-watering increased complementarity effects in open sites and that nurse
-increased complementarity effects in no watered sites, indicating again that there
-is a parallel between the effect in resource increase and nursing effects. We
-further found that in watered sites, the nurse did not increase complementarity
-effects in beneficiary communities compared to open sites, which can be related
-with the negative net effects of nurse on biomass found in watered diverse
-beneficiary communities.
+We found consistent net positive effects of species richness on beneficiary
+community biomass, driven solely by positive complementarity effects. Overall,
+diversity net effects associated with competitive hierarchy were very low
+compared to complementarity effects, a result that matches previous findings in
+grasslands [@loreau_partitioning_2001; @fargione_selection_2007]. This dominance of
+complementary effects rather than competitive hierarchy suggests that the
+processes linked to niche differentiation and facilitation play a more important
+role than the ones linked to competitive dominance. Watering increased
+complementarity effects in open sites and nursing increased complementarity
+effects in non-watered sites. This highlights, in a similar way to functional
+traits, the commonality in the effects of watering and nursing.
 
-However, we found that low water stress led to positive selection
-effects in open sites (compared to quasi neutral selection effects at low water
-stress level), i.e. that species that had higher biomass in monoculture had the
-higher biomass in diverse beneficiary communities. This result indicates that
-alleviation of water stress by watering results in the competitive dominance of
-species that have the higher biomass in monoculture, while higher water stress
-in control conditions suppresses this competitive dominance. It agrees with
-previous findings showing that even small changes in environmental conditions
-can result in a shift in the competitive hierarchy among species [@hillerislambers_how_2013;
-@alexander_when_2016; @van_dyke_small_2022].
-The negative selection effects found in nurse patches regardless of the
-water stress indicate that species that had the lower biomass in monoculture had
-the higher increase in biomass in mixture, suggesting that the more maladapted
-species benefited the most from being in a nurse patch. It resonates with
+
+Although lower than complementarity effects in magnitude, we found that the
+effects of nurse plants on selection effects differed from the ones of watering,
+such as nurse plants facilitated more the most drought-sensitive species
+(negative selection effects) while watering enhanced competitive hierarchy
+(positive selection effects). Lowering water stress through watering led to
+positive selection effects in open sites (compared to quasi neutral selection
+effects without watering), i.e. that species that had higher biomass in
+monoculture also had the higher increase in biomass in species-diverse
+beneficiary communities. This result indicates that the direct alleviation of
+water stress by watering results in the competitive dominance of species that
+already perform best in monoculture while drier, more stressful conditions
+suppress this competitive dominance. It agrees with previous findings showing
+that even small changes in environmental conditions can result in a shift in the
+competitive hierarchy among species [@morcillo_functional_2019;
+@alexander_when_2016; @van_dyke_small_2022]. The negative selection effects found in
+nurse patches regardless of the water stress indicate that species that had the
+lower biomass in monoculture had the higher increase in biomass in
+species-diverse communities, suggesting that the more maladapted species
+benefited the most from being in a nurse patch. This result lines up well with
 earlier findings showing that nurse plants can change the competitive hierarchy
 of beneficiary species [@schob_direct_2013; @michalet_disentangling_2015]
-and that mal-adapted species are the most facilitated species
-[@liancourt_stress_2005; @graff_species_2017]. Hence the use of nurse
-plants, might be a key to maintain the positive effects of biodiversity on
-ecosystem functioning by buffering  environmental stochasticity in environments
-that in environments that are expected to experience more and more extreme
-environmental variations [@jiang_importance_2008; @wright_overlooked_2017].
+and that mal-adapted species tend to be the most facilitated species
+[@liancourt_stress_2005; @graff_species_2017]. Hence, the use of nurse plants
+may be key to maintain the positive effects of biodiversity on ecosystem
+functioning, by buffering environmental stochasticity in ecosystems that are
+expected to experience increasing extreme environmental variations
+[@jiang_importance_2008; @wright_overlooked_2017].
 
 ## Facilitation potential to mitigate climate change effects on biodiversity
 
@@ -903,23 +904,44 @@ we could expect dramatic cascading effects in drylands communities
 
 # Conclusion and perspectives
 
-Our study suffers from some limits that might impede its generalisability. Here,
-diverse beneficiary communities were only composed of three species, which is a
-relatively low number of species compared to natural dryland communities, and we
-used a nurse plant, *Artemisia herba-alba*, which is known to produce phytotoxic
-compounds [@arroyo_phytotoxic_2018]; different results might be expected with a less
-inhibitory nurse plants. Another limit of our experiment is that it only lasts
-for one year because most saplings have died after the first summer. Therefore,
-predictions of nursing effects over a longer time are difficult to estimate,
-such as longer time scales might change effects of the nurse on complementarity
-and selection effects in beneficiary communities [@fargione_selection_2007]. However,
-our study reports a major role of the species richness of the  beneficiary
-communities in driving nurse net effects on survival and biomass. It indicates
+Our study reports a major role of the species richness of the beneficiary
+communities in driving nurse net effects on survival and biomass, suggesting
 that facilitation of beneficiary communities are more likely to happen to
-species diverse communities. Furthermore, our study shows that facilitation can
-maintain high complementarity effects and low selection effects despite water
-stress. Then, our study opens new perspectives on how facilitation acts on
-species diverse communities and contributes to integrate facilitation more
-explicitly into biodiversity and ecosystem functioning concepts.
+species-diverse communities. Furthermore, we report that facilitation can
+maintain high complementarity effects and alter competitive hierarchy among
+beneficiary species despite water stress, indicating a key role of facilitation
+in maintaining ecosystem functioning in stressful conditions. While our study
+stresses that species-diverse beneficiary communities might benefit more from
+facilitation provided by a nurse,  species-diverse beneficiary communities were
+of three species, so that the generality of our result should be confirmed with
+more species-diverse communities. Because most seedlings died after the first
+summer, our study precludes strong inference over dryland dynamics timescale. It
+is noteworthy, however, that the effects of species richness that we report
+about complementarity and competitive hierarchy are consistent with the critical
+findings in Biodiversity-Ecosystem Functioning [@loreau_partitioning_2001;
+@fargione_selection_2007] and facilitation [@liancourt_stress_2005] research.
+Our study opens up new perspectives on the mechanisms by which facilitation can
+improve the functioning of water-limited ecosystems and contributes to integrate
+facilitation more explicitly into biodiversity and ecosystem functioning
+concepts.
+
+Our study calls attention on the importance of facilitation in maintaining
+biodiversity and biomass production in ecosystems that are expected to become
+drier, as our results show that facilitation by nurse plants not only increase
+the survival of plants in their understorey, but also amplify the beneficial
+effects of species richness on biomass production. The potential of using
+facilitation as a restoration tool in drylands largely depends on the nurse and
+the beneficiary species [@fagundes_nurse-target_2022]. However, according to our
+results, facilitation by nurse shrubs could help species-rich transplanted
+communities to establish, by increasing the potential for niche differentiation
+and facilitation among beneficiary species. The drawback of relying on such
+keystone plants to maintain ecosystem functioning, is that if nurses come to be
+impacted by climate change and/or targeted by land-use change, then we could
+expect dramatic cascading effects in drylands communities
+[@losapio_resistance_2017]. This is the well-known  ‘double-edge sword’ effect
+of facilitation, where facilitation increases productivity and species richness
+but also comes at the cost of increased fragility for the corresponding
+ecological communities [@kefi_local_2007; @gross_positive_2008;
+@kefi_evolution_2008; @kefi_how_2016; @danet_indirect_2020].
 
 # References {-}
