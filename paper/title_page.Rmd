@@ -24,7 +24,7 @@ header-includes:
   - ISEM, CNRS, Univ. Montpellier, IRD, EPHE, Montpellier, France
   - Laboratory AMAP, IRD, University of Montpellier, CIRAD, CNRS,
   INRA, Montpellier, France
-  - Current address: School of Biosciences, Ecology and Evolutionary Biology, University of Sheffield, Western Bank, S10 2TN, Sheffield, UK
+  - Current address: School of Biosciences, University of Sheffield, S10 2TN, Sheffield, UK
 - Susana Bautista: Department of Ecology and IMEM, University of Alicante,
   Alicante, Spain
 - Alexandre Génin:
@@ -41,4 +41,4 @@ header-includes:
 
 # Corresponding author
 
-Alain Danet: a.h.danet@Sheffield.ac.uk
+Alain Danet: a.h.danet@sheffield.ac.uk

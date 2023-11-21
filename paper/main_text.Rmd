@@ -70,7 +70,7 @@ if (Sys.info()["login"] == "alain") {
 Climate change is expected to lead to a drier world, with more frequent and
 severe droughts, constituting a growing threat to biodiversity, especially in
 drylands. Positive plant-plant interactions, such as nurse plants facilitating
-beneficiary communities in their understory, could mitigate such climate-induced
+beneficiary communities in their understorey, could mitigate such climate-induced
 stress. However, testing the real-world relevance of nurse facilitation under
 drought requires accounting for interactions within the diverse beneficiary
 communities, which may reduce, or amplify the buffering effect of a nurse. Here,
@@ -116,7 +116,7 @@ interactions both respond to and shape responses to drought  is critical to
 predict the future of plant communities in a drier world.
 
 Drylands across the planet exhibit limited water availability for plants and
-animals. In drylands, plants referred to as “benefactors” or “nurses'' that
+animals. In drylands, plants referred to as "benefactors" or "nurses" that
 facilitate other plants (“beneficiaries”) are key drivers of community structure
 and functioning [@anthelme_positive_2007; @michalet_biotic_2006;
 @maestre_structure_2016]. Nurse plants can improve environmental conditions beneath
@@ -239,7 +239,7 @@ years from 2011 to 2020 in the region (Standardised Precipitation
 Evapotranspiration Index over one year, https://spei.csic.es/index.html). Soils
 are thin (20-50 cm), of silt-loam type (32% sand, 47% silt, 21% clay), and basic
 (pH = 8.7). The area is a mosaic of moderately steep slopes covered by
-alpha-grass (Stipa tenacissima) steppes and abandoned agricultural terraces
+alpha-grass (*Stipa tenacissima*) steppes and abandoned agricultural terraces
 built on the streambeds. The agricultural terraces in the study site were
 abandoned in the 80s and 90s and progressively colonised by forbs and shrubs
 (Fig. \@ref(fig:exp)a). The extant perennial vegetation is dominated by the
@@ -687,9 +687,8 @@ March, Fig. S1, Table S1). However, nurse patches were not found to result in
 higher soil moisture overall (4.0 95%CI:[3.1, 4.9] in nurse patch vs 4.0 [3.1,
 4.9] in open non-watered microsites in June, Fig. S1). We found that nurse patches had a
 temperature 3 celsius degrees lower than in the open at noon (32.3 [31.2, 33.5]
-vs 28.9
-[27.6, 30.1] in June, i.e. -11%, Fig. S1), and a Photosynthetic Active
-Radiation 100 Quantum.m^-2.s^-1 lower than in the open (255 [229, 280] vs 358
+vs 28.9 [27.6, 30.1] in June, i.e. -11%, Fig. S1), and a Photosynthetic Active
+Radiation 100 Quantum.$m^{-2}.s^{-1}$ lower than in the open (255 [229, 280] vs 358
 [333, 383] in June, i.e. -29%, Fig. S1).
 
 
@@ -814,7 +813,7 @@ resource-conservative strategy in nurse patches [@galmes_modulation_2005;
 in LDMC and the increase in SLA in nurse patches might be due to the shading
 effect of the
 nurse. Such shading can induce a compensation for the limited amount of
-radiation received and is a common adaptation in understory plants [@pons_ecophysiological_1977;
+radiation received and is a common adaptation in understorey plants [@pons_ecophysiological_1977;
 @ackerly_leaf_2002; @liu_does_2016; @yang_effects_2019]. We, however, did not
 find that watering affected the SLA of beneficiary communities in open sites,
 but did lead to lower LDMC. This result suggests that the response of leaf
@@ -897,7 +896,7 @@ potential restoration tool in drylands largely depends on the nurse and the
 beneficiary target species [@fagundes_nurse-target_2022]. However,
 according to our results, facilitation by nurse shrubs could help to establish
 species-rich transplanted communities by increasing the potential for niche
-differentiation and facilitation among beneficiary species. However, if nurses
+differentiation and facilitation among beneficiary species. But, if nurses
 come to be impacted by climate change and/or targeted by land-use change, then
 we could expect dramatic cascading effects in drylands communities
 [@losapio_resistance_2017].
