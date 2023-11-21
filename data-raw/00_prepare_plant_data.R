@@ -10,12 +10,16 @@ library(tidyverse)
 library(stringr)
 library(testthat)
 library(magrittr)
+library(here)
 
 # Load data
-january <- read_csv2("data/raw/data_january_plant.csv") %>% mutate(date = "jan")
-march <- read_csv2("data/raw/data_mars_plant.csv") %>% mutate(date = "mar")
-june <- read_csv2("data/raw/data_juin_plant.csv") %>% mutate(date = "jun")
-november <- read_csv2("data/raw/data_nov_plant.csv") %>%
+january <- read_csv2(here("data-raw/data_january_plant.csv")) %>%
+  mutate(date = "jan")
+march <- read_csv2(here("data-raw/data_mars_plant.csv")) %>%
+  mutate(date = "mar")
+june <- read_csv2(here("data-raw/data_juin_plant.csv")) %>%
+  mutate(date = "jun")
+november <- read_csv2(here("data-raw/data_nov_plant.csv")) %>%
   mutate(date = "nov")
 # The tableare quite different
 

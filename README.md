@@ -1,99 +1,31 @@
-###############################
-Overview of the Project
-###############################
+# Effect of species richness and nursing in drylands
 
-# To do
+This repository contains all the data analysis for the manuscript entitled
+"Species diversity promotes facilitation under stressful conditions" submitted
+to Oikos.
 
-- [ ] `./R/`: add documentation to functions 
-- [ ] `./R/`: add stopifnot conditions
-- [ ] `./tests/`: add tests to functiqns 
+## Repository structure
 
-# Resume
+### Raw data
 
-The goal of this project is to investigate the modulation of shrub-saplings
-interactions at the community scale.
+The raw data files have been curated in two scripts located under `data-raw`
+folder:
+- `00_prepare_plant_data.R`
+- `01_prepare_trait_data.R`
 
-We set up an experiment near Murcia in collaboration with the group of the
-professor Susana Bautista of the University of Alicante.
+The raw data can be found on Zenodo: https://doi.org/10.5281/zenodo.10171339
 
-This git repository contains all the datas and codes needed to compute the
-analysis.
+### Data analysis
 
-# How to 
+The curated data have been then analyzed using the R package `targets` to ensure
+that the analysis are reproducible and up to date.
 
-# Structure of the repository
+The code performing the analysis and producing the plots can be found in
+`uncheck_targets.Rmd`.
 
-The structure of the repo was inspired from the
-[`rrtools`](https://github.com/benmarwick/rrtools) and the book of Hadley
-Wickham on creating [`R package`](http://r-pkgs.had.co.nz/), especially to
-organize the [`data set`](http://r-pkgs.had.co.nz/data.html#data-extdata).
+### Manuscript
 
-  . thesis_chap2_alicante
-    ├── data
-    │   ├── processed
-    │   └── raw
-    │       ├── leafs
-    │       │   ├── mars
-    │       │   └── t0
-    │       ├── mart
-    │       ├── pilot
-    │       └── scan_data
-    ├── figures
-    ├── inst
-    │   ├── doc
-    │   └── examples
-    │       ├── concept
-    │       ├── mart
-    │       └── pilot
-    ├── R
-    └── tests
+- Main text: `paper/main_text.Rmd`
+- Supplementary information: `paper/supplementary_figures.Rmd`
+- Figures: `paper/graphics/`
 
-## data-raw
-
-The raw data are the same than the ones that were recorded on the datasheets.
-
-The raw data had been processed in order to analyze them. The procedures used
-can be found in this file:
-
-- [`00_prepare_plant_data.r`](./data-raw/00_prepare_plant_data.r)
-
-The raw data are not supposed to be used directly. Use the processed data instead as
-described in the next subsection.  
-
-## data
-
-This folder contains all the processed data from the experiment. 
-The processed files are in `.rda` format.
-
-Once the package is loaded, you can directly load them by running for example:
-
-     data(holes_data) 
-
-## figures
-
-All the figures produced by the `rmarkdown` files are found in this folder.
-
-## inst 
-
-This folder contains the `rmarkdown` files that performs the analysis of the
-datas.
-
-The sub folder `examples` contains rmd performing exploratory analysis.
-
-The sub folder `doc` contains all the analysis that will be included in the
-paper.
-
-## R
-
-This folder contains all the functions that are used in the analysis.
-
-## tests
-
-This folder contains the tests of the functions that are placed in the R
-subfolder.
-
-
-# To do list
-
-- [ ] document data files
-- [ ] put script in function
