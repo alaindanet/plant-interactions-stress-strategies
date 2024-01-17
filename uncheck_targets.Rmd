@@ -1559,6 +1559,170 @@ Sys.setlocale("LC_ALL", "en_GB.utf8")
 ```
 
 ```{r}
+library(terra)
+#install.packages("tidyterra")
+library(tidyterra)
+library(ggspatial)
+r <- rast("~/Téléchargements/Global-AI_ET0_v3_annual/ai_v3_yr.tif")
+lay
+crs(r)
+```
+
+```{r}
+library(sp)
+# Site coordinates:
+# 37°57’33“N, 1°00’17”W
+lat <- "37d57m33sN"
+long <- "1d00m17sW"
+lat_d <- char2dms(lat, chd='d', chm='m', chs='s') %>% as.numeric()
+long_d <- char2dms(long, chd='d', chm='m', chs='s') %>% as.numeric()
+longlat <- cbind(longitude = long_d, latitude = lat_d)
+site_pt <- vect(longlat)
+crs(site_pt) <- crs(r)
+murcia_pt <- vect(cbind(-1.130278, 37.986111))
+pts_df <- tibble(
+  name = c("Murcia", "Study site"),
+  long = c(-1.130278, long_d),
+  lat = c(37.986111, lat_d),
+
+)
+pts <- vect(as_data_frame(pts_df), geom = c("long", "lat"), keepgeom = TRUE)
+crs(pts) <- crs(r)
+```
+
+```{r}
+```
+
+
+```{r}
+plot(r)
+points(site_pt)
+bounding_box <- ext(-9.39288367353, 3.03948408368, 35.946850084, 43.7483377142)
+r1 <- crop(r, bounding_box)
+x <- subst(r1, 0, NA)
+plot(x)
+values(x)  <- values(x) / 10000
+plot(x, col = grDevices::heat.colors(50))
+points(site_pt, col = "red")
+
+points(murcia_pt)
+```
+
+```{r}
+#https://www.painblogr.org/2020-12-15-climate-change.html
+get_ai_class <- function(layer) {
+  case_when(
+    is.infinite(layer) ~ 'Humid',
+    layer >= 0.65 ~ 'Humid',
+    layer >= 0.5 & layer < 0.65 ~ 'Dry sub-humid',
+    layer >= 0.2 & layer < 0.5 ~ 'Semi-arid',
+    layer >= 0.05 & layer < 0.2 ~ 'Arid',
+    layer < 0.05 ~ 'Hyper-arid'
+  )
+}
+x_c <- x
+values(x_c) <- get_ai_class(values(x_c))
+
+col_fao <- c('#e31a1c', '#fd8d3c', '#fecc5c', '#ffffb2', '#666666')
+names(col_fao) <- rev(c("Humid", "Dry sub-humid", "Semi-arid", "Arid", "Hyper-arid"))
+```
+
+```{r}
+p <- ggplot() +
+  geom_spatraster(data = x_c) +
+  scale_fill_manual(
+    name = "Aridity index",
+    values = col_fao,
+    limits = names(col_fao),
+    na.value = NA) +
+  geom_spatvector(
+         data = pts,
+         nudge_x = NULL,nudge_y = NULL,
+         aes(color = name, label = name),
+         size = 2,
+         alpha = 1, vjust = 1, hjust = -0.25
+       ) +
+     scale_color_manual(values = c("Murcia" = "white", "Study site" = "black")) +
+    theme_void() +
+    theme(
+       legend.position = c(.97, .03),
+       legend.justification = c("right", "bottom"),
+       legend.box.just = "right",
+       legend.margin = margin(6, 6, 6, 6)
+    )
+ggsave_multiple(
+  paste0("map_aridity", c(".png", ".pdf")),
+  plot = p + guides(color = "none"),
+  path = here("paper", "graphics"),
+  scale = 1.5,
+  width = 80,
+  height = 80 * .8,
+  units = "mm",
+  dpi = 400)
+```
+
+
+
+```{r}
+p <- ggplot() +
+  geom_spatraster(data = x) +
+  scale_fill_whitebox_c(
+    palette = "muted",
+    direction = -1,
+    #labels = scales::label_number(suffix = "º"),
+    n.breaks = 20,
+    guide = guide_legend(reverse = FALSE)
+  ) +
+  geom_spatvector(
+         data = pts,
+         nudge_x = NULL,nudge_y = NULL,
+         aes(color = name, label = name),
+         alpha = 1, vjust = 1, hjust = -0.25
+       ) +
+  annotation_scale(
+    height = unit(0.015, "npc"),
+    width_hint = 0.5,
+    pad_x = unit(0.07, "npc"),
+    pad_y = unit(0.07, "npc"),
+    text_cex = .8
+  )
+
+#p +
+#  coord_sf(xlim = c(-1.5, -0.5), ylim = c(37.7, 38.2), expand = FALSE)
+ggsave_multiple(
+  paste0("map_aridity", c(".png", ".pdf")),
+  plot = p +
+    coord_sf(
+      xlim = c(-10, 1),
+      ylim = c(36.0, 43),
+      expand = FALSE),
+  path = here("paper", "graphics"),
+  scale = 2.4,
+  width = 80,
+  height = 80 * 1,
+  units = "mm",
+  dpi = 400)
+```
+
+```{r}
+plot(x)
+points(pts[1])
+points(pts[2])
+bounding_box_site <- ext(-1.5, -0.5, 37.7, 38.2)
+r1_site <- crop(r, bounding_box_site)
+x_site <- subst(r1_site, 0, NA)
+plot(x_site)
+values(x_site) <- values(x_site) / 10000
+```
+
+```{r}
+plot(x_site)
+points(pts)
+```
+
+
+
+```{r}
 tar_load(c(p_surv_pp_ci, p_bm_pp_ci))
 p_surv_pp_ci +
   scale_color_manual(values = wet_dry_color()) +
