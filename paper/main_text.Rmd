@@ -243,7 +243,7 @@ Mediterranean with a very high year to year variability. Mean annual rainfall is
 283mm and mean annual temperature is 18.2°C [Murcia Meteorological Station,
 period 1960-2017, @paniagua_aridity_2019]. The experiment was conducted in 2016,
 within a long drought period in the region that was particularly severe for the
-water years 2013-2016, which received 543.5 of total rainfall (64% of the
+water years 2013-2016, which received 543.5mm of total rainfall (64% of the
 long-term average) and experienced a mean annual temperature of 20°C, almost 2
 °C above the long-term average (Meteorological State Agency, AEMET).
 The Standardised Precipitation Evapotranspiration Index (SPEI), a proxy for
@@ -348,7 +348,7 @@ all terraces equally), which provided excellent initial moisture conditions for
 the planted saplings. The holes were randomly attributed to the different
 treatments. The saplings composing the beneficiary communities were about 6
 months at the time of transplantation and were grown from a local seed bank in the open air in a
-nursery(Viveros Muzalé S.L., www.viverosmuzale.com). They were grown in controlled wet conditions in 200 ml containers with a
+nursery (Viveros Muzalé S.L., www.viverosmuzale.com). They were grown in controlled wet conditions in 200 ml containers with a
 mixture of peat and coconut fibre, containing several individuals of the same
 species. Plants were bought in small pots. Each hole received one beneficiary
 community of three plants. We planted three pots per hole, following a
