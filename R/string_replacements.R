@@ -47,7 +47,7 @@ species_replacement <- function(type = "short") {
     "pistachia" = "Pistacia"
   )
   species <- c(
-    "anthyllis" = "citisoides",
+    "anthyllis" = "cytisoides",
     "dorycnium" = "pentaphyllum",
     "pistacia" = "lentiscus",
     "pistachia" = "lentiscus"

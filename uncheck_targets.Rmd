@@ -135,8 +135,31 @@ list(
 )
 ```
 
+```{r test-pred, eval=FALSE}
+tar_load(surv_data_modelling)
+tot_pred <- get_pred_data(x = surv_data_modelling,
+    predictor = c("com", "ms", "watering", "species", "duration_m", "ter",
+      "label"))
+ter_pred <- get_pred_data(
+  x = surv_data_modelling,
+  predictor = c("com", "ms", "watering", "species", "duration_m", "ter")
+  ) %>%
+select(-label) %>%
+left_join(distinct(surv_data_modelling, ter, label))
+unique(ter_pred$label)
+summary(ter_pred)
+head(ter_pred)
+simple_pred <- get_pred_data(x = surv_data_modelling,
+    predictor = c("com", "ms", "watering", "species", "duration_m"))
+nrow(tot_pred) / nrow(simple_pred)
+tar_load(pred_var)
+pred_var[pred_var != "label"]
+```
+
+
 ```{targets data_modelling, eval = TRUE}
 list(
+  tar_target(n_sampling, 100),
   tar_target(surv_data_modelling,
     surv_data %>%
       mutate(
@@ -147,8 +170,15 @@ list(
         IDtli = seq_len(nrow(surv_data))
       )
   ),
+  tar_target(pred_var, c("com", "ms", "watering", "species", "duration_m", "ter", "label")),
   tar_target(pred_surv_data, get_pred_data(x = surv_data_modelling,
     predictor = c("com", "ms", "watering", "species", "duration_m"))),
+  tar_target(pred_surv_data_exp, get_pred_data(
+  x = surv_data_modelling,
+  predictor = pred_var[pred_var != "label"]
+  ) %>%
+select(-label) %>%
+left_join(distinct(surv_data_modelling, ter, label))),
   tar_target(surv_data_modelling_scaled,
     surv_data_modelling %>%
       mutate(across(biomass_trait, ~scale(.x, center = TRUE, scale = TRUE)[,1])) %>%
@@ -266,7 +296,7 @@ tar_target(inla_surv_perc, inla_surv_effects %>%
 ),
 tar_target(inla_surv_pred,
   inla_surv_model$summary.fitted.values[(nrow(surv_data_modelling) + 1):nrow(inla_surv_model$summary.fitted.values),] %>%
-    cbind(pred_surv_data[, c("duration_m", "ms", "com", "watering", "species")]) %>%
+    cbind(pred_surv_data[, pred_var]) %>%
     as_tibble()
     ),
 tar_target(inla_surv_sp_effects, get_hpdmarginal_inla(inla_surv_sp_model, type = "fixed")),
@@ -288,7 +318,7 @@ tar_target(inla_surv_sp_pred,
 
 ```{targets model-biomass-trait, eval = TRUE}
 list(
-  tar_target(biomass_trait, c("d", "h", "hm", "bm")),
+  tar_target(biomass_trait, c("d", "h", "bm")),
   tar_target(bm_inla,
     tibble(
       response = biomass_trait,
@@ -310,7 +340,7 @@ list(
     bm_inla %>%
       mutate(pred = map(mod,
           ~.x$summary.fitted.values[(nrow(surv_data_modelling) + 1):nrow(.x$summary.fitted.values),] %>%
-        cbind(pred_surv_data[, c("duration_m", "ms", "com", "watering", "species")]) %>%
+        cbind(pred_surv_data[, pred_var]) %>%
         as_tibble())) %>%
     select(-mod) %>%
     unnest(cols = c(pred))
@@ -355,7 +385,7 @@ list(
     bm_inla_sp %>%
       mutate(pred = map(mod,
           ~.x$summary.fitted.values[(nrow(surv_data_modelling) + 1):nrow(.x$summary.fitted.values),] %>%
-        cbind(pred_surv_data[, c("duration_m", "ms", "com", "watering", "species")]) %>%
+        cbind(pred_surv_data[, pred_var]) %>%
         as_tibble())) %>%
     select(-mod) %>%
     unnest(cols = c(pred))
@@ -839,7 +869,7 @@ list(
         ~inla_sampling_from_pred(
         model = .x,
         pred_data = pred_surv_data,
-        nsamp = 1000)
+        nsamp = n_sampling)
       )
       )),
   tar_target(bm_inla_pred_samp,
@@ -850,7 +880,7 @@ list(
         mutate(level = "species")
       ) %>%
     mutate(samp = map(mod,
-        ~inla_sampling_from_pred(model = .x, pred_data = pred_surv_data, nsamp = 1000)
+        ~inla_sampling_from_pred(model = .x, pred_data = pred_surv_data, nsamp = n_sampling)
       )
       ) %>%
     select(-mod)
@@ -863,7 +893,7 @@ tar_target(leaf_inla_pred_samp,
       mutate(level = "species")
     ) %>%
   mutate(samp = map(mod,
-      ~inla_sampling_from_pred(model = .x, pred_data = pred_surv_data, nsamp = 1000)
+      ~inla_sampling_from_pred(model = .x, pred_data = pred_surv_data, nsamp = n_sampling)
     )
     ) %>%
   select(-mod)
@@ -1353,6 +1383,14 @@ list(
 )
 ```
 
+```{r, eval = FALSE}
+tar_load(c(bm_inla_pred_samp, pred_surv_data))
+bm_inla_pred_samp %>%
+  filter(response == "bm", level == "community") %>%
+  unnest(cols = c(samp))
+```
+
+
 ```{targets}
 list(
   tar_target(partition_pred_bm,
@@ -1423,7 +1461,7 @@ list(
     as_tibble() %>%
     mutate(
       sampling = map(fitted,
-        ~tibble(value = inla.rmarginal(1000, .x), rep = 1:length(value))
+        ~tibble(value = inla.rmarginal(n_sampling, .x), rep = 1:length(value))
       )
       ) %>%
     select(-fitted) %>%
@@ -1542,7 +1580,7 @@ tar_make(envir = parent.frame())
 
 # Output
 
-```{r}
+```{r output}
 library(targets)
 library(tidyverse)
 library(magrittr)
@@ -1558,13 +1596,14 @@ source(here::here("R","plot.r"))
 Sys.setlocale("LC_ALL", "en_GB.utf8")
 ```
 
+
+
 ```{r}
 library(terra)
 #install.packages("tidyterra")
 library(tidyterra)
 library(ggspatial)
 r <- rast("~/Téléchargements/Global-AI_ET0_v3_annual/ai_v3_yr.tif")
-lay
 crs(r)
 ```
 
@@ -1591,21 +1630,19 @@ crs(pts) <- crs(r)
 ```
 
 ```{r}
-```
-
-
-```{r}
 plot(r)
 points(site_pt)
 bounding_box <- ext(-9.39288367353, 3.03948408368, 35.946850084, 43.7483377142)
 r1 <- crop(r, bounding_box)
 x <- subst(r1, 0, NA)
 plot(x)
-values(x)  <- values(x) / 10000
-plot(x, col = grDevices::heat.colors(50))
-points(site_pt, col = "red")
-
-points(murcia_pt)
+x1 <- disagg(x, 5, method="bilinear")
+plot(x1)
+values(x)  <- round(values(x) / 10000, 2)
+values(x1)  <- round(values(x1) / 10000, 2)
+plot(x1, col = grDevices::heat.colors(50))
+points(pts, col = "red")
+points(pts)
 ```
 
 ```{r}
@@ -1620,8 +1657,15 @@ get_ai_class <- function(layer) {
     layer < 0.05 ~ 'Hyper-arid'
   )
 }
-x_c <- x
-values(x_c) <- get_ai_class(values(x_c))
+
+sum(is.nan(values(x1)))
+sum(!is.nan(values(x1)))
+nan_x1 <- is.nan(values(x1))
+#x_c <- app(x1, fun=get_ai_class)
+x_c <- rast(ncol=ncol(x1), nrow=nrow(x1))
+x_c <- x1
+values(x_c) <- NA
+values(x_c)[!nan_x1] <- get_ai_class(values(x1)[!nan_x1])
 
 col_fao <- c('#e31a1c', '#fd8d3c', '#fecc5c', '#ffffb2', '#666666')
 names(col_fao) <- rev(c("Humid", "Dry sub-humid", "Semi-arid", "Arid", "Hyper-arid"))
@@ -1639,65 +1683,33 @@ p <- ggplot() +
          data = pts,
          nudge_x = NULL,nudge_y = NULL,
          aes(color = name, label = name),
-         size = 2,
+         size = 1,
          alpha = 1, vjust = 1, hjust = -0.25
        ) +
      scale_color_manual(values = c("Murcia" = "white", "Study site" = "black")) +
-    theme_void() +
+    theme_map() +
     theme(
-       legend.position = c(.97, .03),
-       legend.justification = c("right", "bottom"),
-       legend.box.just = "right",
-       legend.margin = margin(6, 6, 6, 6)
+      legend.title = element_blank(),
+      legend.position = c(.03, .97),
+      legend.justification = c("left", "top"),
+      legend.box.just = "left",
+      legend.margin = margin(1, 1, 1, 1),
+      legend.text = element_text(size = 8),
+      legend.background = element_rect(fill = "white")
     )
 ggsave_multiple(
   paste0("map_aridity", c(".png", ".pdf")),
-  plot = p + guides(color = "none"),
-  path = here("paper", "graphics"),
-  scale = 1.5,
-  width = 80,
-  height = 80 * .8,
-  units = "mm",
-  dpi = 400)
-```
-
-
-
-```{r}
-p <- ggplot() +
-  geom_spatraster(data = x) +
-  scale_fill_whitebox_c(
-    palette = "muted",
-    direction = -1,
-    #labels = scales::label_number(suffix = "º"),
-    n.breaks = 20,
-    guide = guide_legend(reverse = FALSE)
-  ) +
-  geom_spatvector(
-         data = pts,
-         nudge_x = NULL,nudge_y = NULL,
-         aes(color = name, label = name),
-         alpha = 1, vjust = 1, hjust = -0.25
-       ) +
-  annotation_scale(
-    height = unit(0.015, "npc"),
-    width_hint = 0.5,
-    pad_x = unit(0.07, "npc"),
-    pad_y = unit(0.07, "npc"),
-    text_cex = .8
-  )
-
-#p +
-#  coord_sf(xlim = c(-1.5, -0.5), ylim = c(37.7, 38.2), expand = FALSE)
-ggsave_multiple(
-  paste0("map_aridity", c(".png", ".pdf")),
   plot = p +
-    coord_sf(
-      xlim = c(-10, 1),
-      ylim = c(36.0, 43),
-      expand = FALSE),
+    guides(
+      color = "none",
+      fill = guide_legend(
+        title = NULL,
+        keywidth = unit(.3, "cm"),
+        keyheight = unit(.1, "cm"),
+      )
+    ),
   path = here("paper", "graphics"),
-  scale = 2.4,
+  scale = 1.0,
   width = 80,
   height = 80 * 1,
   units = "mm",
@@ -1705,21 +1717,119 @@ ggsave_multiple(
 ```
 
 ```{r}
-plot(x)
-points(pts[1])
-points(pts[2])
-bounding_box_site <- ext(-1.5, -0.5, 37.7, 38.2)
-r1_site <- crop(r, bounding_box_site)
-x_site <- subst(r1_site, 0, NA)
-plot(x_site)
-values(x_site) <- values(x_site) / 10000
+library(viridis)
+p_aridity_index_map <- ggplot() +
+  geom_spatraster(data = x1) +
+  scale_fill_viridis(
+    name = "Aridity\nindex",
+    na.value = NA,
+    option = "turbo",
+    begin = 0,
+    end = 1,
+    direction = -1,
+    ) +
+  geom_spatvector(
+         data = pts,
+         nudge_x = NULL,nudge_y = NULL,
+         aes(color = name, label = name),
+         size = 1,
+         alpha = 1, vjust = 1, hjust = -0.25
+       ) +
+     scale_color_manual(values = c("Murcia" = "white", "Study site" = "black")) +
+  theme_map() +
+  theme(
+    #legend.title = element_blank(),
+    legend.position = c(.03, .97),
+    legend.justification = c("left", "top"),
+    legend.box.just = "left",
+    legend.margin = margin(1, 1, 1, 1),
+    legend.text = element_text(size = 8),
+    legend.title = element_text(size = 8),
+    legend.background = element_rect(fill = "white")
+  )
+ggsave_multiple(
+  paste0("map_aridity", c(".png", ".pdf")),
+  plot = p_aridity_index_map +
+    guides(color = "none"),
+  path = here("paper", "graphics"),
+  scale = 1.0,
+  width = 80,
+  height = 80 * 1,
+  units = "mm",
+  dpi = 400)
+```
+
+
+```{r}
+extract(x1, pts, fun=NULL, method="simple")
+```
+
+
+```{r}
+library(lubridate)
+# From https://spei.csic.es/map/maps.html#months=4#month=10#year=2016
+spei <- read_csv("~/Téléchargements/SPEI_37.75_-1.25.csv")
 ```
 
 ```{r}
-plot(x_site)
-points(pts)
-```
+spei_long <- spei %>%
+  mutate(date = my(DATA)) %>%
+  filter(date > "1951-01-01") %>%
+  select(date, SPEI_1, SPEI_3, SPEI_6, SPEI_12, SPEI_24) %>%
+  pivot_longer(-date, names_to = "duration", values_to = "spei") %>%
+  mutate(month = as.integer(str_extract(duration, "\\d{1,2}")))
+max(spei_long$date)
+min(spei_long$date)
+spei_filtered <- spei_long %>%
+  filter(date >= "2015-11-01" & date <= "2016-11-01")
+spei_filtered %>%
+  group_by(month) %>%
+  summarise(
+    avg = mean(spei),
+    med = median(spei)
+  )
 
+## Highlight dates from the experimental set-up to final measurement
+experiment_date_range <- tibble(
+  x1 = ymd("2015-11-01"), x2 = ymd("2016-11-01"),
+  y1 = -Inf, y2 = +Inf
+)
+paste0(unique(spei_long$month), " month")
+p_spei <- spei_long %>%
+  filter(month %in% c(3, 6, 12)) %>%
+  mutate(month = factor(month, labels = paste0(unique(month), " months"))) %>%
+  ggplot(aes(x = date, y = spei)) +
+  geom_line(color = "darkblue") +
+  geom_area(fill = "lightblue") +
+  geom_rect(
+    data = experiment_date_range,
+    inherit.aes = FALSE,
+    mapping = aes(xmin = x1, xmax = x2,
+      ymin = y1, ymax = y2),
+    color = "transparent",
+    fill = "blue",
+    alpha = .2) +
+  coord_cartesian(expand = FALSE) +
+  geom_hline(yintercept = 0) +
+  scale_color_viridis_d() +
+  facet_grid(rows = vars(month)) +
+  labs(x = "Date", y = "SPEI", color = "Month\nspan") +
+  ylim(-2, 2) +
+  theme_bw()
+ggsave_multiple(
+  paste0("p_spei", c(".png", ".pdf")),
+  plot = p_spei + guides(
+      color = guide_legend(
+        keywidth = unit(.3, "cm"),
+        keyheight = unit(.2, "cm"),
+      )),
+  path = here("paper", "graphics"),
+  scale = 2.4,
+  width = 80,
+  height = 80 * .6,
+  units = "mm",
+  dpi = 400)
+```
 
 
 ```{r}
@@ -1787,18 +1897,28 @@ ggsave_multiple(
 ```
 
 ```{r}
-fig3_alt <- p_effect_trait +
-  theme(legend.justification = c("center", "bottom"))
+tar_load(c(leaf_inla_effects_scaled, term2rm))
+fig3_alt <- plot_inla_fixed_effect(
+  leaf_inla_effects_scaled %>%
+    mutate(response = toupper(response)),
+  term_to_rm = term2rm
+  ) +
+labs(x = "Standardised coefficients", color = "Leaf trait") +
+facet_grid(cols = vars(response)) +
+scale_color_manual(values = c("black", "black")) +
+guides(color = "none") +
+theme(axis.title.y = element_blank())
 ggsave_multiple(
   paste0("fig3_alt", c(".png", ".pdf")),
   plot = fig3_alt,
   path = here("paper", "graphics"),
-  scale = 1.2,
+  scale = 2.4,
   width = 80,
-  height = 80 * 1.05,
+  height = 80 * .5,
   units = "mm",
   dpi = 400)
 ```
+
 
 ```{r}
 ggsave_multiple(
@@ -2195,15 +2315,19 @@ env_inla_pred %>%
 ## Environmental variables
 
 ```{r}
-tar_load(env_plot)
+tar_load(c(env_plot, date_nb_month))
+not_march <- date_nb_month$date[date_nb_month$date != "2016-03-01"]
+
 ggsave_multiple(
   paste0("p_env_raw_data", c(".png", ".pdf")),
-  plot = env_plot + theme(legend.position = "bottom"),
+  plot = env_plot +
+    scale_x_date(date_labels = "%b", breaks = not_march) +
+    theme(legend.position = "bottom"),
   path = here("paper", "graphics"),
   scale = 2.4,
   dpi = 400,
   width = 80,
-  height = 80 * .5,
+  height = 80 * .4,
   units = "mm")
 ```
 
@@ -2218,6 +2342,7 @@ p_pred_bm <- biomass_t0 %>%
   ) %>%
   ggplot(aes(x = bm_total, y = bm_total_pred, color = species)) +
   geom_point() +
+  scale_color_manual(values = species_color()) +
   geom_abline(slope = 1, intercept = 0) +
   labs(
     y = "Predicted total biomass",
@@ -2231,7 +2356,7 @@ ggsave_multiple(
   paste0("p_pred_bm", c(".png", ".pdf")),
   plot = p_pred_bm,
   path = here("paper", "graphics"),
-  scale = 2.0,
+  scale = 1.4,
   dpi = 400,
   width = 80,
   height = 80 * 1,
@@ -2250,6 +2375,7 @@ p_bm_d_effect <- plot_inla_fixed_effect(ti,
   intercept = 0,
   term_to_rm = c(tar_read(term2rm), "duration_m", "I(duration_m^2)")
   ) +
+  scale_color_manual(values = setNames(species_color(), NULL)) +
   labs(x = "Standardised coefficients", color = "Variable") +
   theme(
     axis.title.y = element_blank(),
@@ -2514,6 +2640,17 @@ ggsave(
   units = "mm",
   dpi = "print"
 )
+```
+
+## TEST
+
+```{r}
+tar_load(pp_int_global)
+tar_load(bm_inla_pred_samp)
+tar_load(inta_bm_pred)
+bm_inla_pred_samp %>%
+      filter(response == "bm") %>%
+      unnest(samp)
 ```
 
 
