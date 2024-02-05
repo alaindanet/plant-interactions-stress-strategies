@@ -308,7 +308,7 @@ tar_target(inla_surv_sp_perc, inla_surv_sp_effects %>%
 ),
 tar_target(inla_surv_sp_pred,
   inla_surv_sp_model$summary.fitted.values[(nrow(surv_data_modelling) + 1):nrow(inla_surv_sp_model$summary.fitted.values),] %>%
-    cbind(pred_surv_data[, c("duration_m", "ms", "com", "watering", "species")]) %>%
+    cbind(pred_surv_data[, pred_var]) %>%
     as_tibble()
   )
 )
@@ -1383,14 +1383,6 @@ list(
 )
 ```
 
-```{r, eval = FALSE}
-tar_load(c(bm_inla_pred_samp, pred_surv_data))
-bm_inla_pred_samp %>%
-  filter(response == "bm", level == "community") %>%
-  unnest(cols = c(samp))
-```
-
-
 ```{targets}
 list(
   tar_target(partition_pred_bm,
@@ -1599,11 +1591,12 @@ Sys.setlocale("LC_ALL", "en_GB.utf8")
 
 
 ```{r}
+# Do not work in a pipe bc of external pointer of raster
 library(terra)
 #install.packages("tidyterra")
 library(tidyterra)
 library(ggspatial)
-r <- rast("~/Téléchargements/Global-AI_ET0_v3_annual/ai_v3_yr.tif")
+r <- rast(here::here("data-raw/Global-AI_ET0_v3_annual/ai_v3_yr.tif"))
 crs(r)
 ```
 
@@ -1635,14 +1628,9 @@ points(site_pt)
 bounding_box <- ext(-9.39288367353, 3.03948408368, 35.946850084, 43.7483377142)
 r1 <- crop(r, bounding_box)
 x <- subst(r1, 0, NA)
-plot(x)
 x1 <- disagg(x, 5, method="bilinear")
-plot(x1)
 values(x)  <- round(values(x) / 10000, 2)
 values(x1)  <- round(values(x1) / 10000, 2)
-plot(x1, col = grDevices::heat.colors(50))
-points(pts, col = "red")
-points(pts)
 ```
 
 ```{r}
@@ -1670,6 +1658,20 @@ values(x_c)[!nan_x1] <- get_ai_class(values(x1)[!nan_x1])
 col_fao <- c('#e31a1c', '#fd8d3c', '#fecc5c', '#ffffb2', '#666666')
 names(col_fao) <- rev(c("Humid", "Dry sub-humid", "Semi-arid", "Arid", "Hyper-arid"))
 ```
+
+```{r save-maps}
+writeRaster(
+  x_c,
+  filename = here("data", "ai_crop_class.tif"),
+  overwrite = TRUE)
+writeRaster(
+  x1,
+  filename = here("data", "ai_crop.tif"),
+  overwrite = TRUE)
+site_coord <- longlat
+save(site_coord, file = here("data", "site_coord"))
+```
+
 
 ```{r}
 p <- ggplot() +
@@ -1761,7 +1763,7 @@ ggsave_multiple(
 
 
 ```{r}
-extract(x1, pts, fun=NULL, method="simple")
+extract(x1, pts, fun = NULL, method = "simple")
 ```
 
 
@@ -1935,7 +1937,7 @@ ggsave_multiple(
 
 
 ```{r}
-tar_load(c(p_int_global_surv, p_int_global_bm))
+tar_load(c(p_surv, p_int_global_surv, p_int_global_bm))
 fig_effect_int <- plot_grid(
   plot_grid(
     p_surv,

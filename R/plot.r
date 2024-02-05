@@ -31,3 +31,22 @@ species_color <- function() {
 ggsave_multiple <- function(fns, ...) {
   map(fns, function(x) ggsave(x, ...))
 }
+
+#https://www.painblogr.org/2020-12-15-climate-change.html
+get_ai_class <- function(layer) {
+  case_when(
+    is.infinite(layer) ~ 'Humid',
+    layer >= 0.65 ~ 'Humid',
+    layer >= 0.5 & layer < 0.65 ~ 'Dry sub-humid',
+    layer >= 0.2 & layer < 0.5 ~ 'Semi-arid',
+    layer >= 0.05 & layer < 0.2 ~ 'Arid',
+    layer < 0.05 ~ 'Hyper-arid'
+  )
+}
+
+col_fao <- function() {
+  col_fao <- c('#e31a1c', '#fd8d3c', '#fecc5c', '#ffffb2', '#666666')
+  names(col_fao) <- rev(c("Humid", "Dry sub-humid", "Semi-arid", "Arid", "Hyper-arid"))
+  col_fao
+
+}

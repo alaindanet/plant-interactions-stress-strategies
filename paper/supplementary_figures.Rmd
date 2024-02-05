@@ -40,11 +40,11 @@ knitr::opts_chunk$set(echo = FALSE,
                       optipng = "-o1 -quiet")
 
 library(here)
-source(here::here("R","basic_stat.R"))
-source(here::here("R","inla_helpers.R"))
-source(here::here("R","clean_data.R"))
-source(here::here("R","string_replacements.R"))
-source(here::here("R","plot.r"))
+source(here::here("R", "basic_stat.R"))
+source(here::here("R", "inla_helpers.R"))
+source(here::here("R", "clean_data.R"))
+source(here::here("R", "string_replacements.R"))
+source(here::here("R", "plot.r"))
 library(tidyverse)
 library(magrittr)
 library(cowplot)
@@ -65,10 +65,26 @@ if (Sys.info()["login"] == "alain") {
 # Figures
 
 ```{r}
+spei_cap <- "Timeseries of the monthly Standardised Precipitation
+Evapotranspiration Index (SPEI) across the period 1951-2023 computed over a 3 to
+12 month span in the study area (spatial resolution of one degree), respectively
+representing meteorological, agricultural and hydrological droughts (i.e. from
+short to long term drought). The period of the experiment is highlighted in
+purple. SPEI is expressed in standard deviation. Data were extracted from
+https://spei.csic.es/index.html." %>% str_replace_all("\\s+", " ")
+```
+
+```{r spei, fig.cap = spei_cap}
+knitr::include_graphics(here::here("paper", "graphics", "p_spei.pdf"))
+```
+
+```{r}
 env_plot_cap <- "Boxplots displaying environmental value distributions according
 to watering and nurse patch treatments. Temperature in celcius degree, soil
-moisture in percentage, and Photosynthetic Active Radiation (PAR).  See methods
-for details about the measurements and Table S1 for the statistical model for
+moisture in percentage, and Photosynthetic Active Radiation (PAR). Measurements
+were taken one time in January and one time in June. They were taken around noon
+16 hours (overnight) after applying the watering treatments. See methods for
+details about the measurements and Table S1 for the statistical model for
 the associated effects." %>% str_replace_all("\\s+", " ")
 ```
 
@@ -91,9 +107,15 @@ knitr::include_graphics(here("paper", "graphics", "p_pred_bm.pdf"))
 
 ```{r}
 bm_d_effect <- "Coefficients of the statistical models comparing the effects for
-total biomass, basal diameter, and vegetative height (the last two being used to
-  predict total biomass, see methods). The coefficients for total biomass and
-basal diameter models are highly similar."
+Model coefficients of the statistical model on vegetative height (yellow), total
+biomass (orange), and basal diameter (blue). Points represent the mean of the
+posterior distribution of coefficients; Thin, medium and large bars represent
+the credible interval at 95\\%, 90\\% and 80\\%. The model is the same as for Fig.
+2b, therefore the coefficients for total biomass are exactly the same. We note
+that using either the estimated total biomass or the basal diameter (used with
+vegetative height to estimate total biomass) give similar results, meaning
+that our results do not depend on the chosen variable." %>%
+str_replace_all("\\s+", " ")
 ```
 
 
