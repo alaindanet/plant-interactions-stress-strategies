@@ -192,8 +192,9 @@ valuable way to further understand the mechanisms by which facilitation operates
 on beneficiary plants.
 
 Here we report on an in situ experiment set in a semiarid dryland experiencing a
-long and severe drought (see Methods, Fig. S1) and designed to test how
-facilitative effects provided by nurse species in drylands differed for
+long and severe drought (Standard Precipitation Evaporation Index < -1.5 SD over
+the study period, Fig. S1) and designed to test how facilitative
+effects provided by nurse species in drylands differed for
 diverse and monospecific beneficiary communities, and how these
 facilitative effects changed under lower water stress. Our experiment allows
 us to gather data about the relative importance of complementarity, competitive
@@ -238,24 +239,26 @@ knitr::include_graphics(here("paper", "graphics", "experimental_design4.png"))
 
 
 The experiment was conducted in 2016 in the Murcia region, Southeastern Spain
-(37°57’33“N, 1°00’17”W – 172 m a.s.l.). The region’s climate is semiarid
+(37°57’33“N, 1°00’17”W – 172 m a.s.l., Fig. \@ref(fig:exp)a). The region’s climate is semiarid
 Mediterranean with a very high year to year variability. Mean annual rainfall is
 283mm and mean annual temperature is 18.2°C [Murcia Meteorological Station,
 period 1960-2017, @paniagua_aridity_2019]. The experiment was conducted in 2016,
 within a long drought period in the region that was particularly severe for the
 water years 2013-2016, which received 543.5mm of total rainfall (64% of the
-long-term average) and experienced a mean annual temperature of 20°C, almost 2
-°C above the long-term average (Meteorological State Agency, AEMET).
-The Standardised Precipitation Evapotranspiration Index (SPEI), a proxy for
+long-term average, i.e. 100mm less per year than average) and experienced a mean
+annual temperature of 20°C, almost 2 °C above the long-term average
+(Meteorological State Agency, AEMET). The Standardised Precipitation
+Evapotranspiration Index [SPEI, @vicente-serrano_multiscalar_2010], a proxy for
 water balance, was during the experiment 1.5 standard deviations lower than the
-average over the 1950-2023 period in the region (Fig. S1). Soils
-are thin (20-50 cm), of silt-loam type (32% sand, 47% silt, 21% clay), and basic
-(pH = 8.7). The area is a mosaic of moderately steep slopes covered by
-alpha-grass (*Stipa tenacissima*) steppes and abandoned agricultural terraces
-built on the streambeds. The agricultural terraces in the study site were
-abandoned in the 80s and 90s and progressively colonised by forbs and shrubs
-(Fig. \@ref(fig:exp)a). The extant perennial vegetation is dominated by the
-shrubs *Artemisia herba-alba*, *Anthyllis cytisoides* and *Pistacia lentiscus*.
+average over the 1950-2023 period in the region (Fig. S1), which can be
+categorised as severely drought conditions [@slette_how_2019]. Soils are thin (20-50 cm),
+of silt-loam type (32% sand, 47% silt, 21% clay), and basic (pH = 8.7). The area
+is a mosaic of moderately steep slopes covered by alpha-grass (*Stipa
+tenacissima*) steppes and abandoned agricultural terraces built on the
+streambeds. The agricultural terraces in the study site were abandoned in the
+80s and 90s and progressively colonised by forbs and shrubs (Fig.
+\@ref(fig:exp)b). The extant perennial vegetation is dominated by the shrubs
+*Artemisia herba-alba*, *Anthyllis cytisoides* and *Pistacia lentiscus*.
 
 ## Experimental design {-}
 
@@ -269,8 +272,9 @@ moisture after high rainfall events but to decrease it after small rain events
 [@verwijmeren_combined_2019]. Furthermore, a closely related species Artemisia tridendata
 was previously shown to positively alter microclimate
 [@callaway_competition_1996; @ryel_rapid_2003]. It was reported to be partially
-phytotoxic, producing strong anti-germination compounds, which however were not
-reported to affect negatively sapling growth [@arroyo_phytotoxic_2018].
+phytotoxic, producing strong anti-germination compounds affecting both its own
+and other species, which however were not reported to affect negatively sapling
+growth [@arroyo_phytotoxic_2018].
 
 To assess how nurse effects varied with the species richness of the beneficiary
 communities, we transplanted three plants under the nurse and in open microsites
@@ -303,12 +307,16 @@ beneficiary communities with 1.5L of water per planting microsite and compared
 with control (not watered) beneficiary communities. Because of the
 naturally-droughted ambient conditions we treat the 'not-watered' treatment as
 water-stressed conditions and the 'watered' treatment as non-water-stressed
-conditions. We watered the planting microsites 8 times during 2016 around 6pm to
-avoid the strongest
+conditions. Because of the naturally-droughted ambient conditions we treat the
+'not-watered' treatment as water-stressed conditions and the 'watered' treatment
+as non-water-stressed conditions. This naturally-droughted approach overcomes
+the potential limitations and artefacts associated with experimentally induced
+drought [e.g., @kreyling_drought_2017; @kroel-dulay_field_2022]. We watered the
+planting microsites 8 times during 2016 around 6pm to avoid the strongest
 evapotranspiration, once a month in spring and summer (i.e. March, April, May,
 June, July, and August) and every two months otherwise (i.e. January and
 October). We did so by emptying one water bottle per microsite. We measured soil
-moisture 16 hours after watering in January, March, and June using a hand-held
+moisture 16 hours after watering in January and June using a hand-held
 TDR sensor (Fig. S2).
 
 We used a fully factorial design that included 3 treatments with two levels
@@ -584,12 +592,13 @@ the same survival (OR = `r s_c`, Fig. \@ref(fig:sbm)a) but lower biomass
 Watering increased the survival and biomass of beneficiary communities in open
 microsites (survival OR = `r s_w`, biomass: $\beta$ = `r b_w`), and this effect
 was enhanced in diverse beneficiary communities (survival: OR = `r s_wc`,
-biomass: $\beta$ = `r b_wc`). The positive watering effect on survival and
-biomass in monospecific beneficiary communities was similar regardless of the
-presence or absence of the nurse (survival OR = `r s_wm`; biomass: $\beta$ =
-`r b_wm`), resulting in near-neutral net effects of the nurse on monospecific
-beneficiary communities in watered and non-watered treatments (Fig. \@ref(fig:sbm)c & d, red and
-blue points).
+biomass: $\beta$ = `r b_wc`). This translates into a watering effect that was of
++80% ((1.11 + 0.97)/1.11 - 1) in diverse communities than in monoculture. The
+positive watering effect on survival and biomass in monospecific beneficiary
+communities was similar regardless of the presence or absence of the nurse
+(survival OR = `r s_wm`; biomass: $\beta$ = `r b_wm`), resulting in near-neutral
+net effects of the nurse on monospecific beneficiary communities in watered and
+non-watered treatments (Fig. \@ref(fig:sbm)c & d, red and blue points).
 
 Diverse beneficiary communities under nurses had higher survival and biomass
 than monospecific beneficiary communities in the same conditions (strong support
@@ -825,17 +834,22 @@ beneficiary communities.
 ## Nurse increases complementarity effects in beneficiary communities
 
 We found consistent net positive effects of species richness on beneficiary
-community biomass, driven solely by positive complementarity effects. Overall,
-diversity net effects associated with competitive hierarchy (measured by
-selection effects) were very low compared to complementarity effects, a result
-that matches previous findings in grasslands [@loreau_partitioning_2001;
-@fargione_selection_2007]. This dominance of complementary effects rather than
-competitive hierarchy suggests that the processes linked to niche
-differentiation and facilitation play a more important role than the ones linked
-to competitive dominance. Watering increased complementarity effects in open
-sites and nursing increased complementarity effects in non-watered sites. This
-highlights, similar to functional traits, the commonality in the
-effects of watering and nursing.
+community biomass, driven solely by positive complementarity effects. We report
+total net effects of biodiversity that are five times lower than previously
+reported in species-rich, temperate grasslands [@loreau_partitioning_2001], and
+we suggest that it could be due to three factors: (1) the combination of dryness
+and drought conditions in the study, (2) the use of shrub species which have
+slower growth than grass species, and (3) the small number of species in our
+beneficiary communities. Overall, diversity net effects associated with
+competitive hierarchy (measured by selection effects) were very low compared to
+complementarity effects, a result that matches previous findings in grasslands
+[@loreau_partitioning_2001; @fargione_selection_2007]. The dominance of
+complementary effects rather than competitive hierarchy suggests that the
+processes linked to niche differentiation and facilitation play a more important
+role than the ones linked to competitive dominance. Watering increased
+complementarity effects in open sites and nursing increased complementarity
+effects in non-watered sites. This highlights, similar to functional traits, the
+commonality in the effects of watering and nursing.
 
 
 Although ten times lower than complementarity effects in magnitude, we found that the

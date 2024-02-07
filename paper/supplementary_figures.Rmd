@@ -70,7 +70,9 @@ Evapotranspiration Index (SPEI) across the period 1951-2023 computed over a 3 to
 12 month span in the study area (spatial resolution of one degree), respectively
 representing meteorological, agricultural and hydrological droughts (i.e. from
 short to long term drought). The period of the experiment is highlighted in
-purple. SPEI is expressed in standard deviation. Data were extracted from
+purple. SPEI is expressed in standard deviation (Vicente-Serrano et al. 2010)
+and its median value was of -1.03, -1.18, and -1.60 respectively over the 3, 6
+and 12 months period during the experiment. Data were extracted from
 https://spei.csic.es/index.html." %>% str_replace_all("\\s+", " ")
 ```
 
@@ -106,15 +108,13 @@ knitr::include_graphics(here("paper", "graphics", "p_pred_bm.pdf"))
 ```
 
 ```{r}
-bm_d_effect <- "Coefficients of the statistical models comparing the effects for
-Model coefficients of the statistical model on vegetative height (yellow), total
-biomass (orange), and basal diameter (blue). Points represent the mean of the
-posterior distribution of coefficients; Thin, medium and large bars represent
-the credible interval at 95\\%, 90\\% and 80\\%. The model is the same as for Fig.
-2b, therefore the coefficients for total biomass are exactly the same. We note
-that using either the estimated total biomass or the basal diameter (used with
-vegetative height to estimate total biomass) give similar results, meaning
-that our results do not depend on the chosen variable." %>%
+bm_d_effect <- "Model coefficients using total biomass (orange, e.g. Figure 2b),
+vegetative height (yellow), and basal diameter (blue) as response variables.
+Points represent the mean of the posterior distribution of coefficients; Thin,
+medium and large bars represent the credible interval at 95\\%, 90\\% and 80\\%. The
+model is the same as for Figure 2b, therefore the coefficients for total biomass
+are exactly the same. We note that the coefficients for all response variables
+match and thus the result in Figure 2b are insensitive to the choice of metric." %>%
 str_replace_all("\\s+", " ")
 ```
 

@@ -77,7 +77,7 @@ mutate(across(
 )
 
 # November removed because soil moisture measurement was done months after
-# watering
+# watering contrary to the other that were done just after
 #,
 #  november %>%
 #    rename(notes = ...11)
