@@ -1568,6 +1568,7 @@ If you ran all the `{targets}` chunks in non-interactive mode, then your R scrip
 
 ```{r tar-make}
 tar_make(envir = parent.frame())
+tar_visnetwork()
 ```
 
 # Output

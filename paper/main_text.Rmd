@@ -307,17 +307,15 @@ beneficiary communities with 1.5L of water per planting microsite and compared
 with control (not watered) beneficiary communities. Because of the
 naturally-droughted ambient conditions we treat the 'not-watered' treatment as
 water-stressed conditions and the 'watered' treatment as non-water-stressed
-conditions. Because of the naturally-droughted ambient conditions we treat the
-'not-watered' treatment as water-stressed conditions and the 'watered' treatment
-as non-water-stressed conditions. This naturally-droughted approach overcomes
-the potential limitations and artefacts associated with experimentally induced
-drought [e.g., @kreyling_drought_2017; @kroel-dulay_field_2022]. We watered the
-planting microsites 8 times during 2016 around 6pm to avoid the strongest
+conditions. This naturally-droughted approach overcomes the potential
+limitations and artefacts associated with experimentally induced drought [e.g.,
+@kreyling_drought_2017; @kroel-dulay_field_2022]. We watered the planting
+microsites 8 times during 2016 around 6pm to avoid the strongest
 evapotranspiration, once a month in spring and summer (i.e. March, April, May,
 June, July, and August) and every two months otherwise (i.e. January and
 October). We did so by emptying one water bottle per microsite. We measured soil
-moisture 16 hours after watering in January and June using a hand-held
-TDR sensor (Fig. S2).
+moisture 16 hours after watering in January and June using a hand-held TDR
+sensor (Fig. S2).
 
 We used a fully factorial design that included 3 treatments with two levels
 each: microsite (nurse patch/ open), assemblage diversity (monospecific /
@@ -367,8 +365,8 @@ individual from the original container survived in January, and removed
 supernumerary individuals by cutting their stems at their basis.
 
 In order to estimate the total biomass of the beneficiary plants during the
-course of the experiment, we estimated the allometric relationship linking total
-biomass to basal diameter and maximal height with a species effect
+experiment, we estimated the allometric relationship linking total biomass to
+basal diameter and maximal height with a species effect
 [@catchpole_estimating_1992; @nafus_multispecies_2009]. We put aside twelve
 individuals of each species in November (i.e. at the time we collected the
 seedlings from the nursery), and dried them at 65°C for three days to assess the
@@ -399,7 +397,7 @@ leaves of beneficiary plants were collected and processed in March 2016 (4
 months after plantation) following guidelines from @perez-harguindeguy_new_2013.
 We only collected leaves without traces of disease, grazing or senescence, that
 were mature and most exposed to sunlight (i.e. close to the top
-of the main stem). We collected a few number of leaves, and only from the most
+of the main stem). We collected a few numbers of leaves, and only from the most
 healthy individuals, as to minimise the effect of leaf sampling on their
 response to experimental conditions. We collected 3 leaves per plant for *P.
 lentiscus*, 5 leaves for *A. citisoides* and 10 leaves for *D. pentaphyllum*, so that
@@ -722,7 +720,7 @@ lt_cap_alt <- paste0("Effects of the nurse, watering and beneficiary community
   Specific Leaf Area (SLA). Points represent the mean of the posterior
   distribution of coefficients; Thin, medium and large bars represent the
   credible intervals at 95\\%, 90\\% and 80\\%. The effects of control variables and
-  the predictions of the model are displayed in Fig. S7 and S8c.") %>%
+  the predictions of the model are displayed in Fig. S7c and S8.") %>%
   str_replace_all("\\s+", " ")
 ```
 
