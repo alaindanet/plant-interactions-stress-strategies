@@ -48,7 +48,7 @@ library(here)
 source(here::here("R","basic_stat.R"))
 source(here::here("R","inla_helpers.R"))
 source(here::here("R","clean_data.R"))
-source(here::here("R","string_replacements.R"))
+source(here::here("R","string_replacements.R")) #
 library(tidyverse)
 library(magrittr)
 library(cowplot)
@@ -664,10 +664,10 @@ complementarity effects was much larger for watered beneficiary communities than
 for non-watered ones (Fig. \@ref(fig:div), points), while watering hardly
 increased complementarity in nurse patches (Fig. \@ref(fig:div), triangles). We
 further found that watering increased selection effects from slightly negative
-to slightly positive in open microsites (-.25 vs .5,Fig. \@ref(fig:div),
+to slightly positive in open microsites (-0.25 vs 0.5, Fig. \@ref(fig:div),
 points), while watering had no effect on selection in nurse patches (triangles).
 In nurse patches, selection effects were negative regardless of the water stress
-conditions (around -.1, Fig. \@ref(fig:div)), indicating that nurse plants
+conditions (around -0.1, Fig. \@ref(fig:div)), indicating that nurse plants
 altered competitive dominance in beneficiary communities.
 
 ```{r}
@@ -744,21 +744,40 @@ evidence for lower LDMC in watered treatment ($\beta$ = `r l_w`) but not SLA
 ($\beta$ = `r a_w`). We did not find evidence that community diversity affected
 leaf traits (Fig. \@ref(fig:lt)).
 
-```{r, eval = FALSE}
-tar_read(env_inla_pred) %>%
-  filter(duration_m == 5)
+```{r}
+tar_load(env_inla_pred)
+monw <- paste0(round(get_pred_values()["mean"], 1), "%")
+mow <- paste0(round(get_pred_values(w = "Watered")["mean"], 1), "%")
+dmo_tmp <- get_pred_values(w = "Watered")["mean"] - get_pred_values()["mean"]
+dmo <- paste0(round(dmo_tmp, 1), "%")
+dmo_ratio <- paste0(round(dmo_tmp / get_pred_values()["mean"] * 100, 0), "%")
+
+mnnw5 <- get_pred_values(m = 5, site = "Patch") %>%
+  p_ci(x = ., r = 1, p = TRUE)
+monw5 <- get_pred_values(m = 5, site = "Open") %>%
+  p_ci(x = ., r = 1, p = TRUE)
+
+tnnw5 <- get_pred_values(resp = "temperature", m = 5, site = "Patch") %>%
+  p_ci(x = ., r = 1, p = FALSE)
+tonw5 <- get_pred_values(resp = "temperature", m = 5, site = "Open") %>%
+  p_ci(x = ., r = 1, p = FALSE)
+
+pnnw5 <- get_pred_values(resp = "PAR", m = 5, site = "Patch") %>%
+  p_ci(x = ., r = 0, p = FALSE)
+ponw5 <- get_pred_values(resp = "PAR", m = 5, site = "Open") %>%
+  p_ci(x = ., r = 0, p = FALSE)
 ```
 
 
-We found that soil moisture was quite low, 7.25% on average in March and that
-watering increased soil moisture by 4.24% 16 hours after watering (i.e. +58% in
+We found that soil moisture was quite low, `r monw` on average in March and that
+watering increased soil moisture by `r dmo` 16 hours after watering (i.e. +`r dmo_ratio` in
 March, Fig. S2, Table S1). However, nurse patches were not found to result in
-higher soil moisture overall (4.0 95%CI:[3.1, 4.9] in nurse patch vs 4.0 [3.1,
-4.9] in open non-watered microsites in June, Fig. S2). We found that nurse patches had a
-temperature 3 celsius degrees lower than in the open at noon (32.3 [31.2, 33.5]
-vs 28.9 [27.6, 30.1] in June, i.e. -11%, Fig. S2), and a Photosynthetic Active
-Radiation 100 Quantum.$m^{-2}.s^{-1}$ lower than in the open (255 [229, 280] vs 358
-[333, 383] in June, i.e. -29%, Fig. S2).
+higher soil moisture overall (average 95%CI: `r mnnw5` in nurse patch vs `r monw5` in
+open non-watered microsites in June, Fig. S2). We found that nurse patches had a
+temperature 3 celsius degrees lower than in the open at noon (`r tnnw5`
+vs `r tnnw5` in June, i.e. -11%, Fig. S2), and a Photosynthetic Active
+Radiation 100 Quantum.$m^{-2}.s^{-1}$ lower than in the open (`r pnnw5` vs `r ponw5`
+in June, i.e. -29%, Fig. S2).
 
 
 # Discussion {-}

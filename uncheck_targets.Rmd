@@ -3,7 +3,7 @@ title: "Target Markdown"
 output: html_document
 ---
 
-```{r setup, include = FALSE}
+```{r set, include = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 Sys.setlocale("LC_ALL", "en_GB.utf8")
 ```
@@ -12,6 +12,7 @@ Sys.setlocale("LC_ALL", "en_GB.utf8")
 
 ```{r}
 library(targets)
+library(tarchetypes)
 tar_unscript()
 ```
 
@@ -25,7 +26,7 @@ library(magrittr)
 library(here)
 library(zoo)
 library(ecocom)
-tar_option_set(packages = c("tidyverse", "here", "magrittr", "lubridate", "INLA", "zoo", "ecocom", "cowplot"))
+tar_option_set(packages = c("tidyverse", "here", "magrittr", "lubridate", "INLA", "zoo", "ecocom", "cowplot", "tarchetypes"))
 source(here::here("R","inla_helpers.R"))
 source(here::here("R","clean_data.R"))
 source(here::here("R","string_replacements.R"))
@@ -1073,7 +1074,6 @@ surv_data_modelling %>%
   mutate(date = as.Date(date))
 ```
 
-
 ```{targets mod-plot}
 list(
   tar_target(p_surv,
@@ -1081,12 +1081,24 @@ list(
       color_var = NULL,
       intercept = 0,
       term_to_rm = term2rm) +
+    geom_point(
+      aes(x = mean, y = term),
+      color = "red",
+      alpha = 1, size = 3,
+      position = position_dodge(width = .9)
+    ) +
     labs(x = latex2exp::TeX("Survival odd-ratios $(e^\\beta - 1)$")) +
     theme(axis.title.y = element_blank())),
   tar_target(p_bm,
     plot_inla_fixed_effect(
       bm_inla_effects %>% filter(response == "bm"),
       color_var = NULL, intercept = 0, term_to_rm = term2rm) +
+    geom_point(
+      aes(x = mean, y = term),
+      color = "red",
+      alpha = 1, size = 3,
+      position = position_dodge(width = .9)
+    ) +
     labs(x = "Standardised coefficients (Biomass)") +
     theme(axis.title.y = element_blank())
   ),
@@ -1136,6 +1148,26 @@ plot_grid(
   nrow = 3
 )
 ```
+
+```{targets fig3_alt, tar_simple = TRUE}
+plot_inla_fixed_effect(
+  leaf_inla_effects_scaled %>%
+    mutate(response = toupper(response)),
+  term_to_rm = term2rm,
+  color_var = NULL
+  ) +
+geom_point(
+  aes(x = mean, y = term),
+  color = "red",
+  alpha = 1, size = 3,
+  position = position_dodge(width = .9)
+  ) +
+labs(x = "Standardised coefficients", color = "Leaf trait") +
+facet_grid(cols = vars(response)) +
+guides(color = "none") +
+theme(axis.title.y = element_blank())
+```
+
 
 ```{targets var_fitted, tar_simple = TRUE}
 rbind(leaf_inla_var_fitted, bm_inla_var_fitted,
@@ -1561,6 +1593,16 @@ list(
 )
 ```
 
+```{targets, eval=FALSE}
+
+library(tarchetypes)
+list(
+  tar_render(manuscript, here("paper", "main_text.Rmd"))
+)
+
+```
+
+
 
 # Pipeline
 
@@ -1901,19 +1943,9 @@ ggsave_multiple(
 
 ```{r}
 tar_load(c(leaf_inla_effects_scaled, term2rm))
-fig3_alt <- plot_inla_fixed_effect(
-  leaf_inla_effects_scaled %>%
-    mutate(response = toupper(response)),
-  term_to_rm = term2rm
-  ) +
-labs(x = "Standardised coefficients", color = "Leaf trait") +
-facet_grid(cols = vars(response)) +
-scale_color_manual(values = c("black", "black")) +
-guides(color = "none") +
-theme(axis.title.y = element_blank())
 ggsave_multiple(
   paste0("fig3_alt", c(".png", ".pdf")),
-  plot = fig3_alt,
+  plot = tar_read(fig3_alt),
   path = here("paper", "graphics"),
   scale = 2.4,
   width = 80,

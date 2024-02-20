@@ -536,3 +536,23 @@ inla_sampling_from_pred <- function(
   select(-fitted) %>%
   unnest(sampling)
 }
+
+get_pred_values <- function(
+  x = env_inla_pred,
+  resp = "soil.moisture",
+  m = 3,
+  site = "Open",
+  w = "No Watered"
+  ) {
+  mask <- x$response == resp &
+    x$duration_m == m &
+    x$ms == site &
+    x$watering == w
+
+  out <- x[mask, ]
+  output <- out[, c("mean", "0.025quant", "0.975quant")]
+  output <- unlist(output)
+  names(output) <- c("mean", "low", "high")
+  output
+
+}
