@@ -258,39 +258,54 @@ plot_posterior_fixed <- function(inla_mod = NULL, scales = "free", ncol = 4) {
 plot_inla_fixed_effect <- function(
   x,
   color_var = response,
+  color_point = NULL,
   term_to_rm = c("(Intercept)", "ter2", "ter3", "ter4"),
   intercept = 0,
   point_size = 3
-  ){
-  x %>%
-  filter(!term %in% term_to_rm) %>%
-  mutate(
-    term = str_replace_all(term, term_replacement()),
-    width_bar = 0,
-    width_bar = case_when(
-      ci_level == "level:0.95" ~ .1,
-      ci_level == "level:0.90" ~ 5,
-      ci_level == "level:0.80" ~ 10,
-      TRUE ~ width_bar
-    ),
-    term = factor(term, term_levels())
-    ) %>%
-  ggplot(aes(y = term, x = mean, xmin = low, xmax = high, color = {{color_var}})) +
-  geom_vline(xintercept = intercept, linetype = "dashed") +
-  scale_y_discrete(limits = rev) +
-  geom_blank() +
-  geom_errorbar(
-    aes(width = 0, size = width_bar),
-    alpha = 0.5,
-    position = position_dodge(width = .9),
-    show.legend = FALSE
-    ) +
-  theme_bw() +
-  geom_point(
-    aes(x = mean, y = term, color = {{color_var}}),
-    alpha = 1, size = point_size,
-    position = position_dodge(width = .9)
-  )
+  ) {
+
+  p <- x %>%
+    filter(!term %in% term_to_rm) %>%
+    mutate(
+      term = str_replace_all(term, term_replacement()),
+      width_bar = 0,
+      width_bar = case_when(
+        ci_level == "level:0.95" ~ .1,
+        ci_level == "level:0.90" ~ 5,
+        ci_level == "level:0.80" ~ 10,
+        TRUE ~ width_bar
+        ),
+      term = factor(term, term_levels())
+      ) %>%
+    ggplot(aes(y = term, x = mean, xmin = low, xmax = high, color = {{color_var}})) +
+    geom_vline(xintercept = intercept, linetype = "dashed") +
+    scale_y_discrete(limits = rev) +
+    geom_blank() +
+    geom_errorbar(
+      aes(width = 0, size = width_bar),
+      alpha = 0.5,
+      position = position_dodge(width = .9),
+      show.legend = FALSE
+      ) +
+    theme_bw()
+
+  if (is.null(color_point)) {
+    p +
+      geom_point(
+        aes(x = mean, y = term, color = {{color_var}}),
+        alpha = 1, size = point_size,
+        position = position_dodge(width = .9)
+      )
+  } else {
+    p +
+      geom_point(
+        aes(x = mean, y = term),
+        color = color_point,
+        alpha = 1, size = point_size,
+        position = position_dodge(width = .9)
+      )
+  }
+
 }
 
 old_plot_inla_fixed_effect <- function(

@@ -1074,31 +1074,33 @@ surv_data_modelling %>%
   mutate(date = as.Date(date))
 ```
 
+```{r}
+tar_load(c(inla_surv_odd, term2rm))
+plot_inla_fixed_effect(inla_surv_odd,
+      color_var = NULL,
+      color_point = wet_dry_color()["Not Watered"],
+      intercept = 0,
+      term_to_rm = term2rm) +
+    labs(x = latex2exp::TeX("Survival odd-ratios $(e^\\beta - 1)$")) +
+    theme(axis.title.y = element_blank())
+```
+
+
 ```{targets mod-plot}
 list(
   tar_target(p_surv,
     plot_inla_fixed_effect(inla_surv_odd,
       color_var = NULL,
+      color_point = wet_dry_color()["Not Watered"],
       intercept = 0,
       term_to_rm = term2rm) +
-    geom_point(
-      aes(x = mean, y = term),
-      color = "red",
-      alpha = 1, size = 3,
-      position = position_dodge(width = .9)
-    ) +
     labs(x = latex2exp::TeX("Survival odd-ratios $(e^\\beta - 1)$")) +
     theme(axis.title.y = element_blank())),
   tar_target(p_bm,
     plot_inla_fixed_effect(
       bm_inla_effects %>% filter(response == "bm"),
+      color_point = wet_dry_color()["Not Watered"],
       color_var = NULL, intercept = 0, term_to_rm = term2rm) +
-    geom_point(
-      aes(x = mean, y = term),
-      color = "red",
-      alpha = 1, size = 3,
-      position = position_dodge(width = .9)
-    ) +
     labs(x = "Standardised coefficients (Biomass)") +
     theme(axis.title.y = element_blank())
   ),
@@ -1154,13 +1156,8 @@ plot_inla_fixed_effect(
   leaf_inla_effects_scaled %>%
     mutate(response = toupper(response)),
   term_to_rm = term2rm,
+  color_point = wet_dry_color()["Not Watered"],
   color_var = NULL
-  ) +
-geom_point(
-  aes(x = mean, y = term),
-  color = "red",
-  alpha = 1, size = 3,
-  position = position_dodge(width = .9)
   ) +
 labs(x = "Standardised coefficients", color = "Leaf trait") +
 facet_grid(cols = vars(response)) +
@@ -1970,49 +1967,9 @@ ggsave_multiple(
 
 
 ```{r}
-tar_load(c(p_surv, p_int_global_surv, p_int_global_bm))
-fig_effect_int <- plot_grid(
-  plot_grid(
-    p_surv,
-    p_bm,
-    labels = c("a", "b")
-    ),
-  plot_grid(
-    p_int_global_surv + theme(legend.position = "none"),
-    p_int_global_bm + theme(legend.position = "none"),
-    labels = c("c", "d")
-    ),
-  get_legend(p_int_global_bm + theme(legend.position = "bottom")),
-  rel_heights = c(1.2, 1.0, .1),
-  nrow = 3
-)
-
-ggsave(
-  filename = "p_surv_bm_int.pdf",
-  plot = fig_effect_int,
-  path = here("paper", "graphics"),
-  scale = 2.4,
-  width = 100,
-  height = 100 * .8,
-  units = "mm",
-  dpi = "print"
-)
-ggsave(
-  filename = "p_surv_bm_int.png",
-  plot = fig_effect_int,
-  path = here("paper", "graphics"),
-  scale = 2.4,
-  width = 100,
-  height = 100 * .8,
-  units = "mm",
-  dpi = "print"
-)
-```
-
-```{r}
 ggsave(
   filename = "p_bm_int.pdf",
-  plot = plot_grid(p_bm, p_int_global_bm),
+  plot = plot_grid(tar_read(p_bm), tar_read(p_int_global_bm)),
   path = here("paper", "graphics"),
   scale = 2.4,
   width = 90,
@@ -2022,7 +1979,7 @@ ggsave(
 )
 ggsave(
   filename = "p_bm_int.pdf",
-  plot = plot_grid(p_surv, p_int_global_surv),
+  plot = plot_grid(tar_read(p_surv), tar_read(p_int_global_surv)),
   path = here("paper", "graphics"),
   scale = 2.4,
   width = 90,
@@ -2056,6 +2013,7 @@ ggsave(
 ```
 
 ```{r}
+tar_load(c(p_pred_surv, p_surv, p_pred_bm, p_bm))
 leg_pred <- get_legend(p_pred_surv)
 p_pred_effect <- plot_grid(
   plot_grid(
